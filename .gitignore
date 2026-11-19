@@ -1,0 +1,12 @@
+build/
+dist/
+*.nso
+*.nss
+__pycache__/
+*.pyc
+*.zip
+*.ips
+*.spr
+*.msbt
+main
+main.*

@@ -1,0 +1,115 @@
+name: Switch Hoop3 title bridge (research cross-build)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/switch-text-build.yml'
+      - 'source/**'
+      - 'templates/**'
+      - 'tools/**'
+      - 'tests/**'
+
+permissions:
+  contents: read
+
+jobs:
+  cross-build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate code-only builder and host policy
+        run: |
+          python -m unittest discover -s tools -p 'test_*.py' -v
+          g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined \
+            -fno-sanitize-recover=all -Isource tests/test_hoop3_text_patch_plan.cpp \
+            -o /tmp/test-hoop3-text-plan
+          /tmp/test-hoop3-text-plan
+          g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined \
+            -fno-sanitize-recover=all -Isource \
+            tests/test_hoop3_title_dispatch.cpp source/hoop3_title_bridge.cpp \
+            -o /tmp/test-hoop3-title-dispatch
+          /tmp/test-hoop3-title-dispatch
+      - name: Install pinned public toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build clang-19 llvm-19 lld-19
+          mkdir -p /tmp/llvm19-tools
+          for binary in clang clang++ llvm-ar llvm-ranlib ld.lld; do
+            ln -s "/usr/bin/${binary}-19" "/tmp/llvm19-tools/${binary}"
+          done
+          echo '/tmp/llvm19-tools' >> "$GITHUB_PATH"
+      - name: Download exact public loader revision and submodules
+        run: |
+          git clone --quiet https://github.com/UnusualNorm/groove-mod.git /tmp/groove-loader
+          git -C /tmp/groove-loader checkout --quiet a3212043134c35323e0412648bd86d66253554c5
+          git -C /tmp/groove-loader submodule update --init --recursive
+      - name: Cache pinned public standard library
+        uses: actions/cache@v4
+        with:
+          path: /tmp/hoop3-public-lib/lib/std
+          key: hoop3-stdlib-musl-1.2.5-llvm-19.1.7-aarch64-NX-v1
+      - name: Fetch LibHakkun public standard library
+        run: |
+          mkdir -p /tmp/hoop3-public-lib
+          if ! test -f /tmp/hoop3-public-lib/lib/std/libc.a; then
+            curl --fail --location --retry 3 --retry-all-errors --retry-delay 2 \
+              --connect-timeout 15 --max-time 60 \
+              'https://codeberg.org/fruityloops1/LibHakkun/releases/download/stdlib-19.1.7/stdlib_musl-1.2.5_llvm-19.1.7_clang-19.1.7_aarch64_NX.tar.xz' \
+              --output /tmp/hoop3-public-lib/stdlib.tar.xz
+            python - <<'PY'
+          import tarfile
+          with tarfile.open('/tmp/hoop3-public-lib/stdlib.tar.xz') as archive:
+              archive.extractall('/tmp/hoop3-public-lib', filter='data')
+          PY
+          fi
+      - name: Compile read-only title bridge
+        run: |
+          python tools/prepare.py --loader /tmp/groove-loader \
+            --std /tmp/hoop3-public-lib/lib/std --out /tmp/hoop3-readonly
+          cmake -S /tmp/hoop3-readonly -B /tmp/hoop3-readonly/build \
+            -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build /tmp/hoop3-readonly/build --parallel 2
+      - name: Compile opt-in research bridge (NOT installable)
+        run: |
+          python tools/prepare.py --loader /tmp/groove-loader \
+            --std /tmp/hoop3-public-lib/lib/std --out /tmp/hoop3-active --active
+          cmake -S /tmp/hoop3-active -B /tmp/hoop3-active/build \
+            -G Ninja -DCMAKE_BUILD_TYPE=Release
+          cmake --build /tmp/hoop3-active/build --parallel 2
+      - name: Check compiled objects and safety manifests
+        run: |
+          python - <<'PY'
+          import json, pathlib, subprocess
+          for rootname, active in [('/tmp/hoop3-readonly', False),
+                                   ('/tmp/hoop3-active', True)]:
+              root = pathlib.Path(rootname)
+              status = json.loads((root / 'deployment-status.json').read_text())
+              assert status['package_allowed'] is False
+              assert status['installable'] is False
+              assert status['text_patch_active'] is active
+              elf = root / 'build/MenuColumn.nss'
+              nso = root / 'build/MenuColumn.nso'
+              assert elf.is_file() and nso.is_file()
+              assert nso.read_bytes()[:4] == b'NSO0'
+              symbols = subprocess.check_output(['readelf', '-Ws', str(elf)], text=True)
+              for name in ('menu_hoop3_title_entry', 'menu_hoop3_instruction_entry',
+                           'menu_hoop3_instruction_dispatch_entry', 'hoop3_text_status'):
+                  assert name in symbols, name
+              print(rootname, 'research cross-build:', nso.stat().st_size, 'bytes')
+          PY
+      - name: Preserve compile evidence (not an installation ZIP)
+        uses: actions/upload-artifact@v4
+        with:
+          name: Hoop3-Text-Cross-Build-RESEARCH-ONLY
+          path: |
+            /tmp/hoop3-readonly/build/MenuColumn.nss
+            /tmp/hoop3-active/build/MenuColumn.nss
+            /tmp/hoop3-active/build/MenuColumn.nso
+            /tmp/hoop3-active/deployment-status.json
+          retention-days: 2

@@ -1,0 +1,23 @@
+{
+  "repository": "https://github.com/UnusualNorm/groove-mod",
+  "commit": "a3212043134c35323e0412648bd86d66253554c5",
+  "files": {
+    "example/thread/89_entry.lua": "0d8eae7945298d3173337a7adb401961e6255aad253c4a6bb725a3a83ff3352a",
+    "example/thread/89_cues0.lua": "701ef2b4c4e1f231cd1d7b23ae7903ee5cd41b7c74b75a315f1fb07c3bcf4b26",
+    "example/thread/89_control.lua": "8818d4a8e63afa86174dcfc9dd827e51893edf6989de477055799dc4c54e2559",
+    "src/cstage.cpp": "d3f9dbe5cf7ed23617b8c78971fe23933862b2b905d8cc06582c6aad35bde920",
+    "src/game/thread.hpp": "b88dbffdcc8b440a58d1af2f987e132aa5f0f7cc3b78a1171a2dab0d770ca17c",
+    "src/game/stage_remix.hpp": "c6cdf27157a6526c5dab3c70fed0f1167f6e4db7f76d0a7daa869ec6eac5ab04",
+    "src/game/scene_ring.hpp": "a85df159e9ab912ae5c303e20cf16aa97b3d42cf489c5792404f77da4aea1527",
+    "src/swig/extensions/game/thread.cpp": "743d16fbbb3c0505bfeb5a6bb766e17ca22f8d1129706e46550f58ad8585b267",
+    "config/config.cmake": "8e9995d991b5e9c57ae69087b4b9b75337cfac23431260ad70e6860132d326b0",
+    "config/VersionList.sym": "d9ffba515e85d60987026db5f87e2bdac85ad0191db623b8fbbcb4148528aeca",
+    "syms/game.sym": "cb8ca52c4e9e52358fd4f24a9f8faa9f3aaa04d940e8df7d95c81d5c24425385"
+  },
+  "submodules": {
+    "sys": "bd608cc9b203760f5f84212106aa004399bb1f39",
+    "lib/lua": "7579fc9d7ed90240487251dfb69168f8e64e9294",
+    "lib/nnsdk": "02dab8893e850d9f9f8d6f28c51491c1bf0d8f66",
+    "sys/tools/senobi": "ac106da19a2bba49b6130e5dd61c08e46e6a0316"
+  }
+}
