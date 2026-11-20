@@ -142,6 +142,9 @@ def prepare(loader: Path, std: Path, output: Path, active: bool) -> Path:
             "HOOP3_ACTIVE_MODE", "1" if active else "0"
         )
     )
+    override = output / "cmake/nx-elf-object-suffix.cmake"
+    override.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(ROOT / "templates/cmake/nx-elf-object-suffix.cmake", override)
     manifest = {
         "module": "MenuColumn.nss",
         "slot": "subsdk6",

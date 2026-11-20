@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.16)
 set(CMAKE_TOOLCHAIN_FILE "${CMAKE_SOURCE_DIR}/sys/cmake/toolchain.cmake")
+# Must be set before project() so it runs after the NX language modules.
+set(CMAKE_USER_MAKE_RULES_OVERRIDE "${CMAKE_CURRENT_SOURCE_DIR}/cmake/nx-elf-object-suffix.cmake")
 project(MenuColumn LANGUAGES ASM C CXX)
 include(config/config.cmake)
 set(USE_SAIL FALSE)
