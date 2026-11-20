@@ -6,6 +6,7 @@ import copy
 import importlib.util
 import json
 from pathlib import Path
+import struct
 import tempfile
 import unittest
 import zipfile
@@ -37,6 +38,7 @@ class GroovePackTests(unittest.TestCase):
         self.assertEqual(report["slot"], {"world": 1, "column": 9, "row": 0})
         self.assertEqual(report["base"]["index"], 41)
         self.assertEqual(report["mode"], "replace")
+        self.assertEqual(report["practice"], "skip")
         self.assertEqual(report["event_count"], 4)
         self.assertEqual(report["resource_overrides"], [])
         self.assertFalse(report["switch_playable"])
@@ -47,13 +49,63 @@ class GroovePackTests(unittest.TestCase):
             b = Path(tmp) / "b.groove"
             self.assertEqual(pack.build_archive(EXAMPLE, a), pack.build_archive(EXAMPLE, b))
             self.assertEqual(a.read_bytes(), b.read_bytes())
-            self.assertEqual(pack.read_archive(a), example_files())
+            archive_files = pack.read_archive(a)
+            self.assertEqual({k: v for k, v in archive_files.items() if k != "timeline.bin"},
+                             example_files())
+            timeline = json.loads(example_files()["timeline.json"])
+            self.assertEqual(archive_files["timeline.bin"],
+                             pack.compile_timeline(timeline["events"]))
+            binary = archive_files["timeline.bin"]
+            self.assertEqual(struct.unpack_from("<4sI", binary), (b"GRT1", 4))
+            self.assertEqual([struct.unpack_from("<QIi", binary, 8 + i * 16)
+                              for i in range(4)],
+                             [(0, 2, -1), (4000000, 1, 0),
+                              (6500000, 1, 0), (8000000, 2, 1)])
+
+    def test_binary_cache_must_match_json_after_any_edit(self):
+        files = example_files()
+        files["timeline.bin"] = pack.compile_timeline(
+            json.loads(files["timeline.json"])["events"])
+        self.assertEqual(pack.validate_package(files)["event_count"], 4)
+        changed = mutate(files, "timeline.json", lambda t: t["events"][1].update(
+            {"beat": "5"}))
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(changed)
+        files["timeline.bin"] += b"unexpected"
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(files)
 
     def test_inherit_mode_needs_no_timeline(self):
         files = mutate(example_files(), "manifest.json", lambda m: m.update(
-            {"sequence": {"mode": "inherit", "file": None}}))
+            {"sequence": {"mode": "inherit", "file": None},
+             "launch": {"practice": "native"}}))
         files.pop("timeline.json")
         self.assertEqual(pack.validate_package(files)["event_count"], 0)
+
+    def test_inherit_mode_does_not_ship_unused_events(self):
+        files = mutate(example_files(), "manifest.json", lambda m: m.update(
+            {"sequence": {"mode": "inherit", "file": None},
+             "launch": {"practice": "native"}}))
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(files)
+
+    def test_empty_replacement_rejected_by_runtime_contract(self):
+        files = mutate(example_files(), "timeline.json", lambda t: t.update({"events": []}))
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(files)
+
+    def test_skip_practice_requires_a_replacement_timeline(self):
+        files = mutate(example_files(), "manifest.json", lambda m: m.update(
+            {"sequence": {"mode": "inherit", "file": None}}))
+        files.pop("timeline.json")
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(files)
+
+    def test_unknown_practice_mode_rejected(self):
+        files = mutate(example_files(), "manifest.json", lambda m: m["launch"].update(
+            {"practice": "maybe"}))
+        with self.assertRaises(pack.GrooveFormatError):
+            pack.validate_package(files)
 
     def test_patch_mode_is_reserved_until_original_event_ids_are_known(self):
         files = mutate(example_files(), "manifest.json", lambda m: m["sequence"].update(

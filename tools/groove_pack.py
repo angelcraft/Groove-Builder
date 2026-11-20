@@ -11,6 +11,7 @@ from decimal import Decimal, InvalidOperation
 import json
 from pathlib import Path, PurePosixPath
 import re
+import struct
 import zipfile
 
 
@@ -22,6 +23,7 @@ ID = re.compile(r"^[a-z][a-z0-9_.-]{2,79}$")
 BEAT = re.compile(r"^[0-9]{1,7}(?:\.[0-9]{1,6})?$")
 RESOURCE_TYPES = {".png", ".webp", ".spr", ".tex", ".ogg", ".wav",
                   ".opus", ".mp3", ".json", ".bin", ".bfsar", ".bfstm"}
+COMMAND_IDS = {"hoop.ring_spawn": 1, "hoop.bubble_state": 2}
 
 
 class GrooveFormatError(ValueError):
@@ -92,6 +94,21 @@ def decode_json(data: bytes, label: str) -> dict:
     return obj
 
 
+def compile_timeline(events: list[dict]) -> bytes:
+    """Deterministic little-endian GRT1 event cache, after JSON validation.
+
+    Never trust this alone: the pack validator compares it byte-for-byte with
+    timeline.json so an edited JSON cannot execute stale binary commands.
+    """
+    result = bytearray(struct.pack("<4sI", b"GRT1", len(events)))
+    for event in events:
+        beat_micro = int(Decimal(event["beat"]) * 1_000_000)
+        command_id = COMMAND_IDS[event["command"]]
+        argument = (0 if command_id == 1 else event["args"]["mask"])
+        result.extend(struct.pack("<QIi", beat_micro, command_id, argument))
+    return bytes(result)
+
+
 def validate_package(files: dict[str, bytes]) -> dict:
     if "manifest.json" not in files:
         raise GrooveFormatError("Missing manifest.json")
@@ -104,7 +121,7 @@ def validate_package(files: dict[str, bytes]) -> dict:
 
     manifest = fields(decode_json(files["manifest.json"], "manifest.json"),
                       {"format", "version", "id", "title", "slot", "base", "sequence",
-                       "resources", "progress_namespace", "state"}, "manifest")
+                       "launch", "resources", "progress_namespace", "state"}, "manifest")
     if manifest["format"] != FORMAT or number(manifest["version"], 1, 1, "version") != 1:
         raise GrooveFormatError("Unsupported .groove format/version")
     stable_id(manifest["id"], "id")
@@ -121,13 +138,20 @@ def validate_package(files: dict[str, bytes]) -> dict:
     number(base["kind"], 1, 1, "base.kind")
     number(base["index"], 0, 79, "base.index")
     stable_id(base["adapter"], "base.adapter")
+    launch = fields(manifest["launch"], {"practice"}, "launch")
+    if launch["practice"] not in ("native", "skip"):
+        raise GrooveFormatError("launch.practice must be native or skip")
     seq = fields(manifest["sequence"], {"mode", "file"}, "sequence")
     if seq["mode"] not in ("inherit", "patch", "replace"):
         raise GrooveFormatError("Unsupported sequence mode")
     if seq["mode"] == "patch":
         raise GrooveFormatError("Patch-mode target-event identity is not implemented in v1")
+    if launch["practice"] == "skip" and seq["mode"] != "replace":
+        raise GrooveFormatError("Skip-practice requires an independent replacement sequence")
     if seq["mode"] == "inherit" and seq["file"] is not None:
         raise GrooveFormatError("Inherited sequence must not specify a timeline")
+    if seq["mode"] == "inherit" and ("timeline.json" in files or "timeline.bin" in files):
+        raise GrooveFormatError("Inherited sequence cannot bundle an unused timeline")
     if seq["mode"] != "inherit":
         if seq["file"] != "timeline.json" or seq["file"] not in files:
             raise GrooveFormatError("Missing required timeline.json")
@@ -148,7 +172,7 @@ def validate_package(files: dict[str, bytes]) -> dict:
         if timeline["timebase"] != "beats":
             raise GrooveFormatError("Only beat-based timeline coordinates are supported")
         events = timeline["events"]
-        if not isinstance(events, list) or len(events) > 10000:
+        if not isinstance(events, list) or not 1 <= len(events) <= 10000:
             raise GrooveFormatError("Invalid event count")
         ids: set[str] = set()
         last_beat = Decimal(-1)
@@ -177,15 +201,20 @@ def validate_package(files: dict[str, bytes]) -> dict:
             else:
                 raise GrooveFormatError(f"Unimplemented command: {event['command']}")
 
+    if "timeline.bin" in files:
+        if timeline is None or files["timeline.bin"] != compile_timeline(timeline["events"]):
+            raise GrooveFormatError("timeline.bin is not the exact timeline.json event cache")
+
     # Files outside a recognized resource folder are not allowed, even when unreferenced.
-    allowed = {"manifest.json", "timeline.json"}
+    allowed = {"manifest.json", "timeline.json", "timeline.bin"}
     for name in files:
         if name not in allowed:
             if name.split("/")[0] not in ("sprites", "audio", "intro", "effects"):
                 raise GrooveFormatError(f"Unexpected package member: {name}")
             asset_path(name, name)
     return {"id": manifest["id"], "slot": slot, "base": base,
-            "mode": seq["mode"], "event_count": len(timeline["events"]) if timeline else 0,
+            "mode": seq["mode"], "practice": launch["practice"],
+            "event_count": len(timeline["events"]) if timeline else 0,
             "resource_overrides": [key for key, value in resources.items() if value],
             "state": manifest["state"], "switch_playable": False}
 
@@ -234,6 +263,11 @@ def read_archive(archive: Path) -> dict[str, bytes]:
 
 def build_archive(folder: Path, target: Path) -> dict:
     files = read_folder(folder)
+    manifest = decode_json(files["manifest.json"], "manifest.json")
+    if manifest["sequence"]["mode"] != "inherit":
+        timeline = decode_json(files["timeline.json"], "timeline.json")
+        files["timeline.bin"] = compile_timeline(timeline["events"])
+    validate_package(files)
     if target.resolve().is_relative_to(folder.resolve()):
         raise GrooveFormatError("Output must be outside the input folder")
     target.parent.mkdir(parents=True, exist_ok=True)

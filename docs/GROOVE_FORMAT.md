@@ -25,6 +25,7 @@ entries is a design goal, not an installed binary patch.
 HoopTrundling3.groove (ZIP)
   manifest.json      required, validated game ID, origin, menu slot, adapter
   timeline.json      required for patch/replace modes
+  timeline.bin       generated cache of timeline.json in built archives
   sprites/           optional graphic resources (inherit if absent)
   audio/             optional music (inherit if absent)
   effects/           optional sound effects (inherit if absent)
@@ -36,6 +37,23 @@ resource. A non-null resource points **inside the same archive**. Imported
 commercial assets should remain in local/private archives and never be
 committed to public Git. A self-contained pack can include modified sprites,
 music, introduction and effects without requiring separate SD folders.
+
+## Virtual launch and practice
+
+`manifest.launch.practice` is `"native"` or `"skip"`. Hoop3 declares
+`"skip"`, paired with `"sequence": {"mode": "replace", "file":
+"timeline.json"}`. The host validator rejects `skip` on an inherited
+sequence. `skip` is a **request**, not a working Switch hook. A future runtime
+must authorize it only for the correlated Hoop3 Stage68 launch, never as a
+global Stage68 patch. It must leave native Hoop2 launches and practice intact.
+
+The virtual catalog selects a stable Groove ID (Hoop3 = virtual index 80),
+then borrows the compatible native mechanics of kind1/index41. The native
+descriptor table has only 80 occupied entries: virtual index 80 must NEVER
+be passed to the original kind1 getter. The original sequence is suppressed
+only after the matching launch has been verified and custom commands are
+ready. A missing/broken pack must leave the extra slot unavailable rather
+than silently play Hoop2 as if it were Hoop3.
 
 ## Time and commands
 
@@ -54,11 +72,28 @@ format bound; it does not certify the meaning of every BubbleState bit.
 Modes: `inherit` uses the base sequence; `replace` describes an entire custom
 sequence; `patch` is reserved for editing original events by stable IDs and
 is explicitly rejected by this validator until that mapping exists. The
-v1 host validator can check timeline syntax, but no native scheduler or patch
-algorithm exists yet. The example's four events are **illustrative, not the
-54-ring Hoop DX sequence**. No executable/game-specific code is included in
+v1 host validator can check timeline syntax, but no *Switch-integrated*
+scheduler or patch algorithm exists yet. The portable C++
+`groove_replace_session.hpp` now models replacement ownership and dispatches
+validated commands against injected callbacks using integer microbeats
+(1 beat = 1,000,000 microbeats). It is tested on a host only, with **no actual
+Switch native function bindings**. The example's four events are
+**illustrative, not the 54-ring Hoop DX sequence**. No executable/game-specific
+code is included in
 the archive; game adapters must explicitly implement and validate each
 allowed command.
+
+`groove_pack.py --build` now adds a generated `timeline.bin` cache while
+preserving editable `timeline.json` in the same ZIP. Binary layout: ASCII
+`GRT1`, little-endian `uint32` event count, then 16 bytes per event:
+`uint64 beat_micro`, `uint32 command_id`, `int32 argument`. Command IDs are
+1 = `hoop.ring_spawn` (argument 0/normal), 2 = `hoop.bubble_state` (mask).
+`groove_binary_timeline.hpp` decodes this format without allocations; both
+the host validator and the eventual Switch loader must reject mismatches
+between JSON and cache. No decompression, JSON parsing or SD access may happen
+inside the gameplay tick callback. The session stays in error state on a
+native call failure and must return safely to menu rather than replay original
+Hoop2 cues halfway through the custom level.
 
 ## Host-side build and inspection
 

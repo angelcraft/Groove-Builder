@@ -10,6 +10,7 @@
     "index": 41,
     "adapter": "hoop_trundling"
   },
+  "launch": {"practice": "skip"},
   "sequence": {"mode": "replace", "file": "timeline.json"},
   "resources": {
     "sprites": null,

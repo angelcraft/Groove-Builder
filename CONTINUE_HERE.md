@@ -1,5 +1,42 @@
 # Continue Hoop Trundling 3 — Switch menu, 20 November 2026
 
+## Current session: data-driven Hoop3 replacement policy (host-tested)
+
+- The user accepted a **virtual level overlay**: Hoop3 uses original Hoop2
+  mechanics and visual assets, but `HoopTrundling3.groove` owns its event
+  timeline and must not append to or play the Hoop2 timeline. Hoop3 must **skip
+  practice**, while the original Hoop2 still retains practice and gameplay.
+- `examples/hoop_trundling_3/manifest.json` now requests
+  `launch.practice=skip` and `sequence.mode=replace`. `tools/groove_pack.py`
+  validates the combination and compiles deterministic `timeline.bin` (`GRT1`
+  with 16-byte microbeat command records) *inside* a generated `.groove` ZIP.
+  Stale/mismatched cache is rejected against editable `timeline.json`.
+- `source/groove_replace_session.hpp` is an allocation-free, host-tested
+  event dispatcher. It demands an explicitly verified launch, suppresses
+  original cues during replacement, requests practice skip only for an active
+  session and locks out replay if callbacks/clock fail. Its `NativeAdapter`
+  callbacks are **unbound** until ARM64 entry signatures are proven.
+- `source/groove_binary_timeline.hpp` is a portable GRT1 decoder. The
+  `.groove` parser, SD access inside the title, real beat-clock binding,
+  original scheduler bypass, secure Stage68 ticket and save routing are STILL
+  NOT implemented. No runtime patch or installable build was produced.
+- `tests/test_groove_hoop3_route_integration.cpp` links the existing
+  Stage68 one-shot policy to the replacement session: the correct origin
+  starts custom events; borrowed original Hoop2, stale manager records and
+  cancellation cannot start them. **Host simulation, not hardware proof.**
+- Four example events remain a **draft test**, not the 54-ring level. Recover
+  and validate the proven 34+20 Hoop DX arrangement before claiming playable.
+- Run `python3 -m unittest discover -s tools -p 'test_*.py' -q` and
+  `g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource
+  tests/test_groove_replace_session.cpp -o /tmp/groove-session &&
+  /tmp/groove-session` (similarly `test_groove_binary_timeline.cpp`).
+
+**Next critical hardware milestone:** correlate virtual Hoop3 launch
+with Stage68, safely bypass its preliminary practice route for this instance,
+and connect native command callbacks under its real beat clock. Do NOT install
+the old Stage68-wide skip patch, and do NOT let an invalid mod fall back to
+playing native Hoop2 under the Hoop3 identity.
+
 ## NEW direction: `.groove` packages and real native catalog growth
 
 - The owner wants a **persistent Groove Engine (IPS + resident subsdk)** and
