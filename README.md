@@ -13,6 +13,10 @@ repository and can be published without original game files.
 - Retains original text behavior for the other 179 tested selections.
 - Two compile variants: read-only diagnostic (default), experimental code-writing
   patcher (explicit `--active`). Neither has passed a hardware runtime test.
+- One compile-time **text override catalog** in `source/hoop3_title_dispatch.hpp`:
+  currently **only** `(world=1, column=9, row=0)`. The same `subsdk6`
+  carrier can eventually route more independently verified cells; a host test
+  exercises two entries without enabling the second entry in the Switch build.
 - Does **not** make the new cell a separate 54-ring gameplay level, change cues,
   skip practice, or supply/modify the proprietary resource containing the Spanish
   title `Pasar por el anillo 3` and matching description.
@@ -20,6 +24,9 @@ repository and can be published without original game files.
 **This is NOT an installer. Do not copy the `.nso` into an active Switch setup.**
 The slot, memory mapping, cache behavior, build identity, coexistence with other
 mods, and game Scene lifetime still need physical verification.
+
+See [`docs/MODULE_CATALOG.md`](docs/MODULE_CATALOG.md) for the boundaries
+between menu text, selection, game routing, cues, practice, and progress.
 
 ## Run local source tests (Linux, g++ and Python)
 
