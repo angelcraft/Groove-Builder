@@ -27,9 +27,13 @@ mods, and game Scene lifetime still need physical verification.
 
 See [`docs/MODULE_CATALOG.md`](docs/MODULE_CATALOG.md) for the boundaries
 between menu text, selection, game routing, cues, practice, and progress.
-The optional read-only `tools/audit_hoop3_practice_path.py` checks the native
-practice/showtime branch against a local original `main`; it neither skips
-practice nor requires distributing game binaries.
+The optional read-only `tools/audit_hoop3_practice_path.py` checks an older
+**Stage67** practice/showtime branch; it must **not** be used to patch Hoop 2.
+`tools/audit_hoop3_stage68_route.py` checks the correct **Stage68 (Hoop 2)**
+constructor, preliminary/normal paths, and later uses of a local stage flag.
+Both require a user-owned original `main`; neither modifies it.
+The inactive `source/hoop3_stage68_route_gate.hpp` models a one-shot stage
+instance match. It does not patch a branch or prove the asynchronous lifecycle.
 `tools/audit_hoop3_prologue_route.py` audits the original prologue selection
 and scans the independently supplied ring SPR/TEX set without modifying it.
 The inactive `source/hoop3_intro_dispatch.hpp` models a prologue-title
@@ -51,6 +55,9 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_launch_origin_gate.cpp -o /tmp/hoop3-origin
 /tmp/hoop3-origin
+g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
+  tests/test_hoop3_stage68_route_gate.cpp -o /tmp/hoop3-stage68
+/tmp/hoop3-stage68
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_intro_dispatch.cpp -o /tmp/hoop3-intro
 /tmp/hoop3-intro

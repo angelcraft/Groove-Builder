@@ -71,26 +71,40 @@ scoped to `(world=1, column=9, row=0)` and leave Hoop 1/2 unchanged.
 Do not mark any checkbox complete from host-side tests, Unicorn, or a cross-
 compiled NSO alone. It requires the relevant Switch runtime observation.
 
-### Read-only practice routing evidence (pinned original `main`)
+### Read-only Stage68 practice routing evidence (pinned original `main`)
 
-The original Hoop 2 stage has a distinct practice/showtime control-flow split:
+**Correction, 20 November:** the older practice route at `0x428fbc/0x428fc0`
+belongs to **StageFactory 67**, not Stage68. Its constructor starts at
+`0x428d70` and its registered worker is `0x428ef0`. That route remains in
+`tools/audit_hoop3_practice_path.py` as an explicitly labeled Stage67 audit;
+it **must not** be used as an address for Hoop 3's borrowed Hoop 2 game.
 
-- `main+0x428fbc` calls a state predicate, then `0x428fc0` branches to the
-  tutorial when its return bit 0 is clear.
-- The practice path calls `0x42b740` at `main+0x4290cc`, then rejoins normal
-  playback via `0x4290ec -> 0x428ff8`.
-- The non-practice route goes directly to `0x428ff8`, which invokes showtime
-  setup `0x429330` at `0x42900c`; the registered cue worker is `0x429750`.
-- The predicate reaches `main+0x1306f0` and reads a **global** bitmask `0x101`.
-  It is **not yet established** that this flag is a dedicated tutorial switch.
+The correctly identified **StageFactory 68 (Hoop 2)** route is now pinned:
 
-`tools/audit_hoop3_practice_path.py` checks these exact opcodes, branch targets,
-registration pointer and original NSO SHA-256. It does **not** change a byte.
-Five synthetic negative/positive tests require no Nintendo data. Example use
-with an authorized private original and local `lz4` dependency:
+- Factory case `0x488dc4` allocates the object, `0x488de8` calls constructor
+  `0x42bea0`, and the common factory exit `0x48a568` returns the same stage
+  pointer held in `x22`.
+- The constructor installs the Stage68 vtable `0xd4d4b0`; its native worker
+  is `0x42c0c0` (registered via the pointer at `0xd9c798`). The worker copies
+  the Stage pointer from `x0` to `x20`.
+- The branch `0x42c190..0x42c198` consults the instance-local byte at
+  `Stage68+0x2c94`. The path for byte `!=1` reaches `0x42c2ac`; the other
+  path can call the preliminary worker `0x42ed80`.
+- Regular gameplay proceeds through `0x42c660`. The global predicate
+  `0x139020` is shared with other code and **must not** be rewritten globally.
+- **Important:** the local byte is read again at `0x42de7c` and `0x42e4a4`.
+  Blindly clearing it would alter *other* Stage68 behavior; therefore the
+  candidate bypass is scoped to the branch, not a write to that byte.
+
+`tools/audit_hoop3_stage68_route.py` checks these original opcodes, branch
+targets, factory/worker pointers and NSO SHA-256. It modifies nothing and
+has synthetic negative/positive tests. Run with your own original and local
+`lz4` dependency:
 
 ```sh
-python tools/audit_hoop3_practice_path.py /private/path/to/main
+python tools/audit_hoop3_stage68_route.py /private/path/to/main
+# Optional, if Unicorn is installed: execute the unmodified branch for 0/1/2
+python tools/audit_hoop3_stage68_route.py /private/path/to/main --unicorn
 ```
 
 **Critical next gate:** verify a trustworthy *menu-confirm launch origin* for
@@ -104,7 +118,7 @@ Simply selecting a title is **not** evidence of launching it.
 Changing this global predicate or making the original branch unconditional
 would also affect Hoop 2 and is therefore **not an acceptable skip patch**.
 
-`source/hoop3_launch_origin_gate.hpp` now contains an **inactive one-shot policy**:
+`source/hoop3_launch_origin_gate.hpp` contains an **inactive one-shot policy**:
 confirming precisely `(1,9,0)` with the borrowed `(kind=1,index=41)` may arm
 one nonzero launch ticket, and the matching stage entry may consume it once.
 Any other confirmation, a mismatched stage entry, cancellation, menu reopen,
@@ -112,6 +126,16 @@ scene destruction or return must clear the ticket. Host tests exercise all 180
 menu cells and stale-ticket cases. **No native correlated launch ticket has been
 verified**, so this is not yet wired to an IPS/subsdk or presented as a working
 practice skip. It must never be armed from mere cursor movement.
+
+The newer `source/hoop3_stage68_route_gate.hpp` models an alternative requiring
+**no invented native ticket**: the menu confirmation for `(1,9,0)` arms a
+pending origin; the *first* StageFactory return consumes it and, only if it
+returns the Stage68 vtable, tags that object; the worker's conditional branch
+consumes the tag only for the exact matching Stage pointer. Any unrelated
+factory return, other confirmation, cancellation or reentry clears it. Tests
+cover all 180 coordinates, original Hoop 2, pointer reuse and invalid vtables.
+This is a **host-side policy only**. The real cancel/Scene lifecycle and an
+ARM64 installer are not validated, so no experimental IPS is shipped yet.
 
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original

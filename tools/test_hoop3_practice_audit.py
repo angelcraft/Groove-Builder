@@ -24,6 +24,8 @@ def fixture():
 class PracticeAuditTests(unittest.TestCase):
     def test_two_native_routes_are_distinct(self):
         result = audit.audit_image(fixture())
+        self.assertEqual(result["stage_factory_id"], 67)
+        self.assertEqual(result["kind"], "native_stage67_practice_showtime_control_readonly")
         self.assertEqual(result["branch"], "0x428fc0")
         self.assertEqual(result["predicate_mask"], "0x101")
         self.assertIn("0x1d2eac", result["menu_launch_forward"])

@@ -1,7 +1,10 @@
-"""Read-only audit of Hoop 2's practice/showtime split on the pinned Switch main.
+"""Read-only audit of StageFactory 67's practice/showtime split.
 
-Takes the user's own NSO as input. No patches, Nintendo resources, installation,
-or claim that a safe scoped practice-skip hook is already available.
+This is NOT the Stage68 (Hoop 2) practice route. That earlier identification
+was corrected by checking the original constructor and factory mapping. See
+audit_hoop3_stage68_route.py for the correct Hoop 2 candidate.
+
+Takes the user's own pinned NSO as input. No patches or installation.
 """
 
 from __future__ import annotations
@@ -15,8 +18,7 @@ import struct
 
 EXPECTED_MAIN_SHA = "494c35e74dae893615980134f8be7673779f8d4b9eb9601e0f1b130d5ee1870e"
 
-# Minimal, exact native evidence: the caller's conditional tutorial route,
-# its rejoin with showtime and the 1-bit predicate beneath main+0x139020.
+# Minimal native evidence for StageFactory 67, not StageFactory 68.
 WORDS = {
     0x1D2CE8: 0x97FFF1D6,  # Menu obtains the selected descriptor
     0x1D2D00: 0x7100041F,  # CMP availability with 1
@@ -97,7 +99,8 @@ def audit_image(image: bytes | bytearray) -> dict:
         if branch_target(pc, u32(image, pc), link=link) != expected:
             raise EvidenceMismatch(f"Unexpected control flow at 0x{pc:x}")
     return {
-        "kind": "native_hoop2_practice_showtime_control_readonly",
+        "kind": "native_stage67_practice_showtime_control_readonly",
+        "stage_factory_id": 67,
         "main_sha256_required": EXPECTED_MAIN_SHA,
         "predicate_callsite": "0x428fbc",
         "predicate_wrapper": "0x139020",
@@ -114,8 +117,9 @@ def audit_image(image: bytes | bytearray) -> dict:
         "hook_installed": False,
         "scoped_launch_origin_proven": False,
         "limitations": [
+            "This worker belongs to StageFactory 67, not Stage68 (Hoop 2).",
             "The bit-0 predicate reads global state; its exact semantic meaning is unknown.",
-            "The old and new menu cells currently share the original Hoop 2 launch identity.",
+            "Hoop 3 and original Hoop 2 currently share a menu launch identity.",
             "A future bypass MUST have an independently verified launch-origin scope and cleanup.",
             "No global predicate override, blanket branch patch or save mutation is authorized.",
         ],
