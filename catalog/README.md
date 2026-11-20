@@ -4,6 +4,11 @@ The single source of truth is [`groove_extended_catalog.v1.json`](groove_extende
 It is public, **resource-free metadata** and is safe to import on Android or
 check into Git. Do not add Nintendo sprites/audio/cues to this folder.
 
+The metadata now records **80 original + 176 planned = 256 possible kind1
+identities**. This is an ID budget only; no original 80-entry native array has
+been relocated, and the extra IDs remain unsafe in its unmodified getter.
+New IDs can be declared through index 255 as slots and runtime are validated.
+
 ## First entry (verified scope, unverified launch)
 
 - `virtual_index=80`, `id=groove.hoop_trundling_3`.

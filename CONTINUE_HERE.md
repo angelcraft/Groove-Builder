@@ -1,5 +1,24 @@
 # Continue Hoop Trundling 3 — Switch menu, 20 November 2026
 
+## NEW direction: `.groove` packages and real native catalog growth
+
+- The owner wants a **persistent Groove Engine (IPS + resident subsdk)** and
+  many independent native levels, not a single borrowed level, an icon test,
+  or a global Stage68 practice skip. Original kind=1 entries 0..79 remain
+  untouched; the aspirational initial catalog capacity is 256 total entries.
+- Extra slots should be disabled if no matching `.groove` file is loaded.
+  `.groove` is a ZIP with level manifest, editable native-command timeline,
+  and optional sprites/music/sound/intro. Missing resources inherit the base
+  game's original assets. A single file should be portable from Android
+  Groove Editor to Switch without rebuilding the engine for every level.
+- **Host-only format prototype**: `tools/groove_pack.py`,
+  `examples/hoop_trundling_3/`, `docs/GROOVE_FORMAT.md` and its tests.
+  Current example has four demonstrative RingSpawn/BubbleState commands,
+  is explicitly `draft`, **not** 54 playable aros or a Switch IPS.
+- Priority is now native descriptor allocation/lookup, separate identity,
+  SD loader and *real command bridge*. Prior Stage68-wide/scoped practice
+  experiments remain diagnostic only; do not present them as a solution.
+
 ## Verified on the user's physical Switch
 
 - World 1's extra visual column is visible and new `(world 1, column 9,

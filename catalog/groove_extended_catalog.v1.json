@@ -2,6 +2,7 @@
   "schema_version": 1,
   "catalog_id": "groove.extended",
   "original_kind1_count": 80,
+  "planned_kind1_capacity": 256,
   "entries": [
     {
       "id": "groove.hoop_trundling_3",

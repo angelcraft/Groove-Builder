@@ -30,6 +30,8 @@ struct Entry {
 
 constexpr std::uint32_t kSchemaVersion = 1;
 constexpr std::uint32_t kOriginalKind1Count = 80;
+// DESIGN GOAL, NOT PATCHED: the original native getter still owns only 80.
+constexpr std::uint32_t kPlannedKind1Capacity = 256;
 constexpr std::uint32_t kHoop3VirtualIndex = 80;
 constexpr Entry kEntries[] = {
     {"groove.hoop_trundling_3", 80, 1, 9, 0, 1, 41, 68, "Pasar por el anillo 3", "I_RING_01", "I_RING_02", "groove.hoop_trundling_3", 54, true, false, false, false},
@@ -59,6 +61,7 @@ constexpr bool valid_entries() {
     for (std::size_t i = 0; i < kEntryCount; ++i) {
         const auto& a = kEntries[i];
         if (a.virtual_index < kOriginalKind1Count ||
+            a.virtual_index >= kPlannedKind1Capacity ||
             !native_index_safe(a.native_kind, a.native_index) ||
             a.world < 0 || a.world > 2 || a.column < 0 || a.column > 11 ||
             a.row < 0 || a.row > 4 || !a.id || !a.id[0] ||

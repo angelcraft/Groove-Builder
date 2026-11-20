@@ -46,6 +46,14 @@ class ExtendedCatalogTests(unittest.TestCase):
         with self.assertRaises(catalog.CatalogError):
             catalog.validate_manifest(data)
 
+    def test_planned_capacity_is_larger_than_eighty_not_native_enabled(self):
+        data = manifest()
+        self.assertEqual(data["original_kind1_count"], 80)
+        self.assertEqual(data["planned_kind1_capacity"], 256)
+        data["entries"][0]["virtual_index"] = 256
+        with self.assertRaises(catalog.CatalogError):
+            catalog.validate_manifest(data)
+
     def test_borrowed_stage_must_match_verified_hoop2(self):
         data = manifest()
         data["entries"][0]["native_fallback"]["stage_factory_id"] = 67

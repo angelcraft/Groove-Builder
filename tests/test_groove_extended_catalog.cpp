@@ -6,6 +6,7 @@
 using namespace groove_extended;
 
 static_assert(kEntryCount == 1, "Only Hoop3 is a verified extended cell");
+static_assert(kPlannedKind1Capacity == 256, "Planned 176 extra IDs; no native patch yet");
 static_assert(!native_index_safe(1, 80), "Virtual indices must not enter native lookup");
 static_assert(native_index_safe(1, 41), "Original Hoop2 must remain available");
 static_assert(native_index_safe(1, 79), "Original Remix20 must remain available");

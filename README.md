@@ -1,5 +1,14 @@
 # Groove Hoop3 — independent Switch text builder
 
+> **Current direction (20 Nov 2026): Groove Engine + `.groove` levels.**
+> New research-only tools can validate and build ZIP-based `.groove` packs
+> with native-style timelines and optional resources; see
+> [`docs/GROOVE_FORMAT.md`](docs/GROOVE_FORMAT.md) and
+> `examples/hoop_trundling_3/`. The catalog metadata plans 256 identities
+> (80 originals + 176 new), but **no Switch runtime loader, native table
+> expansion or playable custom sequence is installed yet**. Existing Stage68
+> practice probes do not implement this new architecture.
+
 Small, **source-only** public research project for cross-compiling the proposed
 Hoop Trundling 3 menu title / description bridge.
 

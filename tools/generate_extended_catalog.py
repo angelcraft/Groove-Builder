@@ -20,6 +20,7 @@ DEFAULT_HEADER = ROOT / "source/groove_extended_catalog.hpp"
 ID_RE = re.compile(r"^[a-z][a-z0-9_.-]{2,79}$")
 LABEL_RE = re.compile(r"^I_[A-Z0-9_]{1,40}$")
 NATIVE_KIND1_COUNT = 80
+PLANNED_KIND1_CAPACITY = 256  # Metadata goal, NOT current native memory capacity.
 
 
 class CatalogError(ValueError):
@@ -62,16 +63,20 @@ def safe_asset(value, label: str) -> None:
 
 
 def validate_manifest(document: dict) -> list[dict]:
-    exact(document, {"schema_version", "catalog_id", "original_kind1_count", "entries"}, "root")
+    exact(document, {"schema_version", "catalog_id", "original_kind1_count",
+                     "planned_kind1_capacity", "entries"}, "root")
     integer(document["schema_version"], 1, 1, "schema_version")
     if document["catalog_id"] != "groove.extended":
         raise CatalogError("Unexpected catalog ID")
     integer(document["original_kind1_count"], NATIVE_KIND1_COUNT,
             NATIVE_KIND1_COUNT, "original_kind1_count")
+    integer(document["planned_kind1_capacity"], PLANNED_KIND1_CAPACITY,
+            PLANNED_KIND1_CAPACITY, "planned_kind1_capacity")
 
     entries = document["entries"]
-    if not isinstance(entries, list) or not 1 <= len(entries) <= 64:
-        raise CatalogError("Expected 1..64 extended entries")
+    if not isinstance(entries, list) or not 1 <= len(entries) <= (
+            PLANNED_KIND1_CAPACITY - NATIVE_KIND1_COUNT):
+        raise CatalogError("Extended entry count exceeds planned catalog capacity")
 
     used_indices: set[int] = set()
     used_slots: set[tuple[int, int, int]] = set()
@@ -82,7 +87,8 @@ def validate_manifest(document: dict) -> list[dict]:
         exact(item, {"id", "virtual_index", "slot", "native_fallback", "text",
                      "resources", "gameplay", "progress", "integration"}, label)
         unique_id = named(item["id"], f"{label}.id")
-        virtual_index = integer(item["virtual_index"], NATIVE_KIND1_COUNT, 65535,
+        virtual_index = integer(item["virtual_index"], NATIVE_KIND1_COUNT,
+                                PLANNED_KIND1_CAPACITY - 1,
                                 f"{label}.virtual_index")
 
         slot = item["slot"]
@@ -228,6 +234,8 @@ struct Entry {
 
 constexpr std::uint32_t kSchemaVersion = 1;
 constexpr std::uint32_t kOriginalKind1Count = 80;
+// DESIGN GOAL, NOT PATCHED: the original native getter still owns only 80.
+constexpr std::uint32_t kPlannedKind1Capacity = 256;
 constexpr std::uint32_t kHoop3VirtualIndex = 80;
 constexpr Entry kEntries[] = {
 """ + "\n".join(records) + """
@@ -257,6 +265,7 @@ constexpr bool valid_entries() {
     for (std::size_t i = 0; i < kEntryCount; ++i) {
         const auto& a = kEntries[i];
         if (a.virtual_index < kOriginalKind1Count ||
+            a.virtual_index >= kPlannedKind1Capacity ||
             !native_index_safe(a.native_kind, a.native_index) ||
             a.world < 0 || a.world > 2 || a.column < 0 || a.column > 11 ||
             a.row < 0 || a.row > 4 || !a.id || !a.id[0] ||
