@@ -44,6 +44,9 @@ jobs:
             ln -s "/usr/bin/${binary}-19" "/tmp/llvm19-tools/${binary}"
           done
           echo '/tmp/llvm19-tools' >> "$GITHUB_PATH"
+          # Public LibHakkun's ELF -> NSO converter imports these at runtime.
+          python -m pip install --disable-pip-version-check \
+            capstone==5.0.7 pyelftools==0.33 lz4==4.4.5 mmh
       - name: Download exact public loader revision and submodules
         run: |
           git clone --quiet https://github.com/UnusualNorm/groove-mod.git /tmp/groove-loader
