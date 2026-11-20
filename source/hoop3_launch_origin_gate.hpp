@@ -7,6 +7,8 @@
 
 #include <cstdint>
 
+#include "groove_extended_catalog.hpp"
+
 namespace hoop3_launch {
 
 struct Selection {
@@ -19,8 +21,8 @@ struct Selection {
 };
 
 constexpr bool is_hoop3(const Selection& s) {
-    return s.world == 1 && s.column == 9 && s.row == 0 &&
-           s.kind == 1 && s.index == 41;
+    return groove_extended::matches_hoop3(s.world, s.column, s.row,
+                                          s.kind, s.index);
 }
 
 class OneShotOriginGate {

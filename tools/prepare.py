@@ -22,6 +22,7 @@ SOURCES = (
     "hoop3_title_bridge.cpp",
     "hoop3_title_entry.S",
     "hoop3_title_dispatch.hpp",
+    "groove_extended_catalog.hpp",
     "hoop3_intro_bridge.cpp",
     "hoop3_intro_entry.S",
     "hoop3_intro_dispatch.hpp",

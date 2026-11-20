@@ -27,6 +27,11 @@ mods, and game Scene lifetime still need physical verification.
 
 See [`docs/MODULE_CATALOG.md`](docs/MODULE_CATALOG.md) for the boundaries
 between menu text, selection, game routing, cues, practice, and progress.
+The new [`Groove Extended Catalog v1`](catalog/README.md) now holds the first
+**mod-owned** entry, `groove.hoop_trundling_3` / virtual index `80`, as shared
+JSON metadata for Android and a generated C++17 table for Switch. The existing
+title/intro/stage-origin policies use this shared entry; a virtual launch,
+independent records, music/cues and game assets remain **uninstalled**.
 The optional read-only `tools/audit_hoop3_practice_path.py` checks an older
 **Stage67** practice/showtime branch; it must **not** be used to patch Hoop 2.
 `tools/audit_hoop3_stage68_route.py` checks the correct **Stage68 (Hoop 2)**
@@ -49,6 +54,10 @@ proof; the hook is NOT installed, the API is NOT bound and no title is changed.
 
 ```sh
 python3 -m unittest discover -s tools -p 'test_*.py' -v
+python3 tools/generate_extended_catalog.py --check
+g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
+  tests/test_groove_extended_catalog.cpp -o /tmp/hoop3-catalog
+/tmp/hoop3-catalog
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_text_patch_plan.cpp -o /tmp/hoop3-plan
 /tmp/hoop3-plan

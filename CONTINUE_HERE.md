@@ -51,6 +51,23 @@
   index 80 resolves to the beginning of the kind2 descriptor array, not to
   newly allocated kind1 storage. This is **not** a playable extra entry.
 
+## Groove Extended Catalog v1 (new code, NOT installed)
+
+- `catalog/groove_extended_catalog.v1.json` is the canonical shared metadata
+  for Android editor and Switch; entry `groove.hoop_trundling_3` gets **virtual
+  index 80**, outside the original 0..79 catalog.
+- It explicitly pins world1/col9/row0, original fallback kind1/index41 and
+  StageFactory68. Custom title `I_RING_02`, 54-ring target and progress key
+  are declarations only; external sprites, music, cues and scene/sequence
+  references are null and **not packaged**.
+- `tools/generate_extended_catalog.py` validates this manifest and builds
+  `source/groove_extended_catalog.hpp` (checked in). It rejects duplicates,
+  native index80, invalid paths, mismatched Hoop2 StageFactory and unverified
+  installation claims. New slots are supported by the format but must be
+  separately verified before enabling on Switch.
+- The existing title/intro/Stage68 origin policies now read the generated
+  Hoop3 cell/identity; no runtime hooks, playback, save or install is added.
+
 ## Other features still pending
 
 - Actual separate Spanish name + instructions (`I_RING_02`), intro/splash 3,
@@ -63,6 +80,7 @@
 
 ```sh
 python3 -m unittest discover -s tools -p 'test_*.py' -q
+python3 tools/generate_extended_catalog.py --check
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_stage68_route_gate.cpp -o /tmp/hoop3-stage68
 /tmp/hoop3-stage68

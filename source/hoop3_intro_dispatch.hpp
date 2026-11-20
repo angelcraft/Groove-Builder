@@ -28,7 +28,8 @@ inline bool should_override(const void* scene, int kind, int index) {
         hoop3_title::load<std::int32_t>(scene, hoop3_title::kSceneColumn),
         hoop3_title::load<std::int32_t>(scene, hoop3_title::kSceneRow),
     };
-    return hoop3_title::same_cell(cell, {1, 9, 0});
+    return groove_extended::matches_hoop3(cell.world, cell.column, cell.row,
+                                          kind, index);
 }
 
 inline void dispatch(const Api& api, const void* scene, int kind, int index) {

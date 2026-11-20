@@ -7,6 +7,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include "groove_extended_catalog.hpp"
+
 namespace hoop3_title {
 
 using NativeTitle = void* (*)(int, int);
@@ -24,8 +26,8 @@ constexpr std::size_t kSceneWorld = 0x5274;
 constexpr std::size_t kSceneColumn = 0x5298;
 constexpr std::size_t kSceneRow = 0x529c;
 constexpr std::size_t kMessageNames = 0x38;
-constexpr char kHoop3Label[] = "I_RING_02";
-constexpr char kHoop2Label[] = "I_RING_01";
+constexpr const char* kHoop3Label = groove_extended::kEntries[0].replacement_label;
+constexpr const char* kHoop2Label = groove_extended::kEntries[0].borrowed_label;
 
 // One module can serve several *independently verified* menu cells. Keep this
 // list compile-time and fail closed: future rows must not become active just
@@ -46,7 +48,12 @@ struct TextOverride {
 };
 
 constexpr TextOverride kTextOverrides[] = {
-    {{1, 9, 0}, 1, 41, kHoop2Label, kHoop3Label},
+    {{groove_extended::kEntries[0].world,
+      groove_extended::kEntries[0].column,
+      groove_extended::kEntries[0].row},
+     groove_extended::kEntries[0].native_kind,
+     groove_extended::kEntries[0].native_index,
+     kHoop2Label, kHoop3Label},
 };
 
 template <std::size_t N>

@@ -74,6 +74,27 @@ not an installed or proven runtime implementation. The research inspector
 `tools/audit_hoop3_catalog_ownership.py` checks the pinned original and has
 synthetic negative/positive regression tests.
 
+### Groove Extended Catalog v1 (source-only implementation)
+
+The first **mod-owned** entry now exists as a canonical machine-readable file:
+`catalog/groove_extended_catalog.v1.json`. It defines virtual ID `80` for
+`groove.hoop_trundling_3`, the verified world 1/column 9/row 0 slot, native
+fallback `(kind=1,index=41)` / StageFactory `68`, Spanish text intent,
+target count 54, and distinct progress namespace. New icon/intro/music/cues,
+sequence payload and installation flags are deliberately **empty/false**.
+
+`tools/generate_extended_catalog.py` strictly validates the JSON and
+generates `source/groove_extended_catalog.hpp`. The existing inactive title,
+intro and Stage68 origin policies now consult the generated entry rather than
+maintaining three independent hardcoded coordinate maps. Android editors may
+read the original JSON and resolve separate `romfs/` resources locally.
+
+This is **not** a native catalog expansion in memory yet. The engine's 80
+original kind=1 records remain unmodified, virtual ID 80 never reaches the
+original lookup, and no scored/launchable new game has been registered.
+The first runtime gate is still a proven confirmed-launch transition with
+safe Stage68 origin lifetime and rollback.
+
 ## Hoop Trundling 3 — visual and gameplay acceptance checklist
 
 These are **requirements, not implemented features**. Every change must be
