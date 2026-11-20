@@ -26,6 +26,9 @@ SOURCES = (
     "hoop3_intro_bridge.cpp",
     "hoop3_intro_entry.S",
     "hoop3_intro_dispatch.hpp",
+    "hoop3_launch_origin_gate.hpp",
+    "hoop3_native_menu_record.hpp",
+    "hoop3_stage68_route_gate.hpp",
     "hoop3_text_patch_plan.hpp",
     "switch_startup_plan.hpp",
 )

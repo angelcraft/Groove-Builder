@@ -47,6 +47,19 @@
   does NOT establish an independent skip, scene lifetime, 54 hoops or scores.
   No hardware A/B result yet. The diagnostic kit must be removed after a
   single supervised test; it is NOT a proposed permanent install.
+- **20 November, saved native menu identity found:** after `0x1d2eac` launch
+  forwarding, `0x1d2ed0 -> 0x4890` copies live Scene world/col/row to manager
+  `+0xb98/+0xb9a/+0xb9c`, indexed by menu mode 0/1. `0x1d3430` sets current
+  mode at manager `+0x2904`, and `0x1d344c -> 0x48b0` saves native index
+  `+0xba0+2*mode`. The manager singleton pointer is `*(main+0xd96058)`.
+  There are TWO additional direct coordinate writers: `0x1cf294` and
+  `0x1d1614`; restore reader `0x1ce03c -> 0x4860`.
+  `tools/audit_hoop3_native_selection_record.py` checks opcodes and exact
+  BL callers and executes real ARM64 setter/getter for four cases in Unicorn.
+  `source/hoop3_stage68_route_gate.hpp` now requires a matching snapshot
+  (mode 0/1, world1/col9/row0, native index41) before tracking the object.
+  This *narrows* the async ambiguity, but the manager record may be overwritten
+  while loading/returning; no scoped IPS should be installed without live proof.
 
 ## Native catalog ownership (newly proven)
 
@@ -92,6 +105,7 @@
 python3 -m unittest discover -s tools -p 'test_*.py' -q
 python3 tools/generate_extended_catalog.py --check
 python3 tools/build_stage68_global_probe.py /private/main
+python3 tools/audit_hoop3_native_selection_record.py /private/main --unicorn
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_stage68_route_gate.cpp -o /tmp/hoop3-stage68
 /tmp/hoop3-stage68
@@ -101,9 +115,9 @@ python tools/audit_hoop3_catalog_ownership.py /private/main --unicorn
 python tools/audit_hoop3_stage68_route.py /private/main --unicorn
 ```
 
-**Next:** determine the actual asynchronous transition and cancellation
-callbacks from menu confirmation `0x1d2eac` into the StageFactory return.
-Use a verified, strictly scoped virtual identity; don't ship a practice IPS
-that silently modifies original Hoop 2. Produce a reversible Switch-only A/B
-when the route and safe patch locations are established. No new APK, no game
-assets in Git, no patch installation without an explicitly testable artifact.
+**Next:** prove the manager's mode and saved coordinates remain associated
+with the *same confirmed Scene* until Stage68's branch, or identify a
+reliable cancel/transition callback to revoke them. Integrate this evidence
+as a one-shot, validated ARM64 gate; no scoped practice IPS is ready yet.
+Do not mistake the Stage68-global diagnostic for Hoop3-only behavior.
+No new APK, no game assets in Git, no silently altered original Hoop2.

@@ -16,6 +16,7 @@
 #include <limits>
 
 #include "hoop3_launch_origin_gate.hpp"
+#include "hoop3_native_menu_record.hpp"
 
 namespace hoop3_launch {
 
@@ -40,8 +41,11 @@ public:
     // Caller must invoke this for EVERY StageFactory return; the FIRST stage
     // consumes the origin. A different stage fails closed, never letting a
     // delayed Stage68 creation accidentally inherit the old menu origin.
-    bool on_factory_return(const FactoryResult& created) {
-        const bool match = pending_ && created.stage_address != 0 &&
+    bool on_factory_return(const FactoryResult& created,
+                           const NativeMenuRecord& native_record) {
+        const bool match = pending_ &&
+                           matches_hoop3_native_record(native_record) &&
+                           created.stage_address != 0 &&
                            created.main_base != 0 &&
                            created.main_base <=
                                std::numeric_limits<std::uintptr_t>::max() -

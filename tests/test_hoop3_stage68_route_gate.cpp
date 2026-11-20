@@ -6,6 +6,7 @@
 #include <limits>
 
 using hoop3_launch::FactoryResult;
+using hoop3_launch::NativeMenuRecord;
 using hoop3_launch::Selection;
 using hoop3_launch::Stage68RouteGate;
 
@@ -15,11 +16,14 @@ int main() {
     const FactoryResult stage68{stage, base + 0xD4D4B0, base};
     const FactoryResult stage67{stage, base + 0xD4D258, base};
     const Selection hoop3{1, 9, 0, 1, 41, 0};
+    constexpr NativeMenuRecord saved_hoop3{1, 1, 9, 0, 41};
+    static_assert(hoop3_launch::matches_hoop3_native_record(saved_hoop3),
+                  "Pinned native snapshot must match");
 
     Stage68RouteGate gate;
     assert(gate.on_confirmed_launch(hoop3));
     assert(gate.pending());
-    assert(gate.on_factory_return(stage68));
+    assert(gate.on_factory_return(stage68, saved_hoop3));
     assert(!gate.pending());
     assert(gate.stage_tracked());
     assert(gate.consume_on_stage68_branch(stage));
@@ -29,13 +33,13 @@ int main() {
     // A stale origin cannot survive another factory return, including
     // another Stage68, even when the memory allocator reuses the address.
     assert(gate.on_confirmed_launch(hoop3));
-    assert(!gate.on_factory_return(stage67));
-    assert(!gate.on_factory_return(stage68));
+    assert(!gate.on_factory_return(stage67, saved_hoop3));
+    assert(!gate.on_factory_return(stage68, saved_hoop3));
     assert(!gate.consume_on_stage68_branch(stage));
 
     // A stage worker from any other object consumes and rejects the tag.
     assert(gate.on_confirmed_launch(hoop3));
-    assert(gate.on_factory_return(stage68));
+    assert(gate.on_factory_return(stage68, saved_hoop3));
     assert(!gate.consume_on_stage68_branch(stage + 0x1000));
     assert(!gate.consume_on_stage68_branch(stage));
 
@@ -49,7 +53,7 @@ int main() {
                            std::numeric_limits<std::uintptr_t>::max()},
          }) {
         assert(gate.on_confirmed_launch(hoop3));
-        assert(!gate.on_factory_return(invalid));
+        assert(!gate.on_factory_return(invalid, saved_hoop3));
         assert(!gate.consume_on_stage68_branch(stage));
     }
 
@@ -60,25 +64,48 @@ int main() {
                 const Selection candidate{world, column, row, 1, 41, 0};
                 const bool expected = world == 1 && column == 9 && row == 0;
                 assert(gate.on_confirmed_launch(candidate) == expected);
-                assert(gate.on_factory_return(stage68) == expected);
+                const NativeMenuRecord snapshot{1, world, column, row, 41};
+                assert(gate.on_factory_return(stage68, snapshot) == expected);
                 assert(gate.consume_on_stage68_branch(stage) == expected);
             }
+
+    // The source coordinate ticket alone is insufficient. Reject a menu
+    // manager record overwritten during a cancellation, mode switch or an
+    // unrelated confirmation before the StageFactory result arrives.
+    for (const NativeMenuRecord different : {
+             NativeMenuRecord{-1, 1, 9, 0, 41},
+             NativeMenuRecord{2, 1, 9, 0, 41},
+             NativeMenuRecord{1, 0, 9, 0, 41},
+             NativeMenuRecord{1, 2, 9, 0, 41},
+             NativeMenuRecord{1, 1, 8, 0, 41},
+             NativeMenuRecord{1, 1, 9, 1, 41},
+             NativeMenuRecord{1, 1, 9, 0, 40},
+             NativeMenuRecord{1, 1, 9, 0, 80},
+         }) {
+        assert(gate.on_confirmed_launch(hoop3));
+        assert(!gate.on_factory_return(stage68, different));
+        assert(!gate.consume_on_stage68_branch(stage));
+    }
+    const NativeMenuRecord mode_zero{0, 1, 9, 0, 41};
+    assert(gate.on_confirmed_launch(hoop3));
+    assert(gate.on_factory_return(stage68, mode_zero));
+    assert(gate.consume_on_stage68_branch(stage));
 
     for (int lifecycle = 0; lifecycle != 4; ++lifecycle) {
         assert(gate.on_confirmed_launch(hoop3));
         gate.clear(); // cancel / menu reopen / destroy / exit
-        assert(!gate.on_factory_return(stage68));
+        assert(!gate.on_factory_return(stage68, saved_hoop3));
         assert(!gate.consume_on_stage68_branch(stage));
 
         assert(gate.on_confirmed_launch(hoop3));
-        assert(gate.on_factory_return(stage68));
+        assert(gate.on_factory_return(stage68, saved_hoop3));
         gate.clear(); // cancel after stage creation
         assert(!gate.consume_on_stage68_branch(stage));
     }
 
     // A second confirmation invalidates an earlier Hoop3 and its object.
     assert(gate.on_confirmed_launch(hoop3));
-    assert(gate.on_factory_return(stage68));
+    assert(gate.on_factory_return(stage68, saved_hoop3));
     assert(!gate.on_confirmed_launch({1, 8, 0, 1, 41, 0}));
     assert(!gate.consume_on_stage68_branch(stage));
     return 0;

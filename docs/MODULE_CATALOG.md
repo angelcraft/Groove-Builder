@@ -186,12 +186,29 @@ practice skip. It must never be armed from mere cursor movement.
 The newer `source/hoop3_stage68_route_gate.hpp` models an alternative requiring
 **no invented native ticket**: the menu confirmation for `(1,9,0)` arms a
 pending origin; the *first* StageFactory return consumes it and, only if it
-returns the Stage68 vtable, tags that object; the worker's conditional branch
-consumes the tag only for the exact matching Stage pointer. Any unrelated
-factory return, other confirmation, cancellation or reentry clears it. Tests
-cover all 180 coordinates, original Hoop 2, pointer reuse and invalid vtables.
-This is a **host-side policy only**. The real cancel/Scene lifecycle and an
-ARM64 installer are not validated, so no experimental IPS is shipped yet.
+returns the Stage68 vtable **and a matching saved manager record**, tags that
+object. The worker's conditional branch consumes the tag only for the exact
+matching Stage pointer. Any unrelated factory return, other confirmation,
+cancellation or reentry clears it. Tests cover all 180 coordinates, original
+Hoop 2, pointer reuse, invalid vtables and overwritten manager state.
+
+**New native coordinate evidence, 20 November:** the original menu confirmation
+calls `0x1d3130`, then `0x1d2ed0 -> 0x4890` saves world/column/row from the
+live Scene into the manager at `+0xb98/+0xb9a/+0xb9c` (offset also depends on
+mode 0/1). `0x1d3430` stores the active mode in manager `+0x2904` and
+`0x1d344c -> 0x48b0` stores the borrowed native index at `+0xba0+2*mode`.
+The original restore getter is `0x4860`. Two other direct setter callsites
+exist at `0x1cf294` and `0x1d1614`. The audit
+`tools/audit_hoop3_native_selection_record.py` verifies every instruction,
+counts direct callers and runs the original setter/getter under Unicorn for
+both modes. That makes a **read-only, second discriminator** plausible without
+extending the native 80-entry array or introducing a fake manager handle.
+Indirect writers and the stability of this record across loading remain
+unverified: no live code is allowed to trust it as sole authorization yet.
+
+The scoped route remains **host-only**. The real cancel/Scene lifecycle and an
+ARM64 installer are not validated; the separately emitted global Stage68 IPS
+diagnostic described above is explicitly **not** the scoped implementation.
 
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original
