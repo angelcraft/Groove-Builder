@@ -1,0 +1,23 @@
+{
+  "format": "groove.level",
+  "version": 1,
+  "id": "groove.hoop_trundling_3",
+  "title": "Pasar por el anillo 3",
+  "slot": {"world": 1, "column": 9, "row": 0},
+  "base": {
+    "game": "rhythm_paradise_switch",
+    "kind": 1,
+    "index": 41,
+    "adapter": "hoop_trundling"
+  },
+  "launch": {"practice": "skip"},
+  "sequence": {"mode": "replace", "file": "timeline.json"},
+  "resources": {
+    "sprites": null,
+    "music": null,
+    "sound_effects": null,
+    "intro": null
+  },
+  "progress_namespace": "groove.hoop_trundling_3",
+  "state": "draft"
+}

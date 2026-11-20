@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "catalog_id": "groove.extended",
+  "original_kind1_count": 80,
+  "planned_kind1_capacity": 256,
+  "entries": [
+    {
+      "id": "groove.hoop_trundling_3",
+      "virtual_index": 80,
+      "slot": {
+        "world": 1,
+        "column": 9,
+        "row": 0
+      },
+      "native_fallback": {
+        "kind": 1,
+        "index": 41,
+        "stage_factory_id": 68
+      },
+      "text": {
+        "display_name_es": "Pasar por el anillo 3",
+        "original_instruction_label": "I_RING_01",
+        "new_instruction_label": "I_RING_02",
+        "messages_installed": false
+      },
+      "resources": {
+        "original_prologue": "graph/prologue/ring/type_01/prologue",
+        "new_icon": null,
+        "new_intro": null,
+        "music": null,
+        "cue_bank": null
+      },
+      "gameplay": {
+        "target_ring_count": 54,
+        "sequence_asset": null,
+        "skip_practice_requested": true,
+        "skip_practice_installed": false
+      },
+      "progress": {
+        "namespace": "groove.hoop_trundling_3",
+        "independent_records_installed": false
+      },
+      "integration": {
+        "menu_cell_seen_on_switch": true,
+        "virtual_launch_installed": false,
+        "gameplay_tested_on_switch": false
+      }
+    }
+  ]
+}

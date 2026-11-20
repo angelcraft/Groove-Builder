@@ -22,9 +22,27 @@ SOURCES = (
     "hoop3_title_bridge.cpp",
     "hoop3_title_entry.S",
     "hoop3_title_dispatch.hpp",
+    "groove_extended_catalog.hpp",
+    "hoop3_intro_bridge.cpp",
+    "hoop3_intro_entry.S",
+    "hoop3_intro_dispatch.hpp",
+    "hoop3_launch_origin_gate.hpp",
+    "hoop3_native_menu_record.hpp",
+    "hoop3_stage68_route_gate.hpp",
     "hoop3_text_patch_plan.hpp",
     "switch_startup_plan.hpp",
 )
+
+# Compile-only audit of the future borrowed-data: file reader. This object is
+# NOT added to the MenuColumn executable, cannot run during hkMain, and is
+# never packaged for installation. Source lives in tests/ on purpose.
+READER_AUDIT_HEADERS = (
+    "groove_hoop3_nnfs_borrowed.hpp",
+    "groove_hoop3_readonly_probe.hpp",
+    "groove_hoop3_package_file.hpp",
+    "groove_zip_archive.hpp",
+)
+READER_AUDIT_SOURCE = "hoop3_pinned_nnsdk_abi.cpp"
 
 
 def git_head(path: Path) -> str:
@@ -97,6 +115,10 @@ def prepare(loader: Path, std: Path, output: Path, active: bool) -> Path:
 
     for name in SOURCES:
         shutil.copy2(ROOT / "source" / name, output / name)
+    for name in READER_AUDIT_HEADERS:
+        shutil.copy2(ROOT / "source" / name, output / name)
+    shutil.copy2(ROOT / "tests" / READER_AUDIT_SOURCE,
+                 output / READER_AUDIT_SOURCE)
     for name in ("VersionList.sym", "ModuleList.sym"):
         path = loader / "config" / name
         if path.exists():

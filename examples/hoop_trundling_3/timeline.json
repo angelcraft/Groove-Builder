@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "timebase": "beats",
+  "events": [
+    {"id": "bubble_start", "beat": "0", "command": "hoop.bubble_state", "args": {"mask": -1}},
+    {"id": "ring_first", "beat": "4", "command": "hoop.ring_spawn", "args": {"variant": "normal"}},
+    {"id": "bubble_change", "beat": "6", "command": "hoop.bubble_state", "args": {"mask": 1}},
+    {"id": "ring_second", "beat": "6.5", "command": "hoop.ring_spawn", "args": {"variant": "normal"}}
+  ]
+}

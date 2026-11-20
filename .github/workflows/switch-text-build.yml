@@ -52,6 +52,10 @@ jobs:
           git clone --quiet https://github.com/UnusualNorm/groove-mod.git /tmp/groove-loader
           git -C /tmp/groove-loader checkout --quiet a3212043134c35323e0412648bd86d66253554c5
           git -C /tmp/groove-loader submodule update --init --recursive
+      - name: Audit Hoop3 reader against pinned public NNSDK declarations
+        run: |
+          python tools/verify_hoop3_pinned_nnsdk_abi.py \
+            --sdk-dir /tmp/groove-loader/lib/nnsdk
       - name: Cache pinned public standard library
         uses: actions/cache@v4
         with:
@@ -104,8 +108,16 @@ jobs:
               for name in ('menu_hoop3_title_entry', 'menu_hoop3_instruction_entry',
                            'menu_hoop3_instruction_dispatch_entry', 'hoop3_text_status'):
                   assert name in symbols, name
+              # The .groove reader probe MUST remain outside the runtime NSO.
+              assert 'hoop3_verify_pinned_nnsdk_abi' not in symbols
               print(rootname, 'research cross-build:', nso.stat().st_size, 'bytes')
           PY
+      - name: Verify separate AArch64 reader probe objects (never linked)
+        run: |
+          python tools/verify_hoop3_pinned_nnsdk_abi.py \
+            --cross-object /tmp/hoop3-readonly/build/CMakeFiles/Hoop3ReadOnlyAbiAudit.dir/hoop3_pinned_nnsdk_abi.cpp.o
+          python tools/verify_hoop3_pinned_nnsdk_abi.py \
+            --cross-object /tmp/hoop3-active/build/CMakeFiles/Hoop3ReadOnlyAbiAudit.dir/hoop3_pinned_nnsdk_abi.cpp.o
       - name: Preserve compile evidence (not an installation ZIP)
         uses: actions/upload-artifact@v4
         with:
@@ -114,5 +126,6 @@ jobs:
             /tmp/hoop3-readonly/build/MenuColumn.nss
             /tmp/hoop3-active/build/MenuColumn.nss
             /tmp/hoop3-active/build/MenuColumn.nso
+            /tmp/hoop3-readonly/build/CMakeFiles/Hoop3ReadOnlyAbiAudit.dir/hoop3_pinned_nnsdk_abi.cpp.o
             /tmp/hoop3-active/deployment-status.json
           retention-days: 2
