@@ -48,6 +48,29 @@ read the menu's Scene pointer.
 5. **More slots**: establish each new cell's native kind/index, original
    message label, sprite data, navigation and launch behavior individually.
 
+## Hoop Trundling 3 — visual and gameplay acceptance checklist
+
+These are **requirements, not implemented features**. Every change must be
+scoped to `(world=1, column=9, row=0)` and leave Hoop 1/2 unchanged.
+
+- [ ] **Name and instructions**: show `Pasar por el anillo 3` in Spanish and
+  adapt the original Hoop 2 instructions for Hoop 3 using independent labels.
+- [ ] **Menu icon**: use an independent, recognizably harder-looking Hoop icon
+  in the same visual style as the original, rather than the temporary borrowed
+  Remix graphic. Preserve all original menu cells and animations.
+- [ ] **Intro/splash**: change the visible numeral from **2** to **3** only
+  when Hoop 3 is launched. First identify whether the original `2` is a
+  message, a texture, or an animation; do not globally replace Hoop 2 assets.
+- [ ] **Skip practice**: start Hoop 3's gameplay directly, bypassing its
+  practice/tutorial while preserving practice behavior for Hoop 1 and Hoop 2.
+- [ ] **Separate gameplay**: connect the planned 54-ring sequence without
+  reusing Hoop 2 progress/records as if it were a new level.
+- [ ] **Regression A/B on Switch**: test icon/title/intro/practice, game launch,
+  exit/reentry, other worlds, and Hoop 1/2 with and without the mod.
+
+Do not mark any checkbox complete from host-side tests, Unicorn, or a cross-
+compiled NSO alone. It requires the relevant Switch runtime observation.
+
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original
 Nintendo data belongs in this repository.
