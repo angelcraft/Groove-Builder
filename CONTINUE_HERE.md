@@ -2,6 +2,48 @@
 
 ## Current session: data-driven Hoop3 replacement policy (host-tested)
 
+### 20 November, latest: isolated AArch64 reader object compiled and checked
+
+- LLVM 19 (`clang 19.1.1`, `--target=aarch64-none-elf -mcpu=cortex-a57`)
+  compiled **only** the unlinked `Hoop3ReadOnlyAbiAudit` object against the
+  pinned public loader `a321204` / NNSDK `02dab88` and the public LibHakkun
+  musl headers. No `MenuColumn.nss`, `MenuColumn.nso`, IPS, subsdk or SD
+  file was produced. Hoop Trundling 2 was not modified.
+- `tools/verify_hoop3_pinned_nnsdk_abi.py --cross-object` accepted the
+  result: ELF64, machine AArch64, type REL. The only unresolved `nn::fs`
+  imports are the original four:
+  `_ZN2nn2fs8OpenFileEPNS0_10FileHandleEPKci`,
+  `_ZN2nn2fs11GetFileSizeEPlNS0_10FileHandleE`,
+  `_ZN2nn2fs8ReadFileEPmNS0_10FileHandleElPvm`,
+  `_ZN2nn2fs9CloseFileENS0_10FileHandleE`.
+  The defined entry `hoop3_verify_pinned_nnsdk_abi` stays in that object
+  and is not part of a runtime module. The same four names also matched
+  a disposable x86-64 host object against the same public headers.
+- CMake does not know `SYSTEM_NAME NX`, so the first build named the ELF
+  object `*.cpp.obj` and the prepared CI path `*.cpp.o` would have missed
+  it. `templates/cmake/nx-elf-object-suffix.cmake` now forces the ELF
+  suffix `.o` before the languages are configured. The rebuilt object is
+  `CMakeFiles/Hoop3ReadOnlyAbiAudit.dir/hoop3_pinned_nnsdk_abi.cpp.o`.
+- The compile emitted two `-Wdeprecated-declarations` notes from the
+  pinned public `nn/os.h` (`std::aligned_storage_t` under C++23). They are
+  not errors, the object was produced, and the public SDK was not edited.
+- Host verification after the suffix fix: **129 Python tests passed**,
+  `generate_extended_catalog.py --check` passed, and the existing host
+  C++ policy/probe binaries passed, including the fake-`nn::fs` borrowed
+  reader. Those host runs still do not call a Switch filesystem.
+- **Still not proven:** a game-thread callback late enough to run after
+  the original `MountRom("data")` returns, LayeredFS visibility of
+  `data:/GrooveEngine/HoopTrundling3.groove`, or any hardware open.
+  Do not link this object, install a hook, or unlock the Hoop3 cell on
+  this evidence.
+
+**Next step, still read-only:** audit the return path after the pinned
+`MountRom("data")` at `main+0x50b880` and name one existing game-thread
+site that cannot run before that call returns successfully. Record its
+address, thread, and why an earlier `hkMain` call is too soon. Do not
+patch that site and do not build a diagnostic subsdk until that point
+is independently checked. Hoop2 stays on its original worker.
+
 ### 20 November, latest: isolated AArch64 reader-object cross-build prepared
 
 - `tools/prepare.py` now includes the existing read-only `nn::fs` / ZIP-header

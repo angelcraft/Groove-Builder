@@ -146,21 +146,27 @@ subsdk or APK rebuild**.
   spellings from `tools/audit_hoop3_nnfs_imports.py`. Tested on 64-bit Linux;
   no game-owned binary or third-party SDK headers are committed. Existing
   GitHub Actions cross-build now runs this separate check too.
-- The pinned public cross-build template now also produces an **unlinked
-  `Hoop3ReadOnlyAbiAudit` object**. CI checks its native AArch64 ELF metadata
-  and four unresolved imports with `--cross-object`, then checks that the
-  `hoop3_verify_pinned_nnsdk_abi` entry is **absent** from the runnable
-  `MenuColumn.nss`. This adds build-time evidence without calling `nn::fs`
-  in the game at boot. The AArch64 CI step has **not run in this session**:
-  only 64-bit host checks and mocked build preparation were executed.
+- The pinned public cross-build template produces an **unlinked
+  `Hoop3ReadOnlyAbiAudit` object**. Because CMake treats `SYSTEM_NAME NX`
+  as a non-UNIX platform, an override forces the ELF object suffix `.o`
+  so the checker below finds
+  `CMakeFiles/Hoop3ReadOnlyAbiAudit.dir/hoop3_pinned_nnsdk_abi.cpp.o`.
+  A local LLVM 19.1.1 AArch64 compile (`aarch64-none-elf`, cortex-a57)
+  passed that check: ELF64 / REL / AArch64 and exactly the four original
+  `OpenFile`, `GetFileSize`, `ReadFile` and `CloseFile` imports. The
+  entry `hoop3_verify_pinned_nnsdk_abi` exists only in that object.
+  `MenuColumn.nss` / `.nso` were not built in that run. Two C++23
+  deprecation warnings come from the pinned public `nn/os.h` and do not
+  fail the compile. This is build-time evidence, not a boot call to
+  `nn::fs`.
 
 The runtime behavior tests still use **fake host file APIs or mock SDK
-declarations**. The new **compile-only** audit passes against real pinned
-public SDK headers but does not link or execute that object as a native
-Switch module. It has NOT been compiled for AArch64 nor executed on Switch.
-The real original-process timing/permission and file visibility remain unproven;
-the actual `.groove` DEFLATE backend still needs a native binding. No file
-is written by the runtime path described here.
+declarations**. The compile-only audit now has both a host x86-64 object
+and an unlinked AArch64 object against the pinned public headers. Neither
+object is linked or executed as a Switch module. The real original-process
+timing and file visibility remain unproven; the actual `.groove` DEFLATE
+backend still needs a native binding. No file is written by the runtime
+path described here.
 
 To repeat the public-header and exact original ABI symbol check from an
 externally cloned, pinned public `groove-mod` checkout:

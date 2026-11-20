@@ -23,6 +23,9 @@ class BuilderTests(unittest.TestCase):
         cmake = (builder.ROOT / "templates/CMakeLists.txt").read_text()
         self.assertIn("add_library(Hoop3ReadOnlyAbiAudit OBJECT ", cmake)
         self.assertNotIn("target_link_libraries(MenuColumn PRIVATE Hoop3ReadOnlyAbiAudit", cmake)
+        self.assertIn("CMAKE_USER_MAKE_RULES_OVERRIDE", cmake)
+        suffix = (builder.ROOT / "templates/cmake/nx-elf-object-suffix.cmake").read_text()
+        self.assertIn("set(CMAKE_CXX_OUTPUT_EXTENSION .o)", suffix)
 
     def test_synthetic_preparation_copies_inert_reader_probe(self):
         # No actual loader, Switch binary or external stdlib is needed to
@@ -49,6 +52,10 @@ class BuilderTests(unittest.TestCase):
             )
             cmake = (output / "CMakeLists.txt").read_text()
             self.assertIn("add_library(Hoop3ReadOnlyAbiAudit OBJECT ", cmake)
+            self.assertIn("cmake/nx-elf-object-suffix.cmake", cmake)
+            suffix = (output / "cmake/nx-elf-object-suffix.cmake").read_text()
+            self.assertEqual(suffix, (builder.ROOT / "templates/cmake/nx-elf-object-suffix.cmake").read_text())
+            self.assertIn("set(CMAKE_CXX_OUTPUT_EXTENSION .o)", suffix)
             executable = cmake.split("add_executable(MenuColumn", 1)[1].split(")", 1)[0]
             self.assertNotIn(builder.READER_AUDIT_SOURCE, executable)
 
