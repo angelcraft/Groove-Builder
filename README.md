@@ -27,6 +27,9 @@ mods, and game Scene lifetime still need physical verification.
 
 See [`docs/MODULE_CATALOG.md`](docs/MODULE_CATALOG.md) for the boundaries
 between menu text, selection, game routing, cues, practice, and progress.
+The optional read-only `tools/audit_hoop3_practice_path.py` checks the native
+practice/showtime branch against a local original `main`; it neither skips
+practice nor requires distributing game binaries.
 
 ## Run local source tests (Linux, g++ and Python)
 

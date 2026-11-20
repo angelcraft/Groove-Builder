@@ -71,6 +71,39 @@ scoped to `(world=1, column=9, row=0)` and leave Hoop 1/2 unchanged.
 Do not mark any checkbox complete from host-side tests, Unicorn, or a cross-
 compiled NSO alone. It requires the relevant Switch runtime observation.
 
+### Read-only practice routing evidence (pinned original `main`)
+
+The original Hoop 2 stage has a distinct practice/showtime control-flow split:
+
+- `main+0x428fbc` calls a state predicate, then `0x428fc0` branches to the
+  tutorial when its return bit 0 is clear.
+- The practice path calls `0x42b740` at `main+0x4290cc`, then rejoins normal
+  playback via `0x4290ec -> 0x428ff8`.
+- The non-practice route goes directly to `0x428ff8`, which invokes showtime
+  setup `0x429330` at `0x42900c`; the registered cue worker is `0x429750`.
+- The predicate reaches `main+0x1306f0` and reads a **global** bitmask `0x101`.
+  It is **not yet established** that this flag is a dedicated tutorial switch.
+
+`tools/audit_hoop3_practice_path.py` checks these exact opcodes, branch targets,
+registration pointer and original NSO SHA-256. It does **not** change a byte.
+Five synthetic negative/positive tests require no Nintendo data. Example use
+with an authorized private original and local `lz4` dependency:
+
+```sh
+python tools/audit_hoop3_practice_path.py /private/path/to/main
+```
+
+**Critical next gate:** verify a trustworthy *menu-confirm launch origin* for
+`(1,9,0)` and a one-shot state cleared on cancellation, stage entry, return,
+and menu reopen. A **candidate confirmed path** is now pinned: menu
+`0x1d2d00/0x1d2d04` checks availability greater than 1, then
+`0x1d2eac` passes the Scene and selected descriptor to `0x1d3130`.
+That is better than the unrelated panel-title lookup as a future origin
+signal, but its full asynchronous launch/cancel lifecycle remains unverified.
+Simply selecting a title is **not** evidence of launching it.
+Changing this global predicate or making the original branch unconditional
+would also affect Hoop 2 and is therefore **not an acceptable skip patch**.
+
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original
 Nintendo data belongs in this repository.
