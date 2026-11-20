@@ -37,6 +37,14 @@ The optional read-only `tools/audit_hoop3_practice_path.py` checks an older
 `tools/audit_hoop3_stage68_route.py` checks the correct **Stage68 (Hoop 2)**
 constructor, preliminary/normal paths, and later uses of a local stage flag.
 Both require a user-owned original `main`; neither modifies it.
+`tools/build_stage68_global_probe.py` now optionally generates a **single-
+instruction, reversible IPS diagnostic** for this original Stage68 branch.
+The unmodified branch and proposed branch both execute in Unicorn, but the
+candidate has **not** been tested on Switch. Crucially, the diagnostic applies
+to the **original Hoop 2 as well as the new Hoop3-looking menu slot**; it does
+not grant a unique identity, add 54 hoops, or safely implement a Hoop3-only
+practice skip. The script requires an explicit long opt-in before emitting an
+IPS and does not include game files in source control. See the kit's `LEEME`.
 The inactive `source/hoop3_stage68_route_gate.hpp` models a one-shot stage
 instance match. It does not patch a branch or prove the asynchronous lifecycle.
 `tools/audit_hoop3_prologue_route.py` audits the original prologue selection
@@ -74,6 +82,10 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_intro_dispatch.cpp -o /tmp/hoop3-intro
 /tmp/hoop3-intro
+
+# Optional PRIVATE binary audit (no IPS emitted unless separately opted in):
+# <main> must be your exact verified, original Switch NSO.
+python3 tools/build_stage68_global_probe.py /private/main
 ```
 
 ## GitHub Actions cross-build

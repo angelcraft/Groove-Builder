@@ -37,6 +37,16 @@
   exact menu confirmation -> first StageFactory return -> matching Stage68
   object -> consume on conditional branch. Scene cancellation/return lifecycle
   and safe ARM64 hook installation still need verification.
+- **20 November, Stage68-wide diagnostic built (not Hoop3-specific):**
+  `tools/build_stage68_global_probe.py` checks the unmodified user-owned
+  original and can explicitly emit a one-opcode IPS replacing the branch
+  at `main+0x42c198` (`0x540008a1` B.NE) with `0x14000045` (B).
+  Optional Unicorn evidence: original flags `0,1,2` go to normal,
+  preliminary, normal; IPS flags all go to normal `0x42c2ac`.
+  **Original Hoop2 would be affected** as well as borrowed Hoop3: this
+  does NOT establish an independent skip, scene lifetime, 54 hoops or scores.
+  No hardware A/B result yet. The diagnostic kit must be removed after a
+  single supervised test; it is NOT a proposed permanent install.
 
 ## Native catalog ownership (newly proven)
 
@@ -81,6 +91,7 @@
 ```sh
 python3 -m unittest discover -s tools -p 'test_*.py' -q
 python3 tools/generate_extended_catalog.py --check
+python3 tools/build_stage68_global_probe.py /private/main
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_stage68_route_gate.cpp -o /tmp/hoop3-stage68
 /tmp/hoop3-stage68

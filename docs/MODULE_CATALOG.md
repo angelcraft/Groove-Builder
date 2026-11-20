@@ -95,6 +95,15 @@ original lookup, and no scored/launchable new game has been registered.
 The first runtime gate is still a proven confirmed-launch transition with
 safe Stage68 origin lifetime and rollback.
 
+An opt-in single-opcode **Stage68-wide** branch probe now exists in
+`tools/build_stage68_global_probe.py` for a short Switch A/B. Its original
+and patched branches are verified offline in Unicorn against a SHA-pinned
+user-owned NSO, but it bypasses the preliminary path for **original Hoop 2 as
+well as Hoop 3**. It is therefore not an implementation of the mod-owned
+virtual index, not a safe permanent skip, and has no gameplay or save changes
+attributed to a separate ID. The generator fails closed without the original
+binary, its exact build and explicit permission for that side effect.
+
 ## Hoop Trundling 3 — visual and gameplay acceptance checklist
 
 These are **requirements, not implemented features**. Every change must be
