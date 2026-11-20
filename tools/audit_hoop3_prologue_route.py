@@ -22,6 +22,7 @@ from audit_hoop3_practice_path import (
 # Static AArch64 instructions from the exact pinned original. In particular,
 # the menu passes both 32-bit descriptor words to the shared prologue router.
 WORDS = {
+    0x1D3160: 0xAA0003F3,  # MOV x19,x0 (original menu Scene)
     0x1D3380: 0x294006A0,  # LDP w0,w1,[x21] (kind, index)
     0x1D3384: 0x9400CE5F,  # BL main+0x206d00
     0x1D2FA0: 0x9400CF58,  # Special kind0/index8 route
@@ -60,6 +61,7 @@ def audit_image(image: bytes | bytearray) -> dict:
         "main_sha256_required": EXPECTED_MAIN_SHA,
         "kind1_resource_path": "main+0x206d50 -> 0x1cbc60 -> table+0x20",
         "menu_descriptor_forward": "main+0x1d3380/84 passes original kind/index to 0x206d00",
+        "menu_scene_register": "main+0x1d3160 copies incoming Scene to x19; no clobber before 0x1d3384",
         "type02_direct_case": "kind0/index8 at main+0x206d94/9c; NOT evidence of Hoop3",
         "custom_intro_hook_installed": False,
         "intro_digit_source_proven": False,

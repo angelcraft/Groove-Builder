@@ -134,6 +134,21 @@ at `0x206d94/9c`: **its existence is not evidence of a playable Hoop 3**.
 The custom tile still borrows the `(1,41)` Hoop 2 descriptor, so a separate
 launch origin is needed before changing *its* prologue title or animation.
 
+There is now a **candidate narrower intro-only route**. The confirmed menu
+Scene enters `0x1d3130` as `x0`; its `0x1d3160` copies it to callee-saved
+`x19`, and native disassembly shows **no later write to x19** before the
+prologue-router call at `0x1d3384`. Hence that one original callsite has both
+the selected descriptor `(w0,w1)` and an unmodified menu-Scene pointer. A
+future bridge can check `(1,9,0)` *there*, call `0x206d00` **exactly once**,
+then try a separate `I_RING_02` title in the prologue-name global. This avoids
+a persistent global origin flag for the **intro only**, not for a later
+asynchronous gameplay/practice callback.
+
+`source/hoop3_intro_dispatch.hpp` provides only this host-tested logic; no
+ARM64 callsite has been rewritten, no live global address has been bound, and
+the actual scene lifetime/renderer title use remains a physical Switch gate.
+The original prologue art and all other 179 menu cells are unchanged.
+
 `tools/audit_hoop3_prologue_route.py` validates those native offsets on the
 pinned original and reports private sprite/texture SHA-256/size from the ZIP
 without copying content. This is an inspector, not an installer. Example:

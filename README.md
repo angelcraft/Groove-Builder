@@ -32,6 +32,10 @@ practice/showtime branch against a local original `main`; it neither skips
 practice nor requires distributing game binaries.
 `tools/audit_hoop3_prologue_route.py` audits the original prologue selection
 and scans the independently supplied ring SPR/TEX set without modifying it.
+The inactive `source/hoop3_intro_dispatch.hpp` models a prologue-title
+override from the original menu Scene, with a 180-cell regression test.
+Its candidate `source/hoop3_intro_entry.S` is linked only for compilation
+proof; the hook is NOT installed, the API is NOT bound and no title is changed.
 
 ## Run local source tests (Linux, g++ and Python)
 
@@ -47,6 +51,9 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_launch_origin_gate.cpp -o /tmp/hoop3-origin
 /tmp/hoop3-origin
+g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
+  tests/test_hoop3_intro_dispatch.cpp -o /tmp/hoop3-intro
+/tmp/hoop3-intro
 ```
 
 ## GitHub Actions cross-build
