@@ -104,6 +104,15 @@ Simply selecting a title is **not** evidence of launching it.
 Changing this global predicate or making the original branch unconditional
 would also affect Hoop 2 and is therefore **not an acceptable skip patch**.
 
+`source/hoop3_launch_origin_gate.hpp` now contains an **inactive one-shot policy**:
+confirming precisely `(1,9,0)` with the borrowed `(kind=1,index=41)` may arm
+one nonzero launch ticket, and the matching stage entry may consume it once.
+Any other confirmation, a mismatched stage entry, cancellation, menu reopen,
+scene destruction or return must clear the ticket. Host tests exercise all 180
+menu cells and stale-ticket cases. **No native correlated launch ticket has been
+verified**, so this is not yet wired to an IPS/subsdk or presented as a working
+practice skip. It must never be armed from mere cursor movement.
+
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original
 Nintendo data belongs in this repository.

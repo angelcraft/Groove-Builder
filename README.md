@@ -42,6 +42,9 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_title_dispatch.cpp source/hoop3_title_bridge.cpp \
   -o /tmp/hoop3-dispatch
 /tmp/hoop3-dispatch
+g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
+  tests/test_hoop3_launch_origin_gate.cpp -o /tmp/hoop3-origin
+/tmp/hoop3-origin
 ```
 
 ## GitHub Actions cross-build
