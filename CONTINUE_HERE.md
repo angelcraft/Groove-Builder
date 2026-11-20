@@ -62,6 +62,22 @@
   overwrite rejects and consumes the ticket.
   This *narrows* the async ambiguity, but the manager record may be overwritten
   while loading/returning; no scoped IPS should be installed without live proof.
+- **20 November, scoped IPS A/B candidate:**
+  `tools/build_stage68_scoped_probe.py` validates the user's SHA-pinned main
+  and emits two IPS records only with explicit opt-in: replace the original
+  `main+0x42c198` branch with a jump to a 140-byte ARM64 stub placed at
+  `main+0xa66bf0`, inside the original text-page alignment gap (next rodata
+  starts `0xa67000`). The stub checks live native manager mode 0/1,
+  world1/col9/row0 and index41; on mismatch it reproduces the exact original
+  branch using Stage68's object-local flag, without modifying that flag.
+  It preserves original x9/x16/x17 and SP.
+  **33 Unicorn cases PASS**: both Hoop3 modes, Hoop2 original, worlds0/2,
+  other row/index, bad modes, null singleton, and flag values 0/1/2.
+  Atmosphère's `ldr_process_creation.cpp` loads segments, clears alignment
+  padding, then applies IPS and sets execute permission for rounded `.text`:
+  https://github.com/Atmosphere-NX/Atmosphere/blob/master/stratosphere/loader/source/ldr_process_creation.cpp
+  No hardware result yet. This is a high-risk prototype; disable the old
+  `GrooveStage68GlobalProbe` before trying it (same branch).
 
 ## Native catalog ownership (newly proven)
 
@@ -108,6 +124,7 @@ python3 -m unittest discover -s tools -p 'test_*.py' -q
 python3 tools/generate_extended_catalog.py --check
 python3 tools/build_stage68_global_probe.py /private/main
 python3 tools/audit_hoop3_native_selection_record.py /private/main --unicorn
+python3 tools/build_stage68_scoped_probe.py /private/main
 g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
   tests/test_hoop3_stage68_route_gate.cpp -o /tmp/hoop3-stage68
 /tmp/hoop3-stage68
@@ -117,9 +134,8 @@ python tools/audit_hoop3_catalog_ownership.py /private/main --unicorn
 python tools/audit_hoop3_stage68_route.py /private/main --unicorn
 ```
 
-**Next:** prove the manager's mode and saved coordinates remain associated
-with the *same confirmed Scene* until Stage68's branch, or identify a
-reliable cancel/transition callback to revoke them. Integrate this evidence
-as a one-shot, validated ARM64 gate; no scoped practice IPS is ready yet.
-Do not mistake the Stage68-global diagnostic for Hoop3-only behavior.
+**Next:** perform one reversible physical Switch A/B of the *scoped* preview,
+checking original Hoop2, new (1,9,0), a second world and safe return to menu.
+If hardware shows stale coordinates, trace transition/cancellation callbacks.
+Do not mistake the earlier Stage68-global diagnostic for Hoop3-only behavior.
 No new APK, no game assets in Git, no silently altered original Hoop2.

@@ -51,8 +51,18 @@ index. The original setters/getters now pass an ARM64 Unicorn round-trip for
 both native menu modes. `source/hoop3_stage68_route_gate.hpp` additionally
 requires a matching native-manager snapshot before accepting the Stage68
 object. This is **only a host-side guard**: coordinate stability across the
-actual async scene transition is still unverified, so no Hoop3-specific IPS
-has been emitted.
+actual async scene transition is still unverified.
+**New scoped diagnostic:** `tools/build_stage68_scoped_probe.py` builds a
+two-record experimental IPS. It intercepts the Stage68 branch and checks the
+native saved `(world=1,column=9,row=0,index=41)` before bypassing its
+preliminary route. Hoop2 and other selections retain their original branch
+decision in 33 original-code Unicorn cases. A 140-byte stub lives in the
+zero-filled alignment gap after `.text`, not in the 80-record native array.
+Atmosphère's official loader zeroes that gap, applies IPS and marks the
+page-rounded text region executable. The stub preserves x9/x16/x17/SP, but
+the actual Switch and asynchronous manager lifetime are NOT yet verified.
+The generator refuses to emit the hardware A/B kit without explicit opt-in;
+this is not a new game, a release or a guaranteed working practice skip.
 The inactive `source/hoop3_stage68_route_gate.hpp` models a one-shot stage
 instance match. It does not patch a branch or prove the asynchronous lifecycle.
 `tools/audit_hoop3_prologue_route.py` audits the original prologue selection
@@ -94,6 +104,7 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
 # Optional PRIVATE binary audit (no IPS emitted unless separately opted in):
 # <main> must be your exact verified, original Switch NSO.
 python3 tools/build_stage68_global_probe.py /private/main
+python3 tools/build_stage68_scoped_probe.py /private/main
 ```
 
 ## GitHub Actions cross-build

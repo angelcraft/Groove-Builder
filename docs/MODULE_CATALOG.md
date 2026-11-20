@@ -206,6 +206,22 @@ extending the native 80-entry array or introducing a fake manager handle.
 Indirect writers and the stability of this record across loading remain
 unverified: no live code is allowed to trust it as sole authorization yet.
 
+**Scoped IPS preview (20 November):**
+`tools/build_stage68_scoped_probe.py` now assembles a two-record IPS which
+branches from `main+0x42c198` to 140 bytes of own ARM64 at `0xa66bf0`.
+That offset is original zero-filled alignment padding before `.rodata`, not
+a reallocated descriptor. The stub reads the native manager, accepts only
+world1/column9/row0 with index41, and otherwise runs the **original** flag
+branch. It preserves x9/x16/x17/SP and makes no writes to stage or manager.
+The original ARM64 plus stub pass **33 Unicorn cases** (both modes, flag
+0/1/2, Hoop2, worlds0/2, other rows/indices, null manager).
+Atmosphère's official loader code verifies that it clears this section gap,
+applies IPS afterwards, and grants execute permission to rounded `.text`:
+https://github.com/Atmosphere-NX/Atmosphere/blob/master/stratosphere/loader/source/ldr_process_creation.cpp
+Actual game/Scene behavior, code conflicts and hardware remain unverified;
+the kit is explicitly opt-in and cannot coexist with the older global probe.
+**It is not an independently scored Hoop3 minigame.**
+
 The scoped route remains **host-only**. The real cancel/Scene lifecycle and an
 ARM64 installer are not validated; the separately emitted global Stage68 IPS
 diagnostic described above is explicitly **not** the scoped implementation.
