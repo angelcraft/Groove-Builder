@@ -58,12 +58,15 @@ public:
         return match;
     }
 
-    // At main+0x42c198, only a matching Stage68 worker is eligible for a
-    // branch directly to main+0x42c2ac. Mismatch also clears the ticket.
+    // At main+0x42c198, require BOTH the same Stage68 object and an unchanged
+    // saved manager context. The snapshot is rechecked; mismatches consume the
+    // ticket without changing the game's control flow.
     // NEVER write Stage68+0x2c94: this flag has other later gameplay uses.
-    bool consume_on_stage68_branch(std::uintptr_t stage_address) {
+    bool consume_on_stage68_branch(std::uintptr_t stage_address,
+                                   const NativeMenuRecord& native_record) {
         const bool match = stage_address != 0 &&
-                           stage_address == tracked_stage_;
+                           stage_address == tracked_stage_ &&
+                           matches_hoop3_native_record(native_record);
         clear();
         return match;
     }

@@ -188,7 +188,7 @@ The newer `source/hoop3_stage68_route_gate.hpp` models an alternative requiring
 pending origin; the *first* StageFactory return consumes it and, only if it
 returns the Stage68 vtable **and a matching saved manager record**, tags that
 object. The worker's conditional branch consumes the tag only for the exact
-matching Stage pointer. Any unrelated factory return, other confirmation,
+matching Stage pointer **and a freshly matching manager record**. Any unrelated factory return, other confirmation,
 cancellation or reentry clears it. Tests cover all 180 coordinates, original
 Hoop 2, pointer reuse, invalid vtables and overwritten manager state.
 

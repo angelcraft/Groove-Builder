@@ -57,7 +57,9 @@
   `tools/audit_hoop3_native_selection_record.py` checks opcodes and exact
   BL callers and executes real ARM64 setter/getter for four cases in Unicorn.
   `source/hoop3_stage68_route_gate.hpp` now requires a matching snapshot
-  (mode 0/1, world1/col9/row0, native index41) before tracking the object.
+  (mode 0/1, world1/col9/row0, native index41) both before tracking the object
+  **and again at the original Stage68 branch**. Any intervening manager
+  overwrite rejects and consumes the ticket.
   This *narrows* the async ambiguity, but the manager record may be overwritten
   while loading/returning; no scoped IPS should be installed without live proof.
 
