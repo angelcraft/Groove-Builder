@@ -48,6 +48,32 @@ read the menu's Scene pointer.
 5. **More slots**: establish each new cell's native kind/index, original
    message label, sprite data, navigation and launch behavior individually.
 
+### Catalog capacity: no free native kind=1 descriptors
+
+The pinned original `main` now proves an additional constraint. The kind=1
+descriptor getter at `0x1cbc60` reads a 48-byte-stride table beginning at
+`0xd19108`; the next kind=2 table begins at `0xd1a008`. The difference is
+**exactly 80 entries**. Every index `0..79` has its expected `(kind=1,index)`
+metadata and a unique original prologue resource path. Specifically:
+
+- `(1,40)` belongs to original Ring/Hoop 1 (`ring/type_00`).
+- `(1,41)` belongs to original Ring/Hoop 2 (`ring/type_01`).
+- `(1,75)..(1,79)` belong to original Remix 16–20 (`remix/type_15..19`).
+
+Therefore, the existing visual column's former `75..79` bindings are **not
+unallocated new game IDs**. Reusing or overwriting those native descriptors
+would alter original Remixes, and blindly accessing `80+` would be outside
+the established kind=1 table. The owner has separately confirmed that
+`(1,9,0)` is physically selectable on Switch, but it currently borrows
+`(1,41)` and has no independent progress.
+
+**Direction:** preserve all 80 original entries; introduce a mod-owned
+virtual identity linked to the exact selection origin and explicitly routed
+to Stage68 with independent gameplay/records. This is a *design boundary*,
+not an installed or proven runtime implementation. The research inspector
+`tools/audit_hoop3_catalog_ownership.py` checks the pinned original and has
+synthetic negative/positive regression tests.
+
 ## Hoop Trundling 3 — visual and gameplay acceptance checklist
 
 These are **requirements, not implemented features**. Every change must be

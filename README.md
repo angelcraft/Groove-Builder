@@ -36,6 +36,10 @@ The inactive `source/hoop3_stage68_route_gate.hpp` models a one-shot stage
 instance match. It does not patch a branch or prove the asynchronous lifecycle.
 `tools/audit_hoop3_prologue_route.py` audits the original prologue selection
 and scans the independently supplied ring SPR/TEX set without modifying it.
+`tools/audit_hoop3_catalog_ownership.py` confirms that native kind=1 has
+**80 occupied descriptors**: `41` is the original Hoop 2, and `75..79` are
+Remix 16–20, not unused places for an independent Hoop 3 identity. A future
+extension must add a separate catalog route without overwriting them.
 The inactive `source/hoop3_intro_dispatch.hpp` models a prologue-title
 override from the original menu Scene, with a 180-cell regression test.
 Its candidate `source/hoop3_intro_entry.S` is linked only for compilation
@@ -86,6 +90,9 @@ compiler error. Do not keep retrying builds without resolving the account issue.
 
 No original SPR, MSBT, ROM/NSO, title keys, SDK files, saves, private bundles,
 or commercial media belong in this repository.
+
+For the next engineering step and exact hardware limitations, read
+[`CONTINUE_HERE.md`](CONTINUE_HERE.md).
 
 The application/title name is descriptive only and is not affiliated with
 Nintendo or the game's publisher.
