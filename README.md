@@ -30,6 +30,8 @@ between menu text, selection, game routing, cues, practice, and progress.
 The optional read-only `tools/audit_hoop3_practice_path.py` checks the native
 practice/showtime branch against a local original `main`; it neither skips
 practice nor requires distributing game binaries.
+`tools/audit_hoop3_prologue_route.py` audits the original prologue selection
+and scans the independently supplied ring SPR/TEX set without modifying it.
 
 ## Run local source tests (Linux, g++ and Python)
 

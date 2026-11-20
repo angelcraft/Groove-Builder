@@ -116,3 +116,28 @@ practice skip. It must never be armed from mere cursor movement.
 Do not rename an arbitrary `.nso` to a slot or install the experimental active
 artifact. Preserve the working IPS and all modules and backups. No original
 Nintendo data belongs in this repository.
+
+### Original prologue resource inspection (user-supplied 20 November archive)
+
+The separately supplied `prologue.zip` provides original
+`prologue/ring/type_00`, `type_01` **and `type_02`**, each with its own SPR
+and TEX. Their decoded 1680×752 image atlases contain ring art/animation
+pieces, but no visible glyph **2**. Therefore the intro numeral might be
+drawn by a game-title message or a shared element; the actual numeral source
+remains **unproven**. Do not blindly replace a texture or edit Hoop 2 globally.
+
+The native selection entry `main+0x1d3380/84` passes `kind,index` to the
+shared prologue router `0x206d00`. Its `kind=1` path calls table getter
+`0x1cbc60` and loads the resource path at entry `+0x20`. The visible
+`ring/type_02/prologue` literal belongs to a special `kind=0,index=8` branch
+at `0x206d94/9c`: **its existence is not evidence of a playable Hoop 3**.
+The custom tile still borrows the `(1,41)` Hoop 2 descriptor, so a separate
+launch origin is needed before changing *its* prologue title or animation.
+
+`tools/audit_hoop3_prologue_route.py` validates those native offsets on the
+pinned original and reports private sprite/texture SHA-256/size from the ZIP
+without copying content. This is an inspector, not an installer. Example:
+
+```sh
+python tools/audit_hoop3_prologue_route.py /private/main /private/prologue.zip
+```
