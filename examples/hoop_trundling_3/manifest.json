@@ -13,7 +13,7 @@
   "launch": {"practice": "skip"},
   "sequence": {"mode": "replace", "file": "timeline.json"},
   "resources": {
-    "sprites": null,
+    "sprites": "sprites/background.png",
     "music": null,
     "sound_effects": null,
     "intro": null

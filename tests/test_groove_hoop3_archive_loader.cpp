@@ -4,7 +4,10 @@
 #include <cassert>
 #include <cstdint>
 #include <cstring>
+#include <fstream>
+#include <iterator>
 #include <string>
+#include <utility>
 #include <vector>
 
 using namespace groove_hoop3;
@@ -36,7 +39,19 @@ static void u32(std::vector<std::uint8_t>& out, std::uint32_t value) {
     u16(out, static_cast<std::uint16_t>(value >> 16));
 }
 
-static std::vector<std::uint8_t> pack(const char* timeline) {
+static std::vector<std::uint8_t> read_pack_background() {
+    std::string path = __FILE__;
+    const auto slash = path.find_last_of("/\\");
+    path = (slash == std::string::npos ? std::string(".") : path.substr(0, slash)) +
+           "/../examples/hoop_trundling_3/sprites/background.png";
+    std::ifstream in(path, std::ios::binary);
+    assert(in);
+    return {std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>()};
+}
+
+static std::vector<std::uint8_t> pack(
+    const char* timeline, const char* manifest = kManifest,
+    std::vector<std::pair<std::string, std::vector<std::uint8_t>>> extra = {}) {
     const std::vector<std::uint8_t> binary = {
         'G','R','T','1', 1,0,0,0, 0x40,0x42,0x0F,0,0,0,0,0,
         1,0,0,0, 0,0,0,0,
@@ -47,12 +62,14 @@ static std::vector<std::uint8_t> pack(const char* timeline) {
         std::uint32_t offset;
     };
     std::vector<Member> members = {
-        {"manifest.json", std::vector<std::uint8_t>(kManifest,
-         kManifest + std::strlen(kManifest)), 0},
+        {"manifest.json", std::vector<std::uint8_t>(manifest,
+         manifest + std::strlen(manifest)), 0},
         {"timeline.json", std::vector<std::uint8_t>(timeline,
          timeline + std::strlen(timeline)), 0},
         {"timeline.bin", binary, 0},
     };
+    for (auto& item : extra)
+        members.push_back({std::move(item.first), std::move(item.second), 0});
     std::vector<std::uint8_t> bytes;
     for (auto& member : members) {
         member.offset = static_cast<std::uint32_t>(bytes.size());
@@ -86,8 +103,8 @@ static std::vector<std::uint8_t> pack(const char* timeline) {
     u32(bytes, 0x06054B50);
     u16(bytes, 0);
     u16(bytes, 0);
-    u16(bytes, 3);
-    u16(bytes, 3);
+    u16(bytes, static_cast<std::uint16_t>(members.size()));
+    u16(bytes, static_cast<std::uint16_t>(members.size()));
     u32(bytes, central_size);
     u32(bytes, central_start);
     u16(bytes, 0);
@@ -201,6 +218,7 @@ int main() {
     auto report = loader.load(owner, good_file, nullptr, nullptr);
     assert(report.status == ArchiveLoadStatus::loaded && report.events == 1);
     assert(owner.hoop3_slot_unlocked() && owner.ring_count() == 1);
+    assert(loader.background_size() == 0);
 
     // Missing/replaced file LOCKS a previously valid virtual slot.
     assert(loader.load(owner, {}, nullptr, nullptr).status ==
@@ -304,4 +322,48 @@ int main() {
     loaded = gateway.reload(fs_owner, fs_api(fs), nullptr, nullptr);
     assert(loaded.archive.status == ArchiveLoadStatus::zip_invalid);
     assert(!fs_owner.hoop3_slot_unlocked());
+
+    // Hoop 3 carries sprites/background.png. Hoop 2's type_01/bg.spr is not
+    // a member. The PNG is copied on the host and is not a Switch bind.
+    const char kBackgroundManifest[] = R"({
+      "format":"groove.level", "version":1, "id":"groove.hoop_trundling_3",
+      "title":"Hoop Trundling 3", "slot":{"world":1,"column":9,"row":0},
+      "base":{"game":"rhythm_paradise_switch","kind":1,"index":41,
+              "adapter":"hoop_trundling"},
+      "sequence":{"mode":"replace","file":"timeline.json"},
+      "launch":{"practice":"skip"},
+      "resources":{"sprites":"sprites/background.png","music":null,
+                   "sound_effects":null,"intro":null},
+      "progress_namespace":"groove.hoop_trundling_3", "state":"draft"
+    })";
+    const auto png = read_pack_background();
+    assert(png.size() >= 8 && png[0] == 0x89 && png[1] == 'P');
+    std::vector<std::pair<std::string, std::vector<std::uint8_t>>> bg_member;
+    bg_member.push_back({"sprites/background.png", png});
+    auto with_bg = pack(kTimeline, kBackgroundManifest, bg_member);
+    report = loader.load(owner, input(with_bg), nullptr, nullptr);
+    assert(report.status == ArchiveLoadStatus::loaded && report.events == 1);
+    assert(loader.background_size() == png.size());
+    assert(std::memcmp(loader.background_bytes(), png.data(), png.size()) == 0);
+
+    auto missing = pack(kTimeline, kBackgroundManifest);
+    report = loader.load(owner, input(missing), nullptr, nullptr);
+    assert(report.status == ArchiveLoadStatus::metadata_invalid);
+    assert(loader.background_size() == 0);
+    assert(!owner.hoop3_slot_unlocked());
+
+    std::vector<std::pair<std::string, std::vector<std::uint8_t>>> stray;
+    stray.push_back({"sprites/background.png", png});
+    auto other = pack(kTimeline, kManifest, std::move(stray));
+    report = loader.load(owner, input(other), nullptr, nullptr);
+    assert(report.status == ArchiveLoadStatus::wrong_members);
+    assert(loader.background_size() == 0);
+
+    std::vector<std::uint8_t> not_png(png.size(), 0);
+    std::vector<std::pair<std::string, std::vector<std::uint8_t>>> fake_member;
+    fake_member.push_back({"sprites/background.png", not_png});
+    auto fake = pack(kTimeline, kBackgroundManifest, std::move(fake_member));
+    report = loader.load(owner, input(fake), nullptr, nullptr);
+    assert(report.status == ArchiveLoadStatus::metadata_invalid);
+    assert(loader.background_size() == 0);
 }

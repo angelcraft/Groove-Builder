@@ -187,9 +187,11 @@ test harness extracts all three control files from an actual 68-event draft
 with injected zlib/ifstream functions and checks ZIP CRC + binary tick grid.
 The new bounded `groove_hoop3_json_preflight.hpp` additionally verifies the
 exact initial Hoop3 manifest and all editable JSON events against GRT1.
-This preflight is **Hoop3-only**, not a generic resource-import runtime;
-it deliberately rejects non-null resources until native asset adapters are
-tested. The `groove_hoop3_archive_loader.hpp` now uses those checks to fill
+This preflight is **Hoop3-only**, not a generic resource-import runtime.
+Music, effects and intro must stay `null`. `sprites` may be `null` or
+`sprites/background.png`, the pack-local stage background that replaces
+the inherited `ring/type_01/bg.spr` for Hoop 3 only. The loader copies that
+PNG on the host. It is not drawn on Switch. The `groove_hoop3_archive_loader.hpp` now uses those checks to fill
 the static `SessionOwner` event arena **only after a valid pack** (locking a
 previously ready slot on invalid reloads, leaving active sessions alone).
 That is a host-tested policy: it is not attached to Switch SD and still

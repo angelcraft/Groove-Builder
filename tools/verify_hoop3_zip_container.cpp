@@ -71,4 +71,9 @@ int main(int argc, char** argv) {
               << result.events << " native events passed. Host SessionOwner "
               << (owner.hoop3_slot_unlocked() ? "ready" : "blocked")
               << "; Switch menu/SD/ARM64 NOT connected.\n";
+    if (loader.background_size() > 0) {
+        std::cout << "Hoop3 background override carried ("
+                  << loader.background_size()
+                  << " bytes) instead of ring/type_01/bg.spr; not bound on Switch.\n";
+    }
 }

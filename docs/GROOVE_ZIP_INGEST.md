@@ -37,9 +37,11 @@ the original game's 480-tick grid.
 **Hoop3-only** portable semantic checker. It parses actual UTF-8 JSON with
 bounded fixed-size storage; verifies required/unique manifest fields, the
 virtual Hoop3 slot, the original native Hoop2 adapter, skip-practice request,
-replace mode and independent progress namespace. This initial version
-accepts only inherited resources (`null`); custom asset binding is not yet
-verified. It checks each `timeline.json` event and its exact GRT1 record,
+replace mode and independent progress namespace. Music, effects and intro
+stay inherited (`null`). The one accepted sprite override is
+`sprites/background.png`, copied by the archive loader as Hoop 3's own
+background instead of `ring/type_01/bg.spr`. That copy is host-side only and
+is not bound on Switch. It checks each `timeline.json` event and its exact GRT1 record,
 stable unique IDs, sorted beats on the 480-tick grid, the allowed commands,
 and their exact arguments. It fails closed on stale caches even if the ZIP CRC
 itself is valid. A static 160 KiB ID hash table avoids gameplay allocations.
@@ -103,9 +105,9 @@ python3 -m unittest discover -s tools -p test_groove_zip_container.py -q
    source handle, establish the complete owner lifecycle and invoke the
    preflight before a real menu launch. Original Stage68 worker
    interposition, menu/practice, scoring and teardown remain uninstalled.
-4. **Optional assets.** Resource members are indexed, but no sprite/music
-   override is loaded or replaced. The eventual asset adapter must give
-   them separate validated lifetimes and decompression budgets.
+4. **Optional assets.** Music, effects and intro are still inherited. The
+   loader copies only `sprites/background.png` into host memory. It does not
+   replace `ring/type_01/bg.spr` and does not bind that PNG on Switch.
 
 Next: audit native `nn::fs` imports and FS initialization, then verify a
 **read-only LayeredFS virtual-RomFS open** in an explicitly scoped hardware
