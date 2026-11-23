@@ -1,8 +1,11 @@
 #pragma once
 
 // Bounded, allocation-free Hoop3 v1 semantic preflight. This intentionally
-// accepts ONLY the one verified Hoop3 identity/Stage68 adapter and no custom
-// assets; the generic Python packer still validates other future adapters.
+// accepts ONLY the one verified Hoop3 identity/Stage68 adapter. Music, effects
+// and intro stay inherited. The one custom asset is sprites/background.png,
+// Hoop 3's own stage background; it is not ring/type_01/bg.spr. The generic
+// Python packer still validates other future adapters. Nothing here binds a
+// texture on Switch.
 // All JSON is parsed BEFORE a native game worker may enter. An edited
 // timeline.json must compile byte-for-byte into the GRT1 event cache.
 //
@@ -275,19 +278,32 @@ inline bool read_sequence(Json& json) {
                equals(key, "file") ? take(mask, 1) && exact_string(json, "timeline.json") : false;
     }) && mask == 3;
 }
-inline bool read_resources(Json& json) {
-    // No resource overrides until the native Stage68 visual/audio adapters
-    // and asset lifetime are verified; null means inherit the original.
+// Host-side only. null inherits the original. The sole accepted sprite path
+// is Hoop 3's pack-local background, which stands in for ring/type_01/bg.spr
+// without replacing that original file. Other resource keys stay inherited.
+inline constexpr char kHoop3BackgroundPath[] = "sprites/background.png";
+
+inline bool read_resources(Json& json, bool* own_background) {
     std::uint32_t mask = 0;
     return json.object([&](const char* key) {
-        return equals(key, "sprites") ? take(mask, 0) && json.literal("null") :
-               equals(key, "music") ? take(mask, 1) && json.literal("null") :
+        if (equals(key, "sprites")) {
+            if (!take(mask, 0)) return false;
+            if (json.literal("null")) {
+                if (own_background) *own_background = false;
+                return true;
+            }
+            if (!exact_string(json, kHoop3BackgroundPath)) return false;
+            if (own_background) *own_background = true;
+            return true;
+        }
+        return equals(key, "music") ? take(mask, 1) && json.literal("null") :
                equals(key, "sound_effects") ? take(mask, 2) && json.literal("null") :
                equals(key, "intro") ? take(mask, 3) && json.literal("null") : false;
     }) && mask == 15;
 }
 
-inline bool manifest_matches_hoop3(const std::uint8_t* bytes, std::size_t length) {
+inline bool manifest_matches_hoop3(const std::uint8_t* bytes, std::size_t length,
+                                   bool* own_background = nullptr) {
     Json json(bytes, length);
     std::uint32_t mask = 0;
     const bool parsed = json.object([&](const char* key) {
@@ -312,7 +328,7 @@ inline bool manifest_matches_hoop3(const std::uint8_t* bytes, std::size_t length
         if (equals(key, "launch"))
             return take(mask, 7) && read_launch(json);
         if (equals(key, "resources"))
-            return take(mask, 8) && read_resources(json);
+            return take(mask, 8) && read_resources(json, own_background);
         if (equals(key, "progress_namespace"))
             return take(mask, 9) && exact_string(json, "groove.hoop_trundling_3");
         if (equals(key, "state"))
@@ -495,10 +511,12 @@ inline bool timeline_matches_cache(const std::uint8_t* json_data,
 inline bool preflight(const std::uint8_t* manifest, std::size_t manifest_size,
                       const std::uint8_t* timeline, std::size_t timeline_size,
                       const std::uint8_t* cache, std::size_t cache_size,
-                      IdSet& ids, std::size_t* event_count) {
+                      IdSet& ids, std::size_t* event_count,
+                      bool* own_background = nullptr) {
+    if (own_background) *own_background = false;
     if (!event_count) return false;
     *event_count = 0;
-    return manifest_matches_hoop3(manifest, manifest_size) &&
+    return manifest_matches_hoop3(manifest, manifest_size, own_background) &&
            timeline_matches_cache(timeline, timeline_size, cache, cache_size,
                                   ids, event_count);
 }

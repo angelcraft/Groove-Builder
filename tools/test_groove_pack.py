@@ -10,6 +10,7 @@ import struct
 import tempfile
 import unittest
 import zipfile
+import zlib
 
 
 spec = importlib.util.spec_from_file_location(
@@ -19,8 +20,48 @@ spec.loader.exec_module(pack)
 EXAMPLE = Path(__file__).resolve().parents[1] / "examples/hoop_trundling_3"
 
 
+def red_png(blob: bytes) -> bool:
+    """True when every pixel is a red tone. Host check only."""
+    if not blob.startswith(b"\x89PNG\r\n\x1a\n"):
+        return False
+    pos = 8
+    width = height = None
+    raw = b""
+    while pos + 8 <= len(blob):
+        length = struct.unpack_from(">I", blob, pos)[0]
+        tag = blob[pos + 4:pos + 8]
+        data = blob[pos + 8:pos + 8 + length]
+        if len(data) != length:
+            return False
+        pos += 12 + length
+        if tag == b"IHDR":
+            width, height, depth, color = struct.unpack_from(">IIBB", data)
+            if depth != 8 or color != 2 or width < 1 or height < 1:
+                return False
+        elif tag == b"IDAT":
+            raw += data
+        elif tag == b"IEND":
+            break
+    if width is None or not raw:
+        return False
+    rows = zlib.decompress(raw)
+    stride = 1 + width * 3
+    if len(rows) != stride * height:
+        return False
+    for y in range(height):
+        row = rows[y * stride:(y + 1) * stride]
+        if row[0] != 0:
+            return False
+        for x in range(width):
+            red, green, blue = row[1 + x * 3:4 + x * 3]
+            if red < 140 or red < green + 40 or red < blue + 40:
+                return False
+    return True
+
+
 def example_files():
-    return {path.name: path.read_bytes() for path in EXAMPLE.iterdir() if path.is_file()}
+    return {path.relative_to(EXAMPLE).as_posix(): path.read_bytes()
+            for path in EXAMPLE.rglob("*") if path.is_file()}
 
 
 def mutate(files, name, change):
@@ -32,16 +73,27 @@ def mutate(files, name, change):
 
 
 class GroovePackTests(unittest.TestCase):
-    def test_example_has_independent_identity_and_inherited_assets(self):
-        report = pack.validate_package(example_files())
+    def test_example_has_independent_identity_and_own_background(self):
+        files = example_files()
+        report = pack.validate_package(files)
         self.assertEqual(report["id"], "groove.hoop_trundling_3")
         self.assertEqual(report["slot"], {"world": 1, "column": 9, "row": 0})
         self.assertEqual(report["base"]["index"], 41)
         self.assertEqual(report["mode"], "replace")
         self.assertEqual(report["practice"], "skip")
         self.assertEqual(report["event_count"], 4)
-        self.assertEqual(report["resource_overrides"], [])
+        self.assertEqual(report["resource_overrides"], ["sprites"])
         self.assertFalse(report["switch_playable"])
+        resources = json.loads(files["manifest.json"])["resources"]
+        self.assertEqual(resources["sprites"], "sprites/background.png")
+        self.assertIsNone(resources["music"])
+        self.assertIsNone(resources["sound_effects"])
+        self.assertIsNone(resources["intro"])
+        self.assertNotIn("ring/type_01/bg.spr", files)
+        self.assertNotIn("graph/scene/ring/type_01/bg.spr", files)
+        png = files["sprites/background.png"]
+        self.assertTrue(png.startswith(b"\x89PNG\r\n\x1a\n"))
+        self.assertTrue(red_png(png))
 
     def test_zip_build_is_deterministic_and_roundtrips(self):
         with tempfile.TemporaryDirectory() as tmp:

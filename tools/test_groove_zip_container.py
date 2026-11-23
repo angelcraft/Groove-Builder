@@ -19,7 +19,8 @@ EXAMPLE = ROOT / "examples/hoop_trundling_3"
 
 
 def source_files() -> dict[str, bytes]:
-    files = {p.name: p.read_bytes() for p in EXAMPLE.iterdir() if p.is_file()}
+    files = {p.relative_to(EXAMPLE).as_posix(): p.read_bytes()
+             for p in EXAMPLE.rglob("*") if p.is_file()}
     timeline = json.loads(files["timeline.json"])
     files["timeline.bin"] = groove_pack.compile_timeline(timeline["events"])
     return files
@@ -79,6 +80,7 @@ class GrooveZipContainerTests(unittest.TestCase):
             self.assertIn("full JSON/cache match and 4 native events", output)
             self.assertIn("Host SessionOwner ready", output)
             self.assertIn("Switch menu/SD/ARM64 NOT connected", output)
+            self.assertIn("instead of ring/type_01/bg.spr; not bound on Switch", output)
 
     def test_uncompressed_members_need_no_raw_deflate(self):
         with tempfile.TemporaryDirectory() as folder:
