@@ -19,14 +19,41 @@
  },
  "R21 host (ctor/worker/dtor)": {
   "functions_in_closure": 1192,
-  "reaches": []
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 473
  },
- "HT2 host": {
+ "HT2 host (ctor/worker/dtor/nested)": {
   "functions_in_closure": 28235,
-  "reaches": []
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72237
  },
  "map confirm/launch/return": {
   "functions_in_closure": 27590,
-  "reaches": []
- }
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72081
+ },
+ "map scene ctor/dtor/init (0x371730/0x371AC0/0x1CD9A0/0x1CE200)": {
+  "functions_in_closure": 28100,
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72132
+ },
+ "POSITIVE CONTROL factory[16] ctor 0x398C80": {
+  "functions_in_closure": 719,
+  "reaches": [
+   "X ctor 0x2064A0"
+  ],
+  "paths": {
+   "X ctor 0x2064A0": [
+    "0x398c80",
+    "0x2064a0"
+   ]
+  },
+  "indirect_sites_not_followed": 197
+ },
+ "evidence_level": "static [S], direct BL/B only; indirect sites are counted, not resolved -> H7 tripwires cover them at runtime",
+ "failures": []
 }

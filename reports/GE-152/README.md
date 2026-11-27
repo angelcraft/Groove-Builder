@@ -24,6 +24,7 @@
 | `reports/GE-152/inverse-map-fix.md` | Causa de la contaminación del mapa inverso por la IPS, llamadores y efectos, corrección |
 | `reports/GE-152/unicorn-validation.md` | Validación en Unicorn pedida en PR #5: aislamiento F0–F4 (27 casos), `curIdx=-1`, teardown del Runner, mapa inverso, dos casillas, instalación parcial y `.gsv` |
 | `reports/GE-152/v0-two-slot.md` | V0 de dos casillas Multi en modo 0: 12 casos custom + 5 nativos comparados byte a byte en cada punto de escritura, alcanzabilidad de `0x2E90` y Runner con join real en el modelo |
+| `reports/GE-152/review-7230247601.md` | Respuesta a la revisión 7230247601 (puntos 1 y 3): aserciones con bytes completos y `exit ≠ 0`, autopruebas, H0–H7 rev 2, trazas de automap y página nula, 20 subhilos de R21 y barrera de punto fijo |
 | `reports/GE-152/CODEX_HANDOFF.md` | Traspaso a Codex: hooks H1–H10 (direcciones, firmas, condiciones, orden, lo que no hay que hacer), barrera del Runner, casos reproducibles y bloqueos |
 | `reports/GE-152/unicorn/` | Harness y experimentos (solo direcciones; la imagen se pasa por argumento) y `results/` con diffs por campo |
 
@@ -73,7 +74,7 @@ No se ha compilado `subsdk4` ni ningún prototipo.
 Código real de `main` `03FF4A3B` (imagen sin la IPS) con stubs explícitos del harness. Resumen: F1–F3 → staging
 idéntico al blob inicial en todos los casos de modo de mapa 0 (incluida Perfect Campaign); F4 detecta derivas; F0
 bloquea sin escrituras; el dtor del stage no hace join (el join se hace en `step/reap/clear`, sin accesos tardíos
-al stage); mapa inverso con guard = original. **V0** (`v0-two-slot.md`): 17/17 casos pasan con los hooks H1–H10 del harness. **Contradicciones**: reset del cursor en modo de mapa 1,
+al stage); mapa inverso con guard = original. **V0** (`v0-two-slot.md`; rev 2 en `review-7230247601.md`): 28/28 aserciones, 6/6 mutaciones detectadas; B2 36/36 sin automap ni página nula. **Contradicciones**: reset del cursor en modo de mapa 1,
 `0x2067B0 → 0x2E90` con `curIdx=-1` lee fuera de la tabla, y `sel` persistente tras la confirmación.
 
 ### Switch física — NO REALIZADA

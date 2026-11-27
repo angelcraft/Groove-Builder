@@ -1,15 +1,1858 @@
-[
- {
-  "kind": "HT2",
-  "teardown": "reap",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
+{
+ "scenarios": [
+  {
+   "kind": "HT2",
+   "teardown": "reap",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 1,
+    "T1a2f0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "reap",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 3,
+    "T1a2f0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "reap",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 6,
+    "T1a2f0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "clear",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 1,
+    "T1a2f0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "clear",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 3,
+    "T1a2f0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "clear",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 6,
+    "T1a2f0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "step",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 1,
+    "T1a2f0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "step",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 3,
+    "T1a2f0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "step",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 6,
+    "T1a2f0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "barrier",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 2,
+    "states": [
+     "done",
+     "done"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 2
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 1,
+    "T1a2f0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "barrier",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 2,
+    "states": [
+     "done",
+     "done"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 2
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 3,
+    "T1a2f0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "barrier",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 2,
+    "states": [
+     "done",
+     "done"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 2
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 6,
+    "T1a2f0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "tstop-only",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "tStop_true": [
     1,
     1
    ],
-   "os": {
+   "alive_after_tStop": [
+    "blocked",
+    "blocked"
+   ],
+   "started_children": 2,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 1,
+    "T1a2f0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "tstop-only",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "tStop_true": [
+    1,
+    1
+   ],
+   "alive_after_tStop": [
+    "blocked",
+    "blocked"
+   ],
+   "started_children": 2,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 3,
+    "T1a2f0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "tstop-only",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "tStop_true": [
+    1,
+    1
+   ],
+   "alive_after_tStop": [
+    "blocked",
+    "blocked"
+   ],
+   "started_children": 2,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 4,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 6,
+    "T1a2f0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ]
+  },
+  {
+   "kind": "HT2",
+   "teardown": "resume-after-free",
+   "ticks": 1,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 28,
+   "late_samples": [
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4290e8",
+     "0x6831"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370c8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370f8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x137104",
+     "0x2a74"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4293d4",
+     "0x5be8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x42942c",
+     "0x2c80"
+    ]
+   ],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 10,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2,
+    "0x429330": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 16,
+    "T1a2f0": 16
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ],
+   "control": "TRIGGERED"
+  },
+  {
+   "kind": "HT2",
+   "teardown": "resume-after-free",
+   "ticks": 3,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 28,
+   "late_samples": [
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4290e8",
+     "0x6831"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370c8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370f8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x137104",
+     "0x2a74"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4293d4",
+     "0x5be8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x42942c",
+     "0x2c80"
+    ]
+   ],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 10,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2,
+    "0x429330": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 18,
+    "T1a2f0": 18
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ],
+   "control": "TRIGGERED"
+  },
+  {
+   "kind": "HT2",
+   "teardown": "resume-after-free",
+   "ticks": 6,
+   "children": 2,
+   "runner_list_len": 2,
+   "os_after_ticks": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T1a030": [
+     "blocked",
+     [
+      "ev",
+      "0x228"
+     ]
+    ],
+    "T1a2f0": [
+     "blocked",
+     [
+      "ev",
+      "0x4e8"
+     ]
+    ]
+   },
+   "late_stage_access": 28,
+   "late_samples": [
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4290e8",
+     "0x6831"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370c8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x1370f8",
+     "0x29d8"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x137104",
+     "0x2a74"
+    ],
+    [
+     "teardown:T1a030",
+     "W",
+     "0x4293d4",
+     "0x5be8"
+    ],
+    [
+     "teardown:T1a030",
+     "R",
+     "0x42942c",
+     "0x2c80"
+    ]
+   ],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T1a030": [
+     "done",
+     null
+    ],
+    "T1a2f0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 10,
+   "threads_freed": 2,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x1367f0": 2,
+    "0x42b740": 2,
+    "0x429330": 2
+   },
+   "waits_per_thread": {
+    "T1a030": 21,
+    "T1a2f0": 21
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T1a030",
+     "blocked"
+    ],
+    [
+     "T1a030",
+     "exit",
+     "T1a030"
+    ],
+    [
+     "main",
+     "join",
+     "T1a2f0",
+     "blocked"
+    ],
+    [
+     "T1a2f0",
+     "exit",
+     "T1a2f0"
+    ]
+   ],
+   "control": "TRIGGERED"
+  },
+  {
+   "kind": "R21",
+   "teardown": "reap",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
     "T19c30": [
      "blocked",
      [
@@ -22,4849 +1865,5155 @@
      [
       "ev",
       "0xe8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 1,
+    "T19ef0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "reap",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 3,
+    "T19ef0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "reap",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 6,
+    "T19ef0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "clear",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 1,
+    "T19ef0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "clear",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 3,
+    "T19ef0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "clear",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 6,
+    "T19ef0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "step",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 1,
+    "T19ef0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "step",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 3,
+    "T19ef0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "step",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 6,
+    "T19ef0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "barrier",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 22,
+    "states": [
+     "done",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "done",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled",
+     "never-started/cancelled"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled",
+    "never-started/cancelled"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 2,
+    "never-started/cancelled": 20
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 1,
+    "T19ef0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "barrier",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 22,
+    "states": [
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 22
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 3,
+    "T19ef0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "barrier",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 22,
+    "states": [
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done",
+     "done"
+    ]
+   },
+   "states_before_dtor": [
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done"
+   ],
+   "done_before_dtor": true,
+   "states_count": {
+    "done": 22
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 6,
+    "T19ef0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "tstop-only",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "tStop_true": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "alive_after_tStop": [
+    "blocked",
+    "blocked"
+   ],
+   "started_children": 2,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 1,
+    "T19ef0": 1
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "tstop-only",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "tStop_true": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "alive_after_tStop": [
+    "blocked",
+    "blocked",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done"
+   ],
+   "started_children": 22,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 3,
+    "T19ef0": 3
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "tstop-only",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "tStop_true": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "alive_after_tStop": [
+    "blocked",
+    "blocked",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done",
+    "done"
+   ],
+   "started_children": 22,
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 6,
+    "T19ef0": 6
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ]
+  },
+  {
+   "kind": "R21",
+   "teardown": "resume-after-free",
+   "ticks": 1,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 24,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 16,
+    "T19ef0": 16
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T19c30",
+     "blocked"
+    ],
+    [
+     "T19c30",
+     "exit",
+     "T19c30"
+    ],
+    [
+     "main",
+     "join",
+     "T19ef0",
+     "blocked"
+    ],
+    [
+     "T19ef0",
+     "exit",
+     "T19ef0"
+    ]
+   ],
+   "control": "INCONCLUSIVE"
+  },
+  {
+   "kind": "R21",
+   "teardown": "resume-after-free",
+   "ticks": 3,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 18,
+    "T19ef0": 18
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ],
+   "control": "INCONCLUSIVE"
+  },
+  {
+   "kind": "R21",
+   "teardown": "resume-after-free",
+   "ticks": 6,
+   "children": 22,
+   "runner_list_len": 22,
+   "os_after_ticks": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "dtor": "called",
+   "os_after_dtor": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "remaining_group_threads": 0,
+   "os_final": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ],
+    "T3b1f0": [
+     "done",
+     null
+    ],
+    "T3b4b0": [
+     "done",
+     null
+    ],
+    "T3b770": [
+     "done",
+     null
+    ],
+    "T3ba30": [
+     "done",
+     null
+    ],
+    "T3bcf0": [
+     "done",
+     null
+    ],
+    "T3bfb0": [
+     "done",
+     null
+    ],
+    "T3c270": [
+     "done",
+     null
+    ],
+    "T3c530": [
+     "done",
+     null
+    ],
+    "T3c7f0": [
+     "done",
+     null
+    ],
+    "T3cab0": [
+     "done",
+     null
+    ],
+    "T5ddb0": [
+     "done",
+     null
+    ],
+    "T5e070": [
+     "done",
+     null
+    ],
+    "T5e330": [
+     "done",
+     null
+    ],
+    "T5e5f0": [
+     "done",
+     null
+    ],
+    "T5e8b0": [
+     "done",
+     null
+    ],
+    "T5eb70": [
+     "done",
+     null
+    ],
+    "T5ee30": [
+     "done",
+     null
+    ],
+    "T5f0f0": [
+     "done",
+     null
+    ],
+    "T5f3b0": [
+     "done",
+     null
+    ],
+    "T5f670": [
+     "done",
+     null
+    ]
+   },
+   "frees_total": 44,
+   "threads_freed": 22,
+   "automap": [],
+   "null_page_access": [],
+   "null_page_count": 0,
+   "deadlock": [],
+   "tripwires": {},
+   "nested_entries": {
+    "0x1398b0": 2,
+    "0x421340": 2
+   },
+   "waits_per_thread": {
+    "T19c30": 21,
+    "T19ef0": 21
+   },
+   "join_sequence": [
+    [
+     "main",
+     "join",
+     "T5e330",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e5f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5e8b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5eb70",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5ee30",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f0f0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f3b0",
+     "done"
+    ],
+    [
+     "main",
+     "join",
+     "T5f670",
+     "done"
+    ]
+   ],
+   "control": "INCONCLUSIVE"
+  }
+ ],
+ "selftest": {
+  "no-vptr": {
+   "kind": "HT2",
+   "caught": true,
+   "detail": {
+    "exception": "UcError()"
+   }
+  },
+  "no-runner": {
+   "kind": "R21",
+   "caught": true,
+   "detail": {
+    "automap": [],
+    "null": [
+     [
+      "tick:T19c30",
+      "R",
+      "0x514b4c",
+      "0x50"
+     ],
+     [
+      "tick:T19c30",
+      "R",
+      "0x514b4c",
+      "0x58"
+     ],
+     [
+      "tick:T19c30",
+      "R",
+      "0x5153a0",
+      "0x8"
      ]
     ]
    }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x138b10",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4f8260"
-  ]
+  }
  },
- {
-  "kind": "HT2",
-  "teardown": "reap",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "reap",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138810",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "clear",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x138b10",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "clear",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "clear",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138810",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "step",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x138b10",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "step",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "step",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138810",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "barrier",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x138b10",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "barrier",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "barrier",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138810",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "tstop-only",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x138b10",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "tstop-only",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "tstop-only",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 0,
-  "unlisted_in_children": [
-   "0x130830",
-   "0x136600",
-   "0x1366e0",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1384f0",
-   "0x138810",
-   "0x138b10",
-   "0x138f80",
-   "0x138ff0",
-   "0x139020",
-   "0x139070",
-   "0x139250",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "resume-after-free",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 28,
-  "late_by_phase": {
-   "teardown:T19c30": 14,
-   "teardown:T19ef0": 14
-  },
-  "late_samples": [
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4290e8",
-    "0x6831"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370c8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370f8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x137104",
-    "0x2a74"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4293d4",
-    "0x5be8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x42942c",
-    "0x2c80"
-   ]
-  ],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2,
-   "0x429330": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 16,
-   "T19ef0": 16
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x12a980",
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x136600",
-   "0x1366e0",
-   "0x1368a0",
-   "0x136af0",
-   "0x136e80",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1382a0",
-   "0x1384f0",
-   "0x138720",
-   "0x138810",
-   "0x138a20",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x138ff0",
-   "0x139000",
-   "0x139020",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x1399d0",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "resume-after-free",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 28,
-  "late_by_phase": {
-   "teardown:T19c30": 14,
-   "teardown:T19ef0": 14
-  },
-  "late_samples": [
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4290e8",
-    "0x6831"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370c8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370f8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x137104",
-    "0x2a74"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4293d4",
-    "0x5be8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x42942c",
-    "0x2c80"
-   ]
-  ],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2,
-   "0x429330": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 18,
-   "T19ef0": 18
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x12a980",
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x136600",
-   "0x1366e0",
-   "0x1368a0",
-   "0x136af0",
-   "0x136e80",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1382a0",
-   "0x1384f0",
-   "0x138720",
-   "0x138810",
-   "0x138a20",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x138ff0",
-   "0x139000",
-   "0x139020",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x1399d0",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "HT2",
-  "teardown": "resume-after-free",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 28,
-  "late_by_phase": {
-   "teardown:T19c30": 14,
-   "teardown:T19ef0": 14
-  },
-  "late_samples": [
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4290e8",
-    "0x6831"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370c8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x1370f8",
-    "0x29d8"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x137104",
-    "0x2a74"
-   ],
-   [
-    "teardown:T19c30",
-    "W",
-    "0x4293d4",
-    "0x5be8"
-   ],
-   [
-    "teardown:T19c30",
-    "R",
-    "0x42942c",
-    "0x2c80"
-   ]
-  ],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x1367f0": 2,
-   "0x42b740": 2,
-   "0x429330": 2
-  },
-  "automapped_pages": 1,
-  "waits_per_thread": {
-   "T19c30": 21,
-   "T19ef0": 21
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x12a980",
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x136600",
-   "0x1366e0",
-   "0x1368a0",
-   "0x136af0",
-   "0x136e80",
-   "0x137c30",
-   "0x137f10",
-   "0x138270",
-   "0x1382a0",
-   "0x1384f0",
-   "0x138720",
-   "0x138810",
-   "0x138a20",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x138ff0",
-   "0x139000",
-   "0x139020",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x1399d0",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x4ee970",
-   "0x4efe80",
-   "0x4f8260",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "reap",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "reap",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "reap",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "clear",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "clear",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "clear",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "step",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "step",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "step",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "barrier",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "barrier",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "barrier",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_barrier": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "tstop-only",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 1,
-   "T19ef0": 1
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "tstop-only",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 3,
-   "T19ef0": 3
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "tstop-only",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "tStop_true": [
-   1,
-   1
-  ],
-  "after_tstop": {
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    2,
-    2
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 6,
-   "T19ef0": 6
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "resume-after-free",
-  "ticks": 1,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 16,
-   "T19ef0": 16
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "resume-after-free",
-  "ticks": 3,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 18,
-   "T19ef0": 18
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- },
- {
-  "kind": "R21",
-  "teardown": "resume-after-free",
-  "ticks": 6,
-  "nested_real": true,
-  "after_ticks": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   }
-  },
-  "after_stage_dtor": {
-   "states": [
-    1,
-    1
-   ],
-   "os": {
-    "T19c30": [
-     "blocked",
-     [
-      "ev",
-      "0xe28"
-     ]
-    ],
-    "T19ef0": [
-     "blocked",
-     [
-      "ev",
-      "0xe8"
-     ]
-    ]
-   },
-   "groups": 0
-  },
-  "final": {
-   "os": {
-    "T19c30": [
-     "done",
-     null
-    ],
-    "T19ef0": [
-     "done",
-     null
-    ]
-   },
-   "threads_freed": 2
-  },
-  "late_stage_access": 0,
-  "late_by_phase": {},
-  "late_samples": [],
-  "os_events_teardown": [
-   [
-    "main",
-    "join",
-    "T19c30",
-    "blocked"
-   ],
-   [
-    "T19c30",
-    "exit",
-    "T19c30"
-   ],
-   [
-    "main",
-    "join",
-    "T19ef0",
-    "blocked"
-   ],
-   [
-    "T19ef0",
-    "exit",
-    "T19ef0"
-   ]
-  ],
-  "child_exit_before_stage_dtor": null,
-  "tripwires": {},
-  "nested_entries": {
-   "0x1398b0": 2,
-   "0x421340": 2
-  },
-  "automapped_pages": 0,
-  "waits_per_thread": {
-   "T19c30": 21,
-   "T19ef0": 21
-  },
-  "null_page_writes": 1,
-  "unlisted_in_children": [
-   "0x130300",
-   "0x130830",
-   "0x130f90",
-   "0x1366e0",
-   "0x137b50",
-   "0x137b60",
-   "0x138b10",
-   "0x138ce0",
-   "0x138d20",
-   "0x138f80",
-   "0x139070",
-   "0x139140",
-   "0x139250",
-   "0x2171e0",
-   "0x4d7b40",
-   "0x4d9dc0",
-   "0x4d9ec0",
-   "0x4dae70",
-   "0x4dae80",
-   "0x4df040",
-   "0x4df970",
-   "0x4dfc00",
-   "0x4dfdf0",
-   "0x6a40"
-  ]
- }
-]
+ "failures": []
+}

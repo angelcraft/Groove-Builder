@@ -4,6 +4,7 @@
 - **Instrucciones**: PR #5, comentario 7229942917 (GE-154)
 - **Estado**: V0 validada **solo en el harness de Unicorn**. Ningún hook en `engine/`; ninguna prueba en Switch. El `.gsv` sigue siendo propuesta.
 - **Especificación para Codex**: `CODEX_HANDOFF.md`.
+- **Rev 2 (revisión 7230247601)**: este documento describe la entrega `505612e`. Las aserciones nuevas (bytes completos, lista de bytes permitidos exacta, `exit ≠ 0`, autopruebas), los cambios de H0–H7, las trazas de automap y página nula y los 20 subhilos de R21 están en `review-7230247601.md`. Donde no coincidan, vale ese documento.
 
 ## 0. Niveles de evidencia
 
@@ -20,7 +21,7 @@ Hooks V0 = `unicorn/v0.py` (Python, **solo harness**), forma ejecutable de H1–
 ## 1. Flujo ejecutado por caso [U]
 
 Por cada partida: `onConfirmCell 0x1D2CC0` real (bloqueo, despacho kind1, `launchA` real, `setSel`) → `initGameplay 0x137050` real → resultados: nativos con el `setPending 0x4910` real; custom con un resultado del motor **modelado** que solo va al `.gsv` → `mapEnterFromStage 0x1D38A0` real (→ `commitResult 0x1D39D0`) → H9 → reinicio del mapa con el `getSel 0x4860` real (sitio `0x1CE03C`) + H6 → refresco `0x1D3CA0` → `0x131440` → `writeSave 0x3D60`.
-**Puntos de escritura** comparados byte a byte (0x1188 B) con el blob inicial del caso: la entrada de cada `writeSave` y cada staging asíncrono (`0xB470`). Un byte distinto solo se acepta si su único escritor está dentro de `writeSave` (`0x3D60..0x3DC0`, `hdr.saveCount`).
+**Puntos de escritura** comparados byte a byte (0x1188 B) con el blob inicial del caso: la entrada de cada `writeSave` y cada staging asíncrono (`0xB470`). (Rev 1: un byte distinto se aceptaba si su único escritor estaba dentro de `writeSave`. **Rev 2**: se comparan los bytes completos con una lista de bytes permitidos exacta, solo `hdr.saveCount`. Ver `review-7230247601.md`.)
 
 ## 2. Resultados
 
@@ -79,7 +80,7 @@ Con `pending < 0`, `commitResult` solo ejecuta la caducidad de Perfect Campaign 
 - Secuencia medida en reap/clear: `join(T) → T sale → join devuelve`, para cada hijo.
 - **tStop ≠ join** [U-modelo]: tras `tStop = 1` los hilos siguen vivos hasta `step`, `reap` o `clear`.
 - El control positivo demuestra que el detector funciona y que el riesgo es real: una continuación que corre con el stage liberado lo escribe. En R21 el harness no avanza lo bastante, porque los bucles de las corrutinas dependen de stubs que devuelven 0.
-- Límites: el stage es sintético (los subobjetos nulos se leen de una página cero; HT2 mapeó 1 página bajo demanda); el scheduler y el orden del gestor de escenas no son los reales; no se ejecutan los cuerpos del motor de GE-151.
+- Límites (rev 1, **corregidos en rev 2**: ya no hay página cero ni automap y R21 tiene 22 hilos; ver `review-7230247601.md` §2): el stage era sintético (los subobjetos nulos se leían de una página cero; HT2 mapeó 1 página bajo demanda); el scheduler y el orden del gestor de escenas no son los reales; no se ejecutan los cuerpos del motor de GE-151.
 - Diseño de la barrera: `CODEX_HANDOFF.md` §4.
 
 ## 5. Bloqueos abiertos (antes de hardware)
