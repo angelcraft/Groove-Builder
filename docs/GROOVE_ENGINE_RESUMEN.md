@@ -4,8 +4,7 @@ Documento de seguimiento (27 de noviembre de 2026, Europe/Amsterdam).
 Repositorio público, solo código y documentación originales:
 [angelcraft/Groove-Builder](https://github.com/angelcraft/Groove-Builder).
 
-> Commit de esta entrega: se indica en la [sección 6](#6-commit-subido-a-github)
-> cuando el push ha terminado.
+> Commit de esta entrega: [`9086d42`](https://github.com/angelcraft/Groove-Builder/commit/9086d42bbfd090f58b63feafde04c84cacb01c98) en la rama `work/groove-engine-v0.5.0`.
 
 ## 1. Resumen general del proyecto
 
@@ -284,8 +283,8 @@ sd:/groove/save/*.json                # debe decir "module": "0.5.0"
 ## 6. Commit subido a GitHub
 
 - Rama: `work/groove-engine-v0.5.0` (basada en `main`).
-- SHA: `PENDIENTE`
-- URL: `PENDIENTE`
+- SHA: `9086d42bbfd090f58b63feafde04c84cacb01c98` (`9086d42`)
+- URL: https://github.com/angelcraft/Groove-Builder/commit/9086d42bbfd090f58b63feafde04c84cacb01c98
 - Contenido previsto (solo fuentes, herramientas, docs y ejemplos
   originales; cero archivos con copyright del juego):
   - `engine/` — runtime v0.5.0
