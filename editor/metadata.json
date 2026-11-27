@@ -1,0 +1,6 @@
+{
+  "name": "Groove Builder",
+  "description": "Visual level and remix editor for Rhythm Heaven Groove compatible with Groove Engine v0.5.0 (.gtf, .gtl, .groove).",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

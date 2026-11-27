@@ -1,0 +1,87 @@
+{
+  "task": "GE-153",
+  "import_base": "9a7f385a10327f3f411a8a96039b9764189c69af",
+  "source_archive_sha256": "d87b3417bc5cd675a000d95285715d5908d77b74642d186931e09d419c482999",
+  "archive_entries": 36,
+  "original_file_hashes": {
+    ".env.example": "b6d12c728de0aac8b0bc6239e53aa8088c1431bcb4f9a3d61e5e8a2df1c7c400",
+    ".gitignore": "db691f14fcf678985362a42c6aedb581e42cd6bb99962ce1b44aea460fb2a4df",
+    "CONTINUE_HERE.md": "faa77cb7441748b6d4ca86135b1c822211ae2f40673b849b12fffc2c56a63ca6",
+    "bun.lock": "1b5557aea84f19a9d574cef0966742d3d8cf596e77ea4142bbafe24b52f4662e",
+    "index.html": "caa933b650cb49d2b8631e4797ac6d244d17a18c7ae10e6cfbd53a9c5360b657",
+    "metadata.json": "64680fd395713195f99c7d641f319a7c19367f09e0f4bc4dde9bf6ae4192d25a",
+    "package.json": "e67d29050f4a8784480276779bc0b773076dfed154dacb0e93b8655cc90984e0",
+    "tsconfig.json": "01a54f95b49f1c648548c6981076e6d100a542bf420a5c08cd9244db91adddd6",
+    "vite.config.ts": "00120b1a9c0f7f4771be822e5514c50cf101816307e47f08477342f7bc5c24ec",
+    "src/App.tsx": "64d626113d79b1a13350fe3f2db44953d9e078dcfe9cd13506bb88f652ebc3c7",
+    "src/index.css": "c866cef94bdff6d6e49f8c82d39099c84d05eb3888f55f7301b0b2cf82291bcf",
+    "src/main.tsx": "30d02ee59cb6576973dea4368093b2dcae692a40668f288fdbc66a114873fcd3",
+    "src/audio/rhythmAudio.ts": "12569e5907a6376eb07f43f7e15b17ae5d095701f297f9d6f6598f40bb8618a5",
+    "src/components/CodeStudio.tsx": "e1b887b74ea55ea716e66e63e59edd69c409075893fcc5a6ac62ba5542b5903e",
+    "src/components/CueLibrary.tsx": "9ac9ed7e750c99d5909d7e13a7130074b5f078765fc01a02d08ade0f67ee8382",
+    "src/components/CustomizationStudio.tsx": "9fd6c432f28aa6dd69f3696c300682d1c5e90aee627297283dadb751681931b7",
+    "src/components/InspectorPanel.tsx": "45667aa2f6f5dd8f8c90a9d837b21321c918b81ce59b51a3fba301b2d32c46d2",
+    "src/components/PWAInstallButton.tsx": "17b3a9d7870df68ef1cfc4e8370e6462d8f9b166ff5c43e557168ba03176a21c",
+    "src/components/StagePreview.tsx": "cc342fe17b6c259412b0a73971d2033d8f83bcffae96a79cc949d60fe9424f7b",
+    "src/components/TimelineEditor.tsx": "537da8c1018e9de3e94860eda46d8d594210599911a45310a14fd3da62b11837",
+    "src/components/TopBar.tsx": "a847f736b2ad88d753efb9f73ff7a8fa45f1e449758f89b5fd50a0c91fb0e8e6",
+    "src/components/TransportBar.tsx": "a390679bc2e75c1212334310fddf895994a22dc9a5e011cb1a74280bef5c0d4f",
+    "src/engine/cues.ts": "29c62bbb1b68784dd2d0ed0fd7daf8f463d6d0714e78478c31e1dead2a8324b6",
+    "src/engine/engineContract.ts": "28e3d8b02347e3f37737511d23db438592021fb8082c533c44b0d03b360e6adf",
+    "src/engine/groovePackage.ts": "8dbbb831173873a7c7eb469220e9f9ed30f90d78b86c9e76e8278bef60ed425c",
+    "src/engine/gtfEngine.ts": "d72f237868a70a323c49e317d51c2ab95eb2abe67c82e89042f52b78b29644a0",
+    "src/engine/rhreImporter.ts": "a5bcdbd0cb53c313ed64a740989bb5d77206b6692aa77976f65bfdf84e822301",
+    "src/hooks/usePWAInstall.ts": "25c478f6399672c672cb70fcb64dd852ff0812deb1077ad048fd31e75890a33a",
+    "src/stage/stageRenderer.ts": "f44b06a0683e306465fb52acc9b3951cf2757e5567f2f7f61fa784b310910b40",
+    "public/apple-touch-icon.png": "740377379978997b3bb3a9d5d27c2f0ce9e670ec93c3fdbec94c9efd5d323b7a",
+    "public/icon.svg": "145d329e349657526acfd4df16dc90dd7b9faf5d16c07927770476615dc0ff9f",
+    "public/pwa-192x192.png": "b9bf0c9a95fa299002f97fc8fec91a5f3aac7c52c686b52b07e8cf59c9d448a9",
+    "public/pwa-512x512.png": "13d73ff75f3879d0975e6d5e35c693128e00be2a38053e126f55bbe5fb8edfad",
+    "public/pwa-maskable-512x512.png": "962e15a6afffa2f194c4c3735bf91233c2334b41bad699023fb0aa46ee3d4d00",
+    "tests/grooveEngine.test.ts": "1c3a4a10a79de4f30065728d1b7e6f7adadd77a4d319e661d558b7eeeab40d82",
+    "reports/GE-153/REPORT.md": "32729b0d68668e69c4104e50e6a5c289e4d96aafa1a5f4d1dfd709588dfe2c68"
+  },
+  "changed_original_files": [
+    "package.json"
+  ],
+  "coordination_review_sha256": "d3103bc02dbe6c310dc42cacdb066aa3adf8ff334ce273ca45b2308730a08ec6",
+  "node": "v24.22.3",
+  "npm": "11.19.1",
+  "checks": {
+    "tests": {
+      "command": "npm test",
+      "exit_code": 0,
+      "passed": 8
+    },
+    "typecheck": {
+      "command": "npm run typecheck",
+      "exit_code": 0
+    },
+    "build": {
+      "command": "npm run build",
+      "exit_code": 0
+    },
+    "npm_ci": {
+      "command": "npm ci --ignore-scripts",
+      "exit_code": 0
+    }
+  },
+  "hardware_tested": false,
+  "browser_ui_tested": false,
+  "runtime_modified": false,
+  "known_review_findings_resolved": false,
+  "build_files": {
+    "apple-touch-icon.png": "740377379978997b3bb3a9d5d27c2f0ce9e670ec93c3fdbec94c9efd5d323b7a",
+    "assets/index-2dNmLT6K.css": "3373ed01270b468eb04861854b72f0d3d5585a2368d373f2d1f306118163c189",
+    "assets/index-V6vqu-Aj.js": "2f775f5e12b41e949eaf567bbcfde012bbc4e3db59dc575ba445b7d62418252e",
+    "icon.svg": "145d329e349657526acfd4df16dc90dd7b9faf5d16c07927770476615dc0ff9f",
+    "index.html": "051ba8d760ec12610b2cf620831cd076ce69a8834a2a8f1c2a7a2986b7746296",
+    "manifest.webmanifest": "543ab54db6e648efeaa678624f5326c0ae857daeb16847bf13559ea379acabe6",
+    "pwa-192x192.png": "b9bf0c9a95fa299002f97fc8fec91a5f3aac7c52c686b52b07e8cf59c9d448a9",
+    "pwa-512x512.png": "13d73ff75f3879d0975e6d5e35c693128e00be2a38053e126f55bbe5fb8edfad",
+    "pwa-maskable-512x512.png": "962e15a6afffa2f194c4c3735bf91233c2334b41bad699023fb0aa46ee3d4d00",
+    "registerSW.js": "9742073ef7fc795e7673d98f272992843298426a0ffd8cb3507784df5143608b",
+    "sw.js": "e675f99a5c01ac9dbd3e73619a6d21fa34bd35bd3dda0480a69b593b2c22bb41",
+    "workbox-835c8c05.js": "09fac2e643b2b4eb60ec4b0a4281c196c5942051e2229aec09fb99df59424315"
+  }
+}
