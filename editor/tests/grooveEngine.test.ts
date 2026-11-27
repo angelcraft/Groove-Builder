@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { planLookaheadWindow } from '../src/audio/rhythmAudio.ts';
@@ -376,6 +377,17 @@ test('Authoring and Runtime (GTF + GTL) .groove Draft 0.2 round-trips determinis
   assert.ok(importedEditor.prologueImage?.dataUrl.startsWith('data:image/png;base64,'));
   assert.equal(importedEditor.sprites.KAERU?.scale, 1.25);
 
+  // Independent save/load/rename cycle of the authoring identity (not a UI simulation).
+  const renamedAuthor = await exportGroovePackage({
+    ...importedEditor, packageVersion: '1.2.4',
+    timeline: { ...importedEditor.timeline, title: 'Independent renamed project' },
+  });
+  const reopenedAuthor = await importGroovePackage(await renamedAuthor.blob.arrayBuffer());
+  assert.equal(reopenedAuthor.packageId, pid);
+  assert.equal(reopenedAuthor.packageVersion, '1.2.4');
+  assert.equal(reopenedAuthor.timeline.title, 'Independent renamed project');
+  assert.notEqual(generateProjectId(), pid);
+
   // Impact detector flags omitted resources before runtime export
   const impact = analyzeRuntimeExportImpact({
     packageId: pid,
@@ -640,6 +652,22 @@ test('rejects malformed Draft 0.2 manifests, duplicate JSON keys, raw ZIP attack
   writeU32LE(bombZip, cdOff + 16, plainCrc);
   await assert.rejects(() => importGroovePackage(bombZip), /excede el limite permitido/i);
 
+  // Independent malformed stream: writer rejection must be observed and disposed.
+  const malformed = buildRawStoredZip([{ nameBytes: enc.encode('manifest.json'), data: new Uint8Array([7]), method: 8, overrideUncompressedSize: 1 }]);
+  await assert.rejects(() => importGroovePackage(malformed));
+
+  // A valid LFH embedded in another member must not be accepted as a second range.
+  const inner = buildRawStoredZip([{ nameBytes: enc.encode('b'), data: enc.encode('X') }]);
+  const overlap = buildRawStoredZip([
+    { nameBytes: enc.encode('a'), data: inner.slice(0,32) },
+    { nameBytes: enc.encode('b'), data: enc.encode('X') },
+  ]);
+  const overlapCd = readU32LE(overlap, overlap.length-6);
+  writeU32LE(overlap, overlapCd+47+42,31);
+  await assert.rejects(() => inspectAndOpenZip(overlap, {
+    maxCompressedBytes: 4096, maxTotalUncompressedBytes: 4096, maxEntries: 5, allowDirectories: false,
+  }), /solapadas/i);
+
   // RHRE traversal rejected too
   const badRhreZip = buildRawStoredZip([
     { nameBytes: enc.encode('../remix.json'), data: enc.encode('{}') },
@@ -724,10 +752,16 @@ test('enforces pinned engine_contract.json cue arg profiles, ring_mask, blocked 
     /UTF-8 invalido/i
   );
 
-  // Differential check against Codex Python parser when available in host environment
-  const pyTool = '/tmp/codex_gtf.py';
-  if (fs.existsSync(pyTool)) {
-    const runPyGtfToGtl = (src: string) =>
+  // Mandatory differential check against the pinned authoritative Python parser
+  const referenceCommit = 'ff2adc2a186cfc3e1a15ca1957d673cf7f230dc2';
+  const referenceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ge153-python-'));
+  const pyTool = path.join(referenceDir, 'gtf.py');
+  try {
+    // Fail rather than silently omit parity if the authoritative reference is unavailable.
+    for (const file of ['gtf.py', 'engine_contract.json']) {
+      fs.writeFileSync(path.join(referenceDir, file), execFileSync('git', ['show', `${referenceCommit}:tools/${file}`]));
+    }
+    const runPyGtfToGtl = (src: string, mode = 'gtf') =>
       execFileSync(
         'python3',
         [
@@ -737,18 +771,23 @@ spec = importlib.util.spec_from_file_location("gtf", "${pyTool}")
 m = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = m
 spec.loader.exec_module(m)
-tl = m.compile_gtf(sys.stdin.read(), "diff.gtf")
+tl = (m.parse_gtl if sys.argv[1] == "gtl" else m.compile_gtf)(sys.stdin.read(), "diff")
 print(m.emit_gtl(tl, "diff.gtf"))`,
+          mode,
         ],
         { input: src, encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'] }
       );
 
-    for (const fixture of [EXAMPLE_GTF, SHOWCASE_24_GTF]) {
+    for (const fixture of [EXAMPLE_GTF, SHOWCASE_24_GTF, 'swing 120\nRING.hoop\n', 'def Pattern\nRING.hoop\nend\ncall pattern\n', ...CUES.map(c => `${c.game}.${c.name}\n`)]) {
       const pyGtl = runPyGtfToGtl(fixture);
       const pyTimeline = parseGtl(pyGtl, 'py_diff.gtl');
       const tsTimeline = compileGtf(fixture, 'ts_diff.gtf');
       assert.deepEqual(timelinesEqual(pyTimeline, tsTimeline), []);
     }
+
+    const legacyGtl = 'GTLM 1\nX 0 RING 0x217960 -1\nend 4000 960\nfinish 5000\n';
+    assert.deepEqual(timelinesEqual(parseGtl(runPyGtfToGtl(legacyGtl, 'gtl')), parseGtl(legacyGtl)), []);
+    assert.deepEqual(JSON.parse(fs.readFileSync(path.join(referenceDir, 'engine_contract.json'), 'utf8')), ENGINE_CONTRACT);
 
     // Negative differential parity: invalid inputs must be rejected by both Python and TS parsers
     const badInputs = [
@@ -757,12 +796,18 @@ print(m.emit_gtl(tl, "diff.gtf"))`,
       'first KAERU\nend 8\nfinish 12\nfrog3\nanim KAERU Remix8 0x3B58\n',
       'first KAERU\nmatch 5 0 0\nend 8\nfinish 12\nfrog3\n',
       'first KAERU\nprologue ../escape\nend 8\nfinish 12\nfrog3\n',
+      'RING.hoop 0xFFFFFFFF\n',
+      'CARS.brake 0\n',
+      'RING.hoop\nend 0\n',
+      'RING.hoop\nend 4\nfinish 1\n',
+      'rest 2147483647t\nrest 1t\nRING.hoop\n',
+      'rest 0.00001\nRING.hoop\n',
     ];
     for (const bad of badInputs) {
-      assert.throws(() => compileGtf(bad, 'bad_ts.gtf'));
+      assert.throws(() => compileGtf(bad, 'bad_ts.gtf'), Error, bad);
       assert.throws(() => runPyGtfToGtl(bad));
     }
-  }
+  } finally { fs.rmSync(referenceDir, { recursive: true, force: true }); }
 });
 
 test('AudioContext lookahead scheduler handles seek, deduplication, and background/resume safely', () => {

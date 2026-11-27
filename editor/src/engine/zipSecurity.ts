@@ -207,7 +207,7 @@ export class BoundedZipArchive {
 
     const remainingGlobal = this.maxTotalUncompressedBytes - this.totalDecompressedSoFar;
     const limit =
-      maxEntryBytes !== undefined ? Math.min(maxEntryBytes, remainingGlobal) : remainingGlobal;
+      maxEntryBytes !== undefined ? Math.min(maxEntryBytes, remainingGlobal, entry.uncompressedSize) : Math.min(remainingGlobal, entry.uncompressedSize);
     if (limit < 0) {
       throw new Error('Contenido descomprimido supera el limite total permitido');
     }
@@ -269,6 +269,8 @@ async function inflateRawBounded(
 
     const copy = new Uint8Array(compressed);
     const writePromise = writer.write(copy).then(() => writer.close());
+    // Observe early writer failure even when reader.read rejects first.
+    void writePromise.catch(() => {});
 
     const chunks: Uint8Array[] = [];
     let total = 0;
@@ -291,7 +293,7 @@ async function inflateRawBounded(
       }
       await writePromise;
     } catch (err) {
-      await reader.cancel().catch(() => {});
+      await Promise.allSettled([reader.cancel(), writer.abort(), writePromise]);
       throw err instanceof Error ? err : new Error(String(err));
     }
 
@@ -314,6 +316,8 @@ async function deflateRawDeterministic(raw: Uint8Array): Promise<Uint8Array> {
     const reader = cs.readable.getReader();
     const copy = new Uint8Array(raw);
     const writePromise = writer.write(copy).then(() => writer.close());
+    // Observe early writer failure even when reader.read rejects first.
+    void writePromise.catch(() => {});
     const chunks: Uint8Array[] = [];
     let total = 0;
     while (true) {
@@ -404,6 +408,7 @@ export async function inspectAndOpenZip(
 
   const entries = new Map<string, StrictZipEntry>();
   const seenLower = new Set<string>();
+  const occupied: Array<[number, number]> = [];
   let claimedTotalUncompressed = 0;
   let pos = cdOffset;
   const cdEnd = cdOffset + cdSize;
@@ -516,6 +521,11 @@ export async function inspectAndOpenZip(
     if (dataOffset > cdOffset || dataOffset + compSize > cdOffset) {
       throw new Error(`Datos comprimidos truncados o fuera de limites: ${rawName}`);
     }
+    const rangeEnd = dataOffset + compSize;
+    if (occupied.some(([start, end]) => localHeaderOff < end && rangeEnd > start)) {
+      throw new Error(`Entradas ZIP solapadas: ${rawName}`);
+    }
+    occupied.push([localHeaderOff, rangeEnd]);
     const lfhNameBytes = bytes.subarray(localHeaderOff + 30, localHeaderOff + 30 + lfhNameLen);
     for (let k = 0; k < nameLen; k++) {
       if (lfhNameBytes[k] !== nameBytes[k]) {

@@ -114,7 +114,7 @@ export function createDefaultTimeline(): Timeline {
     start: 0,
     translen: 960,
     swing: 120,
-    results: 1,
+    results: 0,
     match: [-1, 9, 4],
     end: 32 * TPB,
     endFade: 960,
@@ -224,54 +224,35 @@ function gcd(a: number, b: number): number {
 }
 
 export function parseDuration(s: string, what = 'duracion'): number {
-  const t = s.trim();
+  const t = s;
   if (!t) throw new Error(`${what} vacia`);
-  if ((t.endsWith('t') || t.endsWith('T')) && t.toLowerCase() !== 't') {
-    try {
-      return parseIntStrict(t.slice(0, -1));
-    } catch {
-      throw new Error(`${what} en ticks invalida: ${s}`);
-    }
-  }
-  let num = 0;
-  let den = 1;
-  if (t.includes('/')) {
-    const [ns, ds] = t.split('/', 2);
-    if (!ns || !ds || !/^-?\d+$/.test(ns.trim()) || !/^-?\d+$/.test(ds.trim())) {
-      throw new Error(`${what} invalida: ${s}`);
-    }
-    num = parseInt(ns.trim(), 10);
-    den = parseInt(ds.trim(), 10);
-    if (den === 0) throw new Error(`${what} invalida: ${s}`);
+  let ticks: bigint;
+  if (/[tT]$/.test(t)) {
+    ticks = BigInt(parseIntStrict(t.slice(0,-1)));
+  } else if (/^(?:0x|\+0x)/i.test(t)) {
+    throw new Error(`${what} invalida`);
+  } else if (t.includes('/')) {
+    const [a,b,...extra] = t.split('/');
+    if (extra.length) throw new Error(`${what} invalida`);
+    const n=BigInt(parseIntStrict(a)), d=BigInt(parseIntStrict(b));
+    if (n<0n || d<=0n || (n*480n)%d) throw new Error(`${what} invalida`);
+    ticks=n*480n/d;
+  } else if (t.includes('.')) {
+    if (!/^\+?(?:[0-9]+)?\.[0-9]+$/.test(t)) throw new Error(`${what} invalida`);
+    const [whole,raw]=t.split('.'); const frac=raw.replace(/0+$/,'');
+    if (frac.length>9) throw new Error(`${what} invalida`);
+    const n=BigInt(parseIntStrict(whole || '0'));
+    const scale=10n**BigInt(frac.length);
+    const numerator=n*480n*scale+BigInt(frac || '0')*480n;
+    if (numerator%scale) throw new Error(`${what} no cae en un tick entero`);
+    ticks=numerator/scale;
   } else {
-    if (!/^[+-]?(\d+(\.\d*)?|\.\d+)$/.test(t)) {
-      throw new Error(`${what} invalida: ${s}`);
-    }
-    if (t.includes('.')) {
-      const neg = t.startsWith('-');
-      const unsigned = t.replace(/^[+-]/, '');
-      const [intPart, decPart] = unsigned.split('.');
-      const digits = decPart.length;
-      den = Math.pow(10, digits);
-      num = parseInt((intPart || '0') + decPart, 10) * (neg ? -1 : 1);
-    } else {
-      num = parseInt(t, 10);
-      den = 1;
-    }
+    if (!/^[+-]?[0-9]+$/.test(t)) throw new Error(`${what} invalida`);
+    ticks=BigInt(parseIntStrict(t))*480n;
   }
-  if (den < 0) {
-    num = -num;
-    den = -den;
-  }
-  const exactTicks = (num * TPB) / den;
-  const nearest = Math.round(exactTicks);
-  if (Math.abs(exactTicks - nearest) > 1e-4) {
-    throw new Error(`${what} ${s} no cae en un tick entero (${exactTicks.toFixed(4)} ticks; 1 pulso = 480)`);
-  }
-  if (nearest < 0) {
-    throw new Error(`${what} no puede ser negativa (${s})`);
-  }
-  return nearest;
+  if (ticks<0n) throw new Error(`${what} no puede ser negativa`);
+  if (ticks>BigInt(MAX_TICK)) throw new Error(`${what} fuera de rango`);
+  return Number(ticks);
 }
 
 export function formatBeats(ticks: number): string {
@@ -521,6 +502,11 @@ function parseCueLine(
   let gExplicit: GameId | null = null;
   let cueName = toks[0];
   const rest = toks.slice(1);
+  for (const arg of rest) {
+    if (/^[+-]?(?:0[xX][0-9a-fA-F]+|[0-9]+)$/.test(arg) && !isIntToken(arg)) {
+      throw new GtfError('entero fuera de rango', lineNo, path);
+    }
+  }
 
   if (cueName.includes('.')) {
     const [gPart, cPart] = cueName.split('.', 2);
@@ -626,7 +612,7 @@ function parseCueLine(
   if (cueDef.kind === 1 && overrides.length > 0) {
     throw new GtfError(`word cue ${cueDef.game} no acepta argumentos enteros`, lineNo, path);
   }
-  const finalArgs = [...cueDef.args] as [number, number, number, number];
+  const finalArgs: [number, number, number, number] = overrides.length ? [0, 0, 0, 0] : [...cueDef.args];
   for (let k = 0; k < overrides.length; k++) {
     finalArgs[k] = overrides[k];
   }
@@ -692,7 +678,7 @@ export function compileGtf(
       if (defs.size >= MAX_DEFS) {
         throw new GtfError(`demasiados defs (max ${MAX_DEFS})`, sl.no, path);
       }
-      const name = sl.toks[1];
+      const name = sl.toks[1].toLowerCase();
       if (RESERVED.has(name.toLowerCase()) || canonicalGame(name)) {
         throw new GtfError(`'${name}' es una palabra reservada; elige otro nombre de def`, sl.no, path);
       }
@@ -718,7 +704,7 @@ export function compileGtf(
     start: 0,
     translen: 960,
     swing: 120,
-    results: runtimeMode ? 0 : 1,
+    results: 0,
     match: [-1, 9, 4],
     end: 0,
     endFade: 960,
@@ -826,7 +812,7 @@ export function compileGtf(
       if (k === 'swing') {
         if (toks.length < 2) throw new GtfError('swing <ticks|pulsos>', sl.no, path);
         try {
-          tl.swing = parseDuration(toks[1], 'swing');
+          tl.swing = parseIntStrict(toks[1]);
         } catch (e) {
           throw new GtfError(e instanceof Error ? e.message : String(e), sl.no, path);
         }
@@ -982,7 +968,7 @@ export function compileGtf(
         if (callStack.length >= MAX_LOOP_CALL_DEPTH) {
           throw new GtfError('call demasiado profundo (max 8)', sl.no, path);
         }
-        const name = toks[1];
+        const name = toks[1].toLowerCase();
         const defBody = defs.get(name);
         if (!defBody) throw new GtfError(`no hay un def '${name}'`, sl.no, path);
         if (callStack.includes(name)) {
@@ -1087,6 +1073,10 @@ export function compileGtf(
       }
     }
   }
+  const expectedEnd = endSet ? tl.end : (tl.events.at(-1)?.tick ?? 0) + 4 * TPB;
+  if ((endSet && tl.end <= 0) || (finishSet && tl.finish < expectedEnd)) {
+    throw new GtfError('end/finish explicito invalido', undefined, path);
+  }
   if (!endSet) tl.end = 0;
   if (!finishSet) tl.finish = 0;
   finalizeTimeline(tl, path, true, runtimeMode);
@@ -1104,7 +1094,7 @@ export function parseGtl(
     start: 2880,
     translen: 960,
     swing: 120,
-    results: runtimeMode ? 0 : 1,
+    results: 0,
     match: [-1, 9, 4],
     end: -1,
     endFade: 960,

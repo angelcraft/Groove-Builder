@@ -1,22 +1,20 @@
-# Continuación GE-153 — editor importado
+# Continuación GE-153 — actualización 0.2
 
-Rama: gemini/visual-editor. Draft PR #7:
-https://github.com/angelcraft/Groove-Builder/pull/7
-Base de importación: 9a7f385a10327f3f411a8a96039b9764189c69af.
-Código validado: d653945204d664048899113f231242ce94b13a09.
+Rama gemini/visual-editor; conservar Draft PR #7, sin fusionar main.
+Base dea32f2, ZIP literal b908144; leer UPDATE_02_REVIEW.md y UPDATE_02_RESULTS.json.
+COORDINATION_REVIEW.md y los informes históricos permanecen intactos.
+La importación previa se conserva además en archive-import-v1.
 
-Leer IMPORT_VALIDATION.md y COORDINATION_REVIEW.md. Este último se conserva
-intacto como revisión previa; el ZIP ya está publicado bajo editor/.
-IMPORT_RESULTS.json contiene procedencia y resultados reproducidos.
+Verificado: 10/10 pruebas sin omisiones, tipos y build. Paridad Python obligatoria
+con ff2adc2a186cfc3e1a15ca1957d673cf7f230dc2: 80 cues y fixtures positivos/negativos.
+Corregidos results/swing/def/args parciales/duraciones/end y límites de inflado ZIP,
+solapamientos y errores de streams. UUID sobrevive exportación/importación y renombrado;
+fork cambia UUID. No comprobado reinicio real del navegador ni audio físico.
 
-Comandos: cd editor; npm ci --ignore-scripts; npm test;
-npm run typecheck; npm run build. 8/8 pruebas originales, tipos y build pasan.
-Usar package-lock.json para npm; bun.lock es el original conservado y no
-refleja la corrección esbuild/Vite. No repetir la importación ni reemplazar
-el informe original. No presentar el botón ZIP fuente como disponible.
+Reproducir desde editor/: npm ci --ignore-scripts; npm test; npm run typecheck;
+npm run build. Necesita Git y Python 3. En clone superficial recuperar referencia:
+git fetch origin codex/engine-v0.5.1-hardening. package-lock.json es el lock utilizado.
 
-Pendiente: revisión de schema/ZIP, identidad de proyecto, determinismo,
-reloj de audio, contrato generado y paridad diferencial. Las pruebas no
-resuelven esos hallazgos. No paquete instalable Switch ni validación física.
-No modificar GE-151. Próximo paso: GE-154 revisa #7 y asigna el endurecimiento
-pendiente; no fusionar main ni publicar recursos propietarios.
+Siguiente paso: revisión de coordinación del Draft 0.2 y pruebas de interfaz/audio
+reales; no tratar .groove como instalable nativo. GE-151 continúa exclusivamente en
+codex/engine-v0.5.1-hardening / PR #6; bloqueos de join tardío, guardado y pila separados.
