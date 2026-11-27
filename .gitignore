@@ -8,5 +8,23 @@ __pycache__/
 *.ips
 *.spr
 *.msbt
-main
-main.*
+# Game executable only (never our engine/src/main.cpp)
+/main
+**/main
+!**/main.cpp
+!**/main.c
+!**/main.h
+!**/main.hpp
+
+*.rhref
+*.cwv
+*.tex
+*.msbt
+*.bwav
+*.bfsar
+*.bfstm
+*.wav
+*.ogg
+subsdk4
+romfs/
+*.nss

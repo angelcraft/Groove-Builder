@@ -1,0 +1,51 @@
+# Ejemplo de Groove Tickflow v0.1
+# Compila con:  python3 gtf.py compile ejemplo.gtf -o multi.gtl
+# Luego copia multi.gtl a sd:/groove/stages/multi/multi.gtl
+# (haz antes una copia de seguridad con JKSV).
+#
+# 1 pulso = 480 ticks. rest avanza el reloj;
+# switch y los cues se disparan en el pulso actual.
+
+title "Remix 21"
+prologue type_19          # arte del prologo: type_00 .. type_19
+jingle 0x163              # 0x158 .. 0x16C (sin esta linea: el jingle nativo)
+bgm 139
+start 0                   # startGameplay en el pulso 0 (la cancion arranca a tiempo)
+match -1 9 4              # casilla del Multi (mundo -1, col 9, fila 4)
+results native
+first CARS                # escenario que se ve al empezar (sin emitir un switch)
+end 48                    # pulso del endGameplay (si lo omites, se calcula solo)
+finish 52                 # pulso del finish (si lo omites: end + 4 pulsos)
+translen 2
+
+# Un patron reutilizable: tres burbujas blandas, una por pulso
+def burbujas
+  loop 3
+    softGrow basic
+    rest 1
+  end
+end
+
+rest 8
+switch KAERU
+frog5 basic
+rest 4
+frog3 basic
+rest 4
+frog4 basic
+
+rest 2
+switch PUTILABO
+call burbujas
+
+rest 8
+switch CARS cut           # "hard" es un alias de "cut"
+brake basic
+rest 4
+accel basic
+rest 4
+accelRemix7 basic
+
+rest 2
+switch PUTILABO
+call burbujas

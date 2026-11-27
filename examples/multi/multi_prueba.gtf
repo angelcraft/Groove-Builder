@@ -1,0 +1,50 @@
+# Descompilado por gtf.py v0.1 (Groove Tickflow) desde multi_prueba.gtl.
+# 1 pulso = 480 ticks. rest avanza el reloj; switch y cues ocurren en el pulso actual.
+
+bgm 139
+results native
+match -1 9 4
+start 0
+translen 2
+first CARS
+end 80
+finish 84
+
+rest 15
+switch KAERU
+frog5 basic
+rest 5
+frog3 basic
+rest 5
+frog4 basic
+rest 2
+switch PUTILABO
+softGrow basic
+rest 1
+softGrow basic
+rest 1
+softGrow basic
+rest 6
+softGrow basic
+rest 1
+softGrow basic
+rest 1
+softGrow basic
+rest 11
+switch CARS
+brake basic
+rest 4
+brake basic
+rest 7.5
+accel basic
+rest 7
+accelRemix7 basic
+rest 0.5
+switch PUTILABO
+softGrow basic
+rest 1
+softGrow basic
+rest 1
+softGrow basic
+rest 0.5
+softGrow basic
