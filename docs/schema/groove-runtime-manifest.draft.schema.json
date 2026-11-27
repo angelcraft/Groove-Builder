@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Groove runtime package manifest — proposed draft 0.2",
+  "description": "Draft for GE-154 review; structural validation only. A matching manifest does not imply runtime support or safe archive contents.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "format",
+    "profile",
+    "id",
+    "version",
+    "title",
+    "engine_min",
+    "engine_contract",
+    "adapter",
+    "timeline",
+    "required_capabilities",
+    "results"
+  ],
+  "properties": {
+    "format": {
+      "const": "groove-package/1"
+    },
+    "profile": {
+      "const": "runtime"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 96,
+      "pattern": "^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$"
+    },
+    "version": {
+      "$ref": "#/$defs/version"
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 95,
+      "pattern": "^[^\\u0000-\\u001f\\u007f]+$"
+    },
+    "engine_min": {
+      "$ref": "#/$defs/version"
+    },
+    "engine_contract": {
+      "const": 1
+    },
+    "adapter": {
+      "const": "multi"
+    },
+    "timeline": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "path"
+          ],
+          "properties": {
+            "format": {
+              "const": "gtf"
+            },
+            "path": {
+              "const": "timeline.gtf"
+            }
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "format",
+            "path"
+          ],
+          "properties": {
+            "format": {
+              "const": "gtl"
+            },
+            "path": {
+              "const": "timeline.gtl"
+            }
+          }
+        }
+      ]
+    },
+    "required_capabilities": {
+      "oneOf": [
+        {
+          "const": [
+            "timeline.gtf"
+          ]
+        },
+        {
+          "const": [
+            "timeline.gtl"
+          ]
+        }
+      ]
+    },
+    "results": {
+      "const": "custom"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "timeline": {
+            "properties": {
+              "format": {
+                "const": "gtf"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "required_capabilities": {
+            "const": [
+              "timeline.gtf"
+            ]
+          }
+        }
+      },
+      "else": {
+        "properties": {
+          "required_capabilities": {
+            "const": [
+              "timeline.gtl"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "$defs": {
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})\\.(0|[1-9][0-9]{0,8})$"
+    }
+  }
+}
