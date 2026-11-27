@@ -17,3 +17,13 @@ Verificaciones: `python3 tools/run_engine_tests.py` exit 0; 13 métodos unittest
 Siguiente paso exacto: revisión del PR #6 por coordinación. Después, GE-156 necesita el harness privado/SDK o evidencia física dirigida para acreditar destrucción de hijos, ausencia de commits de progreso en Multi exit y cota de pila transitiva. No confundir la supresión de toResults con prueba de aislamiento: GE-152 identifica beginPlay/setPending/commitResult. No preparar instalación desde esta rama sin esa revisión. Mantener #3 y #6 como borradores.
 
 Build reproducible: Clang 19.1.7 en PATH; `python3 -m venv` y `pip install -r tools/engine-build-requirements.txt`; loader a321204 con submódulos exactos de tools/loader_pin.json; stdlib verificado por tools/engine_build_pin.json. tools/build_engine.py exige salida nueva y verifica pins. No subir `.nss`, `.nso`, subsdk o IPS al repo público. Workflow engine-hardening.yml es manual y no ha sido lanzado.
+
+## Seguimiento del ciclo nativo
+
+Ver NATIVE_LIFECYCLE_FOLLOWUP.md y stack-diagnostic.json. Nuevo auditor
+ARM64 tools/audit_engine_stack.py: 114 registros locales, NO cota LTO ni
+nativa. La batería ahora pasa 15 métodos unittest; runtime sin cambios.
+PR #5 recibió solicitud concreta de cadena de destrucción (0x4290F0 /
+0x4207F0) y aislamiento ANTES de beginPlay 0x48B0, que ya incrementa plays
+antes del ctor custom. Esperar evidencia de GE-152; omitir toResults NO
+basta. No candidato instalable. No volver a pedir capturas generales.

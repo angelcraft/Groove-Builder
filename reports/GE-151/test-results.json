@@ -39,5 +39,17 @@
   "private_unicorn_108_suite": "not available, not executed",
   "github_actions_executed": false,
   "physical_switch_tests": false,
-  "installable": false
+  "installable": false,
+  "native_followup": {
+    "base": "07f78337c366156809e13f74f3839221047eb3aa",
+    "unittest_methods": 15,
+    "host_exit_code": 0,
+    "arm64_diagnostic_translation_units": 4,
+    "compiler_stack_records": 114,
+    "lto_removed_for_diagnostics_only": true,
+    "native_stack_bound_verified": false,
+    "native_worker_lifetime_verified": false,
+    "prelaunch_save_isolation_verified": false,
+    "installable": false
+  }
 }
