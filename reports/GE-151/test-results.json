@@ -1,0 +1,43 @@
+{
+  "task": "GE-151",
+  "code_commit": "ff2adc2a186cfc3e1a15ca1957d673cf7f230dc2",
+  "base_commit": "61873906f016d46ac1d47d7a5016ec6e3fe93fa9",
+  "pr": "https://github.com/angelcraft/Groove-Builder/pull/6",
+  "host_command": "python3 tools/run_engine_tests.py",
+  "host_exit_code": 0,
+  "unittest_methods": 13,
+  "gtf_builtin_cases_passed": 19,
+  "native_safety_repeated_or_failed_loads": 30000,
+  "cpp_asan_ubsan_binaries": 3,
+  "cross_builds": 2,
+  "elf_identical": true,
+  "nso_identical": true,
+  "audit": {
+    "abi": "AArch64 ELF64 LE ET_DYN",
+    "segments": [
+      "RX",
+      "RO",
+      "RW"
+    ],
+    "elf_nso_payloads_identical": true,
+    "nso_segment_hashes_checked": false,
+    "relative_relocations": 665,
+    "unresolved_imports": [],
+    "hardware_validated": false
+  },
+  "artifacts": {
+    "GrooveHT3.nss": {
+      "sha256": "2fdc2dbce7ae33a8699692bd58436e29ad1dab610a33267b05d0e9ce2e66902b",
+      "bytes": 476168
+    },
+    "GrooveHT3.nso": {
+      "sha256": "2e557d5c02bbc677550d8e82a4be7ae111417a3e4b35163461cf7489b43ba22a",
+      "bytes": 108631
+    }
+  },
+  "private_gtf_fixture": "omitted: multi_prueba.gtl not present",
+  "private_unicorn_108_suite": "not available, not executed",
+  "github_actions_executed": false,
+  "physical_switch_tests": false,
+  "installable": false
+}

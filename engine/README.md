@@ -46,3 +46,28 @@ python3 tools/gtf.py test
 
 Las 108 pruebas de integración en Unicorn de v0.5.0 no están en el repo:
 necesitan una imagen del juego y no deben publicarse.
+
+## v0.5.1: revisión GE-151 (todavía sin aprobación de instalación)
+
+La rama `codex/engine-v0.5.1-hardening` endurece parsers, vida útil de cadenas,
+metadatos y reemplazo de estadísticas propias. GTF start=0 y GTLM start=2880 se
+conservan. Multi usa exit; su llamada directa a resultados nativos queda bloqueada
+hasta validar aislamiento. Los límites y rechazos nuevos son deliberados: consulta
+[el informe](../reports/GE-151/README.md) antes de migrar niveles.
+
+Pruebas públicas completas: `python3 tools/run_engine_tests.py` (g++ con ASan/UBSan).
+Para el build real, prepara Clang **19.1.7** en PATH e instala en un venv:
+
+```sh
+pip install -r tools/engine-build-requirements.txt
+python tools/build_engine.py --loader /ruta/loader-fijado --std /ruta/lib/std \
+  --out /ruta/NUEVA/fuera-del-repositorio --build
+python tools/verify_engine_artifacts.py /ruta/NUEVA/fuera-del-repositorio
+```
+
+El builder verifica commit/submódulos/fuentes del loader, contenido de la stdlib,
+CMake y Ninja. Pins: `tools/loader_pin.json` y `tools/engine_build_pin.json`.
+Repetir con otro directorio y comparar ELF/NSO para comprobar reproducibilidad.
+El workflow `engine-hardening.yml` es exclusivamente manual: no se lanzó en esta
+sesión y no publica binarios. Compilar no verifica permisos ni vida útil nativa;
+no copiar el resultado a la consola todavía.
