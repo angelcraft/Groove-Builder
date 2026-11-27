@@ -27,3 +27,17 @@ PR #5 recibió solicitud concreta de cadena de destrucción (0x4290F0 /
 0x4207F0) y aislamiento ANTES de beginPlay 0x48B0, que ya incrementa plays
 antes del ctor custom. Esperar evidencia de GE-152; omitir toResults NO
 basta. No candidato instalable. No volver a pedir capturas generales.
+
+
+## Última continuación: GE-152 @ 8e11d7b
+
+Leer el último apartado de NATIVE_LIFECYCLE_FOLLOWUP.md antes de reutilizar el runtime.
+Join es posterior al dtor del Stage; el supuesto anterior NO queda validado.
+Exit tampoco aísla progreso/perfectos. No implementar F0–F4 sin la validación dirigida
+pedida por coordinación en #5. Falta imagen/harness privado en este entorno.
+Se corrige saved para reflejar éxito real y registrar contención/SD ausente.
+15 pruebas Python, 19 GTF y tres ASan/UBSan pasan; nuevo build ARM64 y auditor pasan.
+Resultados/hashes en SAVE_FOLLOWUP_RESULTS.json. No candidato instalable ni prueba física.
+Siguiente paso: traza de reap/join/último acceso y diferencias de guardado desde antes
+del launch, normal/abort/reinicio. No confundir objetos host ni capacidad 64 KiB con
+vida útil o cota de pila nativas verificadas.

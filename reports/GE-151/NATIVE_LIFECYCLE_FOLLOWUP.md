@@ -77,3 +77,45 @@ seguridad es recuperación, no prueba de aislamiento. La futura prueba
 física debe tener un candidato revisado y recuperación, comparar guardado
 antes del lanzamiento y después de salir/cancelar, y acreditar teardown;
 no se solicita repetir capturas generales ni se instala nada ahora.
+
+## Actualización: respuesta de Grokki y corrección de guardado
+
+Revisado PR #5 @ 8e11d7babb9ff85939dda0553a8b5407af7237d9, en particular
+codex-pr5-answers.md y pr6-audit.md. Evidencia de GE-152: desensamblado estático,
+NO ejecución Unicorn ni Switch. Sustituye la incertidumbre anterior sobre el dtor:
+0x1363D0 → 0x5148F0 retira el grupo; Runner pertenece a seq+0x58, no a Stage.
+El reap 0x515450 y dtor 0x514BC0 hacen señal/join/unlink/free posteriormente.
+Por tanto conservar datos hasta el retorno de orig(stage) NO protege todo el
+ciclo de vida. Se corrigen los comentarios runtime que insinuaban lo contrario.
+No se cambia el orden ni se inventa un nuevo hook de join sin validar el contrato.
+
+También se identifican escrituras de campaña en 0x4A30/0x4A70 antes de beginPlay,
+setPending en 0x137094 y commitResult al regresar al mapa, incluido riesgo sobre
+perfectos. Salir sin resultados no aísla la partida original. Propuesta F0–F4 y
+curIdx=-1 todavía NO validadas; coordinación pide validación antes de nuevos hooks.
+Solicitud concreta de traza sanitizada publicada en #5:
+https://github.com/angelcraft/Groove-Builder/pull/5#issuecomment-7229815458
+
+Corrección independiente implementada: writeSave y writeMultiSave devuelven el
+resultado real de persistCustomSave; los trabajadores solo marcan saved tras éxito.
+Contención del buffer y SD no disponible devuelven false con diagnóstico explícito.
+Así no se suprime la oportunidad de reintento que ya existe en el dtor. Esto no
+acredita seguridad del dtor ni garantiza reintento si vuelve a fallar. Se mantiene
+el máximo de 64 backups sin borrar ninguno automáticamente; al agotarse se rechaza
+la escritura, se informa y no se declara saved. Formato y nombres de guardado intactos.
+
+Verificación: batería pública exit 0 (15 métodos Python, 19 casos GTF y 3 binarios
+ASan/UBSan), incluida inyección de fallos de reemplazo y exclusión atómica. Compilación
+ARM64 completa con toolchain fijado exit 0; auditor ELF/NSO exit 0, 665 RELATIVE,
+sin imports ELF sin resolver, payload ELF/NSO idéntico. Esas pruebas no ejecutan los
+servicios FS nativos ni el scheduler del juego. Esta iteración realiza UN build
+ARM64; la prueba de dos builds idénticos corresponde a la revisión anterior.
+NSO SHA-256 fcc1953b3f45ee93cdec99b827f76880746b116b96a15daf7c350225adea900b;
+ELF SHA-256 8f4cf0143149f81e53534c4cfb11cae8f9e33a1a3818be34753fd21a0bacedde.
+NSO sin verificación interna de hashes de segmento; se verifica SHA externo.
+No se publican los binarios ni se prepara instalador.
+
+Omitido explícitamente: ida/vuelta opcional de multi_prueba.gtl (fixture ausente),
+main/SDK privados y suite Unicorn privada; pruebas Horizon y físicas. No se puede
+calcular cota transitiva completa con callbacks y servicios no ejecutados. Los 64 KiB
+que GE-152 identifica en el constructor son capacidad estática, no presupuesto probado.

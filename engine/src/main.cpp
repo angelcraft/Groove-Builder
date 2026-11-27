@@ -547,7 +547,7 @@ void control(void* stage, void* th) {
     tPop(th);
 }
 
-void writeSave();
+bool writeSave();
 bool patchHt3Sky(void* stage, const char* when);
 
 // Equivalent of the native worker 0x428EF0, always on the non-practice path.
@@ -585,8 +585,7 @@ void ht3Worker(void* stage, void* th) {
          gRun.partsStarted, gTl.partCount, gRun.reachedEnd,
          gRun.finished, gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, at<int>(stage, 0x29E4),
          gRun.resultsMode ? "native toResults (as HT2)" : "return to previous scene");
-    writeSave();     // before the scene change, so a hang cannot lose it
-    gRun.saved = 1;
+    gRun.saved = writeSave() ? 1 : 0; // Retry from the stage dtor only if this attempt failed.
     flushLog();
     if (gRun.resultsMode) {
         // Exactly what the native HT2 worker does after its control thread
@@ -630,10 +629,10 @@ bool persistCustomSave(const char* path,const char* data,int size,int capacity) 
 }
 
 // ---------------------------------------------------------------- save
-void writeSave() {
+bool writeSave() {
     groove::TryLease lease(gInputBusy);
-    if (!lease.held) return;
-    if (!gFsOk || !gLogWritable) return;
+    if (!lease.held) { logf("save: input busy; not saved, destructor may retry"); return false; }
+    if (!gFsOk || !gLogWritable) { logf("save: SD unavailable; not saved"); return false; }
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, gStage->name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
     const char* kSavePath = gSavePath;
@@ -659,8 +658,10 @@ void writeSave() {
                      gStage->name, plays, completions, aborted, gRun.gameplayStarted, gRun.partsStarted, gTl.partCount,
                      gRun.partHoops[0], gRun.partHoops[1], gRun.partHoops[2], gRun.partHoops[3], gRun.reachedEnd, gRun.finished,
                      gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, gRun.resultsMode ? "native" : "exit");
-    if (persistCustomSave(kSavePath,buf,n,sizeof(buf)))
+    bool committed=persistCustomSave(kSavePath,buf,n,sizeof(buf));
+    if (committed)
         logf("save: plays=%d completions=%d aborted=%d",plays,completions,aborted);
+    return committed;
 }
 
 // ---------------------------------------------------------------- HT3 custom background (LayeredFS type_01)
@@ -1019,7 +1020,7 @@ HkTrampoline dtorHook = [](TrampolineStatic(), void* stage) -> void* {
         logf("%s stage destroyed: started=%d gameplay=%d end=%d finished=%d stopped=%d hoops=%d", gStage->name, gRun.started,
              gRun.gameplayStarted, gRun.reachedEnd, gRun.finished, gRun.stopped, gRun.hoopsSent);
         if (gRun.started && !gRun.saved) writeSave();
-        void* result=orig(stage); // Keep timeline ownership through native child teardown.
+        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
         gHt3Stage = nullptr;
         logf("ht3 sky: stage done: tinted keyframes=%d crimson lookups=%d", gSkyTinted, (int)gSkyMulHits);
         gSkyRemap = false;
@@ -1283,7 +1284,7 @@ void mControl(void* stage, void* th) {
     tPop(th);
 }
 
-void writeMultiSave();
+bool writeMultiSave();
 
 // Mirrors native REMIX_21 worker 0x420720.
 void multiWorker(void* stage, void* th) {
@@ -1307,8 +1308,7 @@ void multiWorker(void* stage, void* th) {
     logf("multi worker: end reached=%d finished=%d calls=%d skipped=%d switches=%d fades=%d anims=%d late=%d -> %s",
          gMRun.reachedEnd, gMRun.finished, gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims,
          gMRun.late, gMRun.resultsMode ? "native toResults (REMIX_21 record)" : "return to previous scene");
-    writeMultiSave();
-    gMRun.saved = 1;
+    gMRun.saved = writeMultiSave() ? 1 : 0;
     flushLog();
     if (gMRun.resultsMode) {
         fn<VoidStage>(oToResults)(stage);
@@ -1322,10 +1322,10 @@ void multiWorker(void* stage, void* th) {
     tPop(th);
 }
 
-void writeMultiSave() {
+bool writeMultiSave() {
     groove::TryLease lease(gInputBusy);
-    if (!lease.held) return;
-    if (!gFsOk || !gLogWritable) return;
+    if (!lease.held) { logf("save multi: input busy; not saved, destructor may retry"); return false; }
+    if (!gFsOk || !gLogWritable) { logf("save multi: SD unavailable; not saved"); return false; }
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, kMultiStage.name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
     int plays = 0, completions = 0, aborted = 0;
@@ -1348,8 +1348,10 @@ void writeMultiSave() {
                      plays, completions, aborted, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMt.gameCount,
                      gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims, gMRun.late,
                      gMRun.resultsMode ? "native" : "exit");
-    if (persistCustomSave(gSavePath,buf,n,sizeof(buf)))
+    bool committed=persistCustomSave(gSavePath,buf,n,sizeof(buf));
+    if (committed)
         logf("save multi: plays=%d completions=%d aborted=%d",plays,completions,aborted);
+    return committed;
 }
 
 HkTrampoline r21CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, int c, int d, int e, int f) -> void* {
@@ -1417,7 +1419,7 @@ HkTrampoline r21DtorHook = [](TrampolineStatic(), void* stage) -> void* {
              gMRun.started, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMRun.stopped, gMRun.calls,
              gMRun.switches);
         if (gMRun.started && !gMRun.saved) writeMultiSave();
-        void* result=orig(stage); // Keep timeline ownership through native child teardown.
+        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
         gMultiStage = nullptr;
         if (gTitleMode == 3) clearTitleMode();
         flushLog();
