@@ -847,88 +847,27 @@ def rhre2gtlm(args):
     return 0 if rep['ok'] else 1
 
 
-# ---- mirror of engine/src/multi.cpp parseMulti
+# ---- The same validated GTLM parser as the GTF compiler (no token truncation).
 def check_multi(text):
-    r = dict(ok=False, errors=[], warnings=[], calls=0, switches=0, fades=0, anims=0, games=[], first=None, end=-1, finish=-1, start=2880, match=(-1, 9, 4), bgm=0x8B)
-    E = r['errors']; header = False; last = 0; per_game = {}
-    num = re.compile(r'^[-+]?(0[xX][0-9a-fA-F]+|[0-9]+)$')
-    name = re.compile(r'^[A-Za-z0-9_]{1,47}$')
-    def gi(x): return int(x, 0) if num.match(x) else (_ for _ in ()).throw(ValueError())
-    def use(g):
-        if g not in r['games']:
-            if len(r['games']) >= MAX_GAMES: raise OverflowError
-            r['games'].append(g)
-    for n, raw in enumerate(text.split('\n'), 1):
-        k = raw.split('#', 1)[0].split()[:10]
-        if not k: continue
-        if header and k[0] == 'title': continue   # engine v0.3.5: free text
-        if not header:
-            if k[:2] != ['GTLM', '1']: E.append('linea %d: falta la cabecera GTLM 1' % n); return r
-            header = True; continue
-        try:
-            o = k[0]
-            if o == 'ticks_per_beat':
-                if gi(k[1]) != 480: E.append('linea %d: ticks_per_beat debe ser 480' % n)
-            elif o == 'bgm': r['bgm'] = gi(k[1])
-            elif o in ('start', 'translen', 'swing'):
-                v = gi(k[1])
-                if o == 'start': r['start'] = v
-            elif o == 'results':
-                if k[1] not in ('native', 'exit'): E.append('linea %d: results native|exit' % n)
-            elif o == 'match': r['match'] = (gi(k[1]), gi(k[2]), gi(k[3]))
-            elif o == 'end': r['end'] = gi(k[1]); (gi(k[2]) if len(k) > 2 else 0)
-            elif o == 'finish': r['finish'] = gi(k[1])
-            elif o == 'first':
-                if k[1] not in MULTI_GAMES: E.append('linea %d: juego desconocido' % n)
-                else: use(k[1]); r['first'] = k[1]
-            elif o in ('X', 'W', 'F', 'A'):
-                t = gi(k[1])
-                if t < 0: E.append('linea %d: tick negativo' % n)
-                if t < last: E.append('linea %d: eventos desordenados' % n)
-                last = max(last, t)
-                if o == 'F':
-                    gi(k[2]); a = float(k[3])
-                    if not 0 <= a <= 1: E.append('linea %d: alpha 0..1' % n)
-                    r['fades'] += 1; continue
-                g = k[2]
-                if g not in MULTI_GAMES: E.append('linea %d: juego desconocido %s' % (n, g)); continue
-                use(g)
-                if o == 'X':
-                    f = gi(k[3])
-                    if g not in MULTI_FNS or f not in MULTI_FNS[g]: E.append('linea %d: funcion 0x%X no permitida para %s' % (n, f, g))
-                    rest = k[4:]; ints = 0
-                    if (g, f) in WORD_FNS:
-                        if not rest or rest[0] not in WORD_FNS[(g, f)]: E.append('linea %d: %s necesita palabra %s' % (n, g, '|'.join(WORD_FNS[(g, f)])))
-                        rest = rest[1:]; ints = 4
-                    while rest and ints < 4 and num.match(rest[0]): rest = rest[1:]; ints += 1
-                    if len(rest) > 1 or (rest and not name.match(rest[0])): E.append('linea %d: argumento/etiqueta invalido' % n)
-                    r['calls'] += 1; per_game.setdefault(g, []).append(t)
-                elif o == 'W':
-                    if len(k) > 3 and k[3] not in ('cut', '0', '1', '2'): E.append('linea %d: estilo cut|0|1|2' % n)
-                    if len(k) > 4 and k[4] not in ('1', '2'): E.append('linea %d: sub 1|2' % n)
-                    r['switches'] += 1
-                else:
-                    off = gi(k[3])
-                    if off < 0x100 or off > 0x10000 or off & 7 or not name.match(k[4]): E.append('linea %d: A TICK JUEGO OFFSET NOMBRE' % n)
-                    r['anims'] += 1
-            else:
-                E.append('linea %d: clave desconocida %r' % (n, o))
-        except OverflowError:
-            E.append('linea %d: mas de %d juegos' % (n, MAX_GAMES))
-        except (IndexError, ValueError):
-            E.append('linea %d: valor invalido' % n)
-    if not header: E.append('archivo vacio')
-    if not r['games']: E.append('ningun juego')
-    if r['calls'] == 0: E.append('sin llamadas')
-    if r['end'] <= 0: E.append('falta end')
-    if r['finish'] < r['end']: E.append('falta finish o es anterior a end')
-    if r['start'] > r['end'] > 0: E.append('start despues de end')
-    if last > r['end'] > 0: E.append('eventos despues de end')
-    if r['first'] is None and r['games']: r['first'] = r['games'][0]
-    for g, ts in per_game.items():
-        gaps = [b - a for a, b in zip(ts, ts[1:])]
-        if gaps and min(gaps) < 240: r['warnings'].append('%s: llamadas a menos de medio pulso (%d ticks)' % (g, min(gaps)))
-    r['ok'] = not E
+    try:
+        from . import gtf
+    except ImportError:
+        import gtf
+    r = dict(ok=False, errors=[], warnings=[], calls=0, switches=0, fades=0, anims=0,
+             games=[], first=None, end=-1, finish=-1, start=2880, match=(-1,9,4), bgm=0x8B)
+    try:
+        timeline=gtf.parse_gtl(text)
+    except gtf.GtfError as e:
+        r['errors'].append(str(e)); return r
+    for key in ('start','end','finish','first','match','bgm'): r[key]=getattr(timeline,key)
+    r['games']=timeline.games_used()
+    for op,key in [('call','calls'),('switch','switches'),('fade','fades'),('anim','anims')]:
+        r[key]=sum(e.op==op for e in timeline.events)
+    for game in r['games']:
+        times=[e.tick for e in timeline.events if e.op=='call' and e.game==game]
+        gaps=[b-a for a,b in zip(times,times[1:])]
+        if gaps and min(gaps)<240:r['warnings'].append('%s: llamadas a menos de medio pulso (%d ticks)'%(game,min(gaps)))
+    r['ok']=True
     return r
 
 

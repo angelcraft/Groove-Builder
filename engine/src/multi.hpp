@@ -32,7 +32,7 @@ struct MultiTimeline {
     int transLen = 960;           // setTransLen
     int swing = 120;
     int endTick = -1, endFade = 960, finishTick = -1;
-    int resultsMode = 1;          // 1 = native toResults (REMIX_21 record), 0 = exit to menu
+    int resultsMode = 0;          // 1 = native toResults (REMIX_21 record), 0 = exit to menu
     int matchWorld = -1, matchCol = 9, matchRow = 4;
     int gameCount = 0;
     uint8_t games[kMaxMGames];    // kGameName indices in order of first use

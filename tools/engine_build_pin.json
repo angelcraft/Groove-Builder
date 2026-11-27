@@ -1,0 +1,8 @@
+{
+  "clang_version": "19.1.7",
+  "cmake_version": "3.31.6",
+  "ninja_version": "1.11.1.git.kitware.jobserver-1",
+  "stdlib_url": "https://codeberg.org/fruityloops1/LibHakkun/releases/download/stdlib-19.1.7/stdlib_musl-1.2.5_llvm-19.1.7_clang-19.1.7_aarch64_NX.tar.xz",
+  "stdlib_sha256": "3d0f85acac4ff3c26c710f947ec68af9cab28c49b1ea4d13239a4796a63750d0",
+  "stdlib_tree_sha256": "1fe0d094899765074e9a82f09d132b32485bb457bb93c13224ffb405e5c3aca1"
+}

@@ -2,6 +2,8 @@
 #include "multi.hpp"
 #include "cuefns.hpp"
 #include "numparse.hpp"
+#include "parser_support.hpp"
+#include "cue_validation.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -9,27 +11,12 @@
 namespace groove {
 
 namespace {
-constexpr int kPoolSize = 8192;
-char sPool[kPoolSize];
-int sPoolUsed = 0;
-
-const char* intern(const char* s) {
-    int len = (int)strlen(s);
-    for (int i = 0; i < sPoolUsed;) {
-        int l = (int)strlen(sPool + i);
-        if (l == len && memcmp(sPool + i, s, len) == 0) return sPool + i;
-        i += l + 1;
-    }
-    if (sPoolUsed + len + 1 > kPoolSize) return nullptr;
-    char* d = sPool + sPoolUsed;
-    memcpy(d, s, len + 1);
-    sPoolUsed += len + 1;
-    return d;
-}
+PersistentStrings<8192> sStrings;
+const char* intern(const char* s) { return sStrings.intern(s, static_cast<int>(strlen(s))); }
 
 bool isSpace(char c) { return c == ' ' || c == '\t' || c == '\r'; }
 
-constexpr int kMaxTok = 10;
+constexpr int kMaxTok = kMaxTokens;
 int tokenize(char* line, char* tok[kMaxTok]) {
     int n = 0;
     char* p = line;
@@ -40,7 +27,8 @@ int tokenize(char* line, char* tok[kMaxTok]) {
         while (*p && !isSpace(*p)) p++;
         if (*p) *p++ = 0;
     }
-    return n;
+    while (isSpace(*p)) ++p;
+    return *p ? -1 : n;
 }
 
 bool parseInt(const char* s, int& out) { return parseIntStrict(s, out); }
@@ -57,8 +45,16 @@ bool validName(const char* s) {
 } // namespace
 
 int gameIndex(const char* name) {
-    for (int i = 0; i < kGameNames; i++)
-        if (strcmp(kGameName[i], name) == 0) return i;
+    if (!name) return -1;
+    char key[80]; size_t n=strlen(name);
+    if (n>=sizeof(key)) return -1;
+    for (size_t i=0;i<=n;++i) key[i]=(name[i]>='A' && name[i]<='Z') ? name[i]+32 : name[i];
+    for (int i=0;i<kGameNames;++i) {
+        bool same=true;
+        for (size_t j=0;j<=n;++j) { char c=kGameName[i][j]; if (c>='A' && c<='Z') c+=32; if (c!=key[j]) { same=false;break; } if (!c) break; }
+        if (same) return i;
+    }
+    for (const auto& alias:gtfcat::kGameAliases) if (!strcmp(alias.name,key)) return alias.game;
     return -1;
 }
 
@@ -73,9 +69,12 @@ static int useGame(MultiTimeline& tl, int g) {
 #define FAIL(...) do { snprintf(tl.error, sizeof(tl.error), __VA_ARGS__); return false; } while (0)
 
 bool parseMulti(MultiTimeline& tl, const char* text, long size) {
+    ParseGuard guard;
+    if (!guard.held) return false;
+    StringTransaction<8192> strings(sStrings);
     tl.valid = false;
     tl.ticksPerBeat = 480; tl.bgm = 0x8B; tl.startTick = 2880; tl.transLen = 960; tl.swing = 120;
-    tl.endTick = tl.finishTick = -1; tl.endFade = 960; tl.resultsMode = 1;
+    tl.endTick = tl.finishTick = -1; tl.endFade = 960; tl.resultsMode = 0;
     tl.matchWorld = -1; tl.matchCol = 9; tl.matchRow = 4;
     tl.gameCount = 0; tl.firstGame = -1;
     tl.count = tl.calls = tl.switches = tl.fades = tl.anims = 0;
@@ -83,6 +82,7 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
     tl.title[0] = 0;
     tl.prologue[0] = 0;
     tl.jingle = -1;
+    if (!validSource(text, size, tl.error, sizeof(tl.error))) return false;
     static char line[256];
     long pos = 0;
     int lineNo = 0;
@@ -110,7 +110,7 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
             tl.title[0] = 0;
             if (*p) {
                 size_t ntitle = strlen(p);
-                if (ntitle >= sizeof(tl.title)) ntitle = sizeof(tl.title) - 1;
+                if (ntitle >= sizeof(tl.title)) FAIL("line %d: title too long",lineNo);
                 memcpy(tl.title, p, ntitle);
                 tl.title[ntitle] = 0;
             }
@@ -118,13 +118,22 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
         }
         char* tok[kMaxTok];
         int n = tokenize(line, tok);
+        if (n < 0) { snprintf(tl.error, sizeof(tl.error), "line %d: too many tokens", lineNo); return false; }
         if (n == 0) continue;
         if (!header) {
-            if (strcmp(tok[0], "GTLM") != 0 || n < 2 || strcmp(tok[1], "1") != 0) FAIL("line %d: header GTLM 1 missing", lineNo);
+            if (strcmp(tok[0], "GTLM") != 0 || n != 2 || strcmp(tok[1], "1") != 0) FAIL("line %d: header GTLM 1 missing", lineNo);
             header = true;
             continue;
         }
         const char* k = tok[0];
+        int max=2,min=2;
+        if (!strcmp(k,"match")) min=max=4;
+        else if (!strcmp(k,"end")) max=3;
+        else if (!strcmp(k,"X")) { min=4;max=9; }
+        else if (!strcmp(k,"W")) { min=3;max=5; }
+        else if (!strcmp(k,"F")) min=max=4;
+        else if (!strcmp(k,"A")) min=max=5;
+        if (n<min || n>max) FAIL("line %d: wrong argument count",lineNo);
         int v = 0;
         if (!strcmp(k, "ticks_per_beat")) {
             if (n < 2 || !parseInt(tok[1], v) || v != 480) FAIL("line %d: ticks_per_beat must be 480", lineNo);
@@ -139,14 +148,14 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
         } else if (!strcmp(k, "results")) {
             if (n < 2) FAIL("line %d: results native|exit", lineNo);
             if (!strcmp(tok[1], "native")) tl.resultsMode = 1;
-            else if (!strcmp(tok[1], "exit")) tl.resultsMode = 0;
+            else if (!strcmp(tok[1], "exit") || !strcmp(tok[1], "custom")) tl.resultsMode = 0;
             else FAIL("line %d: results native|exit", lineNo);
         } else if (!strcmp(k, "prologue")) {
-            if (n < 2 || strlen(tok[1]) >= sizeof(tl.prologue)) FAIL("line %d: prologue type_XX|path", lineNo);
+            if (n < 2 || strlen(tok[1]) >= sizeof(tl.prologue) || !validPrologue(tok[1])) FAIL("line %d: prologue type_XX|path", lineNo);
             memcpy(tl.prologue, tok[1], strlen(tok[1]) + 1);
         } else if (!strcmp(k, "jingle")) {
-            // Out-of-range ids are ignored here (native jingle kept; the stash hook logs it).
-            if (n < 2 || !parseInt(tok[1], tl.jingle) || tl.jingle < 0x158 || tl.jingle > 0x16C) tl.jingle = -1;
+            // Invalid metadata must not be applied independently of the timeline.
+            if (n < 2 || !parseInt(tok[1], tl.jingle) || tl.jingle < 0x158 || tl.jingle > 0x16C) FAIL("line %d: bad jingle", lineNo);
         } else if (!strcmp(k, "match")) {
             if (n < 4 || !parseInt(tok[1], tl.matchWorld) || !parseInt(tok[2], tl.matchCol) || !parseInt(tok[3], tl.matchRow))
                 FAIL("line %d: match WORLD COL ROW", lineNo);
@@ -191,15 +200,17 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
                         if (!e.word) FAIL("line %d: word must be TEA|SODA|COCOA|AAA", lineNo);
                         ti = 5; ai = 4;
                     }
+                    if (kCueFns[e.fn].kind==1 && ti<n && numericLiteral(tok[ti])) FAIL("line %d: word cue has no integer arguments",lineNo);
                     for (; ti < n && ai < 4; ti++, ai++)
                         if (!parseInt(tok[ti], e.a[ai])) break;
                     if (ti < n) {
-                        if (ti != n - 1 || !validName(tok[ti])) FAIL("line %d: bad argument/tag", lineNo);
+                        if (numericLiteral(tok[ti]) || ti != n - 1 || (strcmp(tok[ti],"-") && !validName(tok[ti]))) FAIL("line %d: bad argument/tag", lineNo);
                         if (strcmp(tok[ti], "-") != 0) {
                             e.str = intern(tok[ti]);
                             if (!e.str) FAIL("line %d: string pool full", lineNo);
                         }
                     }
+                    if (!validCueArgs(g,kCueFns[e.fn].off,e.a)) FAIL("line %d: cue arguments not in verified domain",lineNo);
                     e.op = MOp::Call;
                     tl.calls++;
                 } else if (k[0] == 'W') {
@@ -207,7 +218,7 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
                     e.sub = 2;
                     if (n > 3) {
                         int st = 0;
-                        if (!strcmp(tok[3], "cut")) st = -1;
+                        if (!strcmp(tok[3], "cut") || !strcmp(tok[3], "hard")) st = -1;
                         else if (!parseInt(tok[3], st) || st < 0 || st > 2) FAIL("line %d: style cut|0|1|2", lineNo);
                         e.style = (int8_t)st;
                     } else {
@@ -220,7 +231,7 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
                     }
                     tl.switches++;
                 } else {  // A
-                    if (n < 5 || !parseInt(tok[3], e.len) || e.len < 0x100 || e.len > 0x10000 || (e.len & 7) || !validName(tok[4]))
+                    if (n != 5 || !parseInt(tok[3], e.len) || !validLayout(g,e.len) || !validName(tok[4]))
                         FAIL("line %d: A TICK GAME LAYOUT_OFF NAME", lineNo);
                     e.str = intern(tok[4]);
                     if (!e.str) FAIL("line %d: string pool full", lineNo);
@@ -238,10 +249,12 @@ bool parseMulti(MultiTimeline& tl, const char* text, long size) {
     if (tl.gameCount == 0) FAIL("no games used");
     if (tl.calls == 0) FAIL("no cue calls");
     if (tl.firstGame < 0) tl.firstGame = tl.games[0];
+    if (!validMatch(tl.matchWorld, tl.matchCol, tl.matchRow) || tl.endFade < 0) FAIL("invalid match or end fade");
     if (tl.endTick <= 0) FAIL("end missing");
     if (tl.finishTick < tl.endTick) FAIL("finish missing or before end");
     if (tl.startTick > tl.endTick) FAIL("start after end");
     if (last > tl.endTick) FAIL("events after end (%d > %d)", last, tl.endTick);
+    strings.commit = true;
     tl.valid = true;
     return true;
 }

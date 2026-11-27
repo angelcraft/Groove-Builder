@@ -1,0 +1,50 @@
+name: Groove Engine code-only hardening
+# Prepared for explicit review; never automatically spend the user's Actions budget.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test-and-cross-build:
+    runs-on: ubuntu-24.04
+    container: debian:13.1-slim@sha256:a347fd7510ee31a84387619a492ad6c8eb0af2f2682b916ff3e643eb076f925a
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - name: Install public host/cross tools
+        run: |
+          apt-get update
+          apt-get install -y clang-19 llvm-19 lld-19 python3-venv python3-dev g++ git ca-certificates
+          python3 -m venv /tmp/engine-venv
+          /tmp/engine-venv/bin/pip install -r tools/engine-build-requirements.txt
+          mkdir -p /tmp/llvm19-tools
+          for name in clang clang++ llvm-ar llvm-ranlib ld.lld; do
+            ln -s "/usr/bin/$name-19" "/tmp/llvm19-tools/$name"
+          done
+          echo '/tmp/llvm19-tools' >> "$GITHUB_PATH"
+          echo '/tmp/engine-venv/bin' >> "$GITHUB_PATH"
+      - name: Public parser and memory/save regressions
+        run: python3 tools/run_engine_tests.py
+      - name: Exact loader and verified public stdlib
+        run: |
+          git clone https://github.com/UnusualNorm/groove-mod.git /tmp/engine-loader
+          git -C /tmp/engine-loader checkout a3212043134c35323e0412648bd86d66253554c5
+          git -C /tmp/engine-loader submodule update --init --recursive
+          mkdir -p /tmp/engine-stdlib
+          python3 - <<'PY'
+          import hashlib,json,urllib.request,tarfile
+          from pathlib import Path
+          pin=json.loads(Path('tools/engine_build_pin.json').read_text())
+          archive=Path('/tmp/engine-stdlib/stdlib.tar.xz')
+          urllib.request.urlretrieve(pin['stdlib_url'],archive)
+          assert hashlib.sha256(archive.read_bytes()).hexdigest()==pin['stdlib_sha256']
+          with tarfile.open(archive) as t:t.extractall('/tmp/engine-stdlib',filter='data')
+          PY
+      - name: Rebuild ARM64 twice without private inputs
+        run: |
+          python3 tools/build_engine.py --loader /tmp/engine-loader --std /tmp/engine-stdlib/lib/std --out /tmp/engine-a --build
+          python3 tools/build_engine.py --loader /tmp/engine-loader --std /tmp/engine-stdlib/lib/std --out /tmp/engine-b --build
+          python3 tools/verify_engine_artifacts.py /tmp/engine-a
+          cmp /tmp/engine-a/build/GrooveHT3.nss /tmp/engine-b/build/GrooveHT3.nss
+          cmp /tmp/engine-a/build/GrooveHT3.nso /tmp/engine-b/build/GrooveHT3.nso
+      # Deliberately no compiled subsdk/IPS/artifact upload in this public repository.

@@ -23,8 +23,10 @@
 #include "gtf.hpp"
 #include "cuefns.hpp"
 #include "numparse.hpp"
+#include "save_replace.hpp"
+#include "metadata.hpp"
 
-#define GROOVE_HT3_VERSION "0.5.0"
+#define GROOVE_HT3_VERSION "0.5.1"
 
 namespace {
 
@@ -126,16 +128,23 @@ char gSavePath[96], gSaveTmpPath[100];
 // written to the SD from normal contexts (boot, stage creation, stage dtor).
 char gLogBuf[16384];
 int gLogLen = 0;
-int gLogSeq = 0;
-char gLine[512];
+unsigned gLogSeq = 0;
+unsigned char gLogBusy=0;
+unsigned char gInputBusy=0;
 
 void logf(const char* fmt, ...) {
+    groove::TryLease lease(gLogBusy);
+    if (!lease.held) return;
+    char gLine[512];
     va_list ap;
     va_start(ap, fmt);
-    int n = snprintf(gLine, sizeof(gLine), "[%04d] ", gLogSeq++);
-    n += vsnprintf(gLine + n, sizeof(gLine) - n - 2, fmt, ap);
+    int n = snprintf(gLine, sizeof(gLine), "[%04u] ", (unsigned)gLogSeq++);
+    if (n < 0 || n >= (int)sizeof(gLine)-2) { va_end(ap); return; }
+    int written=vsnprintf(gLine+n,sizeof(gLine)-n-2,fmt,ap);
     va_end(ap);
-    if (n > (int)sizeof(gLine) - 2) n = sizeof(gLine) - 2;
+    if (written<0) return;
+    int available=sizeof(gLine)-n-2;
+    n += written < available ? written : available-1;
     gLine[n++] = '\n';
     if (gLogLen + n > (int)sizeof(gLogBuf)) gLogLen = 0;  // drop on overflow
     memcpy(gLogBuf + gLogLen, gLine, n);
@@ -248,7 +257,7 @@ bool writeAppend(const char* path, const char* data, long len) {
         }
     }
     long size = 0;
-    gFs.GetFileSize(&size, h);
+    if (gFs.GetFileSize(&size,h).IsFailure() || size<0 || len<0 || len>0x7fffffff-size) { gFs.CloseFile(h); return false; }
     bool ok = len == 0 || gFs.WriteFile(h, size, data, len,
                                         nn::fs::WriteOption::CreateOption(nn::fs::WriteOptionFlag_Flush)).IsSuccess();
     gFs.CloseFile(h);
@@ -256,6 +265,8 @@ bool writeAppend(const char* path, const char* data, long len) {
 }
 
 void flushLog() {
+    groove::TryLease lease(gLogBusy);
+    if (!lease.held) return;
     if (!gFsOk || !gLogWritable || gLogLen == 0) return;
     // keep the log bounded (rotate at 1 MiB)
     nn::fs::FileHandle h{};
@@ -406,6 +417,7 @@ bool waitTicks(void* th, int ticks) {
 // HT2 code spawns its member threads (same allocator, ctor, vtable, trampoline).
 void spawn(void* stage, void* parent, void (*body)(void*, void*)) {
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
+    if (!th) { logf("spawn: native allocation failed"); return; }
     void* runner = at<void*>(stage, sRunner);
     int idx = at<int32_t>(stage, sThreadIdx);
     uintptr_t vt = gBase + oThreadVtbl;
@@ -594,8 +606,33 @@ void ht3Worker(void* stage, void* th) {
     tPop(th);
 }
 
+struct CustomSaveFs {
+    bool exists(const char* p) { return fileExists(p); }
+    bool rename(const char* a,const char* b) { return gFs.RenameFile(a,b).IsSuccess(); }
+};
+bool persistCustomSave(const char* path,const char* data,int size,int capacity) {
+    if (size<0 || size>=capacity) { logf("save: formatted data exceeds buffer"); return false; }
+    char tmp[160],backup[160];
+    for (unsigned i=0;i<64;++i) {
+        int a=snprintf(tmp,sizeof(tmp),"%s.tmp.%u",path,i);
+        int b=snprintf(backup,sizeof(backup),"%s.bak.%u",path,i);
+        if (a<0 || b<0 || a>=(int)sizeof(tmp) || b>=(int)sizeof(backup)) return false;
+        if (fileExists(tmp) || fileExists(backup)) continue;
+        if (gFs.CreateFile(tmp,0).IsFailure() || !writeAppend(tmp,data,size)) {
+            logf("save: temporary write failed; previous save retained"); return false;
+        }
+        CustomSaveFs fs;
+        auto result=groove::replaceCustomSave(fs,path,tmp,backup);
+        logf("save: replacement status=%d backup=%s",(int)result,backup);
+        return result==groove::SaveReplace::Committed;
+    }
+    logf("save: backup slots full; no files removed"); return false;
+}
+
 // ---------------------------------------------------------------- save
 void writeSave() {
+    groove::TryLease lease(gInputBusy);
+    if (!lease.held) return;
     if (!gFsOk || !gLogWritable) return;
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, gStage->name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
@@ -622,14 +659,8 @@ void writeSave() {
                      gStage->name, plays, completions, aborted, gRun.gameplayStarted, gRun.partsStarted, gTl.partCount,
                      gRun.partHoops[0], gRun.partHoops[1], gRun.partHoops[2], gRun.partHoops[3], gRun.reachedEnd, gRun.finished,
                      gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, gRun.resultsMode ? "native" : "exit");
-    gFs.DeleteFile(kSaveTmpPath);
-    if (gFs.CreateFile(kSaveTmpPath, 0).IsFailure() || !writeAppend(kSaveTmpPath, buf, n)) {
-        logf("save: write tmp failed");
-        return;
-    }
-    gFs.DeleteFile(kSavePath);
-    if (gFs.RenameFile(kSaveTmpPath, kSavePath).IsFailure()) logf("save: rename failed");
-    else logf("save: plays=%d completions=%d aborted=%d", plays, completions, aborted);
+    if (persistCustomSave(kSavePath,buf,n,sizeof(buf)))
+        logf("save: plays=%d completions=%d aborted=%d",plays,completions,aborted);
 }
 
 // ---------------------------------------------------------------- HT3 custom background (LayeredFS type_01)
@@ -895,6 +926,10 @@ HkTrampoline ht2CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
         return r;
     }
     void* stage = self;
+    // Do not replace a timeline while its owner (and native children) is live.
+    if (gHt3Stage) return orig(self, seq, b, c, d, e, f);
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held) return orig(self, seq, b, c, d, e, f);
     gHt3Stage = nullptr;
     gForceRingType01Bg = false;
     gSkyPatched = false;
@@ -984,11 +1019,13 @@ HkTrampoline dtorHook = [](TrampolineStatic(), void* stage) -> void* {
         logf("%s stage destroyed: started=%d gameplay=%d end=%d finished=%d stopped=%d hoops=%d", gStage->name, gRun.started,
              gRun.gameplayStarted, gRun.reachedEnd, gRun.finished, gRun.stopped, gRun.hoopsSent);
         if (gRun.started && !gRun.saved) writeSave();
+        void* result=orig(stage); // Keep timeline ownership through native child teardown.
         gHt3Stage = nullptr;
         logf("ht3 sky: stage done: tinted keyframes=%d crimson lookups=%d", gSkyTinted, (int)gSkyMulHits);
         gSkyRemap = false;
         clearTitleMode();
         flushLog();
+        return result;
     }
     return orig(stage);
 };
@@ -1036,7 +1073,9 @@ inline void tRestore(void* th, int p) { fn<void (*)(void*, int)>(oRestore)(th, p
 // that wait internally.
 inline int thClock(void* th) { return at<int32_t>(th, 0x278); }
 bool waitUntil(void* th, int base, int tick) {
-    int d = tick - (thClock(th) - base);
+    int64_t distance=(int64_t)tick-((int64_t)thClock(th)-base);
+    if (distance>0x7fffffff || (int64_t)base+tick>0x7fffffff) { gMRun.stopped=1; return false; }
+    int d=distance<0 ? -1 : (int)distance;
     if (d < 0) { gMRun.late++; return !tStop(th); }
     return waitTicks(th, d);
 }
@@ -1044,6 +1083,7 @@ bool waitUntil(void* th, int base, int tick) {
 // Same spawn as the native REMIX_21 code (its thread vtable + PMF trampoline).
 void spawnR21(void* stage, void* parent, void (*body)(void*, void*)) {
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
+    if (!th) { logf("spawnR21: native allocation failed"); return; }
     void* runner = at<void*>(stage, rRunner);
     int idx = at<int32_t>(stage, rThreadIdx);
     uintptr_t vt = gBase + oR21ThreadVtbl;
@@ -1262,7 +1302,8 @@ void multiWorker(void* stage, void* th) {
     mControl(stage, th);
     tRestore(th, p);
     if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }
-    gMRun.resultsMode = gMt.resultsMode && !gMultiNoNative;
+    gMRun.resultsMode = 0; // v0.5.1: REMIX_21 save isolation is not verified.
+    if (gMt.resultsMode) logf("multi: native results requested but blocked; using custom exit");
     logf("multi worker: end reached=%d finished=%d calls=%d skipped=%d switches=%d fades=%d anims=%d late=%d -> %s",
          gMRun.reachedEnd, gMRun.finished, gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims,
          gMRun.late, gMRun.resultsMode ? "native toResults (REMIX_21 record)" : "return to previous scene");
@@ -1282,6 +1323,8 @@ void multiWorker(void* stage, void* th) {
 }
 
 void writeMultiSave() {
+    groove::TryLease lease(gInputBusy);
+    if (!lease.held) return;
     if (!gFsOk || !gLogWritable) return;
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, kMultiStage.name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
@@ -1305,18 +1348,15 @@ void writeMultiSave() {
                      plays, completions, aborted, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMt.gameCount,
                      gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims, gMRun.late,
                      gMRun.resultsMode ? "native" : "exit");
-    gFs.DeleteFile(gSaveTmpPath);
-    if (gFs.CreateFile(gSaveTmpPath, 0).IsFailure() || !writeAppend(gSaveTmpPath, buf, n)) {
-        logf("save: write tmp failed");
-        return;
-    }
-    gFs.DeleteFile(gSavePath);
-    if (gFs.RenameFile(gSaveTmpPath, gSavePath).IsFailure()) logf("save: rename failed");
-    else logf("save multi: plays=%d completions=%d aborted=%d", plays, completions, aborted);
+    if (persistCustomSave(gSavePath,buf,n,sizeof(buf)))
+        logf("save multi: plays=%d completions=%d aborted=%d",plays,completions,aborted);
 }
 
 HkTrampoline r21CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, int c, int d, int e, int f) -> void* {
     void* r = orig(self, seq, b, c, d, e, f);
+    if (gMultiStage) return r;
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held) return r;
     gMultiStage = nullptr;
     gTTLoaded = false;  // GRO-11
     if (!gMultiActive || !ensureFs()) return r;
@@ -1377,9 +1417,11 @@ HkTrampoline r21DtorHook = [](TrampolineStatic(), void* stage) -> void* {
              gMRun.started, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMRun.stopped, gMRun.calls,
              gMRun.switches);
         if (gMRun.started && !gMRun.saved) writeMultiSave();
+        void* result=orig(stage); // Keep timeline ownership through native child teardown.
         gMultiStage = nullptr;
         if (gTitleMode == 3) clearTitleMode();
         flushLog();
+        return result;
     }
     return orig(stage);
 };
@@ -1506,96 +1548,25 @@ char gMapTitleBuf[96];
 Selection gMapCur;  // last cell the map info panel showed
 int gMapLogW = -99, gMapLogC = -99, gMapLogR = -99;
 
-bool ttSpace(char c) { return c == ' ' || c == '\t' || c == '\r'; }
-bool ttInt(const char*& p, int& out) {
-    while (ttSpace(*p)) p++;
-    bool neg = false;
-    if (*p == '-') { neg = true; p++; }
-    if (*p < '0' || *p > '9') return false;
-    int v = 0;
-    for (; *p >= '0' && *p <= '9' && v < 100000; p++) v = v * 10 + (*p - '0');
-    out = neg ? -v : v;
-    return true;
-}
-
+// Separate scratch timeline: map refresh must never overwrite an active worker's data.
 void scanTileTitle(TileTitle& t, const char* gtl, const char* disable, int defCol, int defRow, bool fallback,
                    const char* defTitle = nullptr) {
-    t = TileTitle{};
-    t.defTitle = defTitle;
-    t.col = defCol;
-    t.row = defRow;
+    t = TileTitle{}; t.defTitle=defTitle; t.col=defCol; t.row=defRow;
     if (fileExists(disable)) return;
-    long size = 0;
-    char* text = readFile(gtl, &size, 60 * 1024);
+    long size=0; char* text=readFile(gtl,&size,60*1024);
     if (!text) return;
-    t.on = true;
-    t.fallback23 = fallback;
-    static char line[256];
-    long pos = 0;
-    int lines = 0;
-    while (pos < size && lines < 4096) {  // header keys may appear after comments
-        int len = 0;
-        while (pos < size && text[pos] != '\n') {
-            if (len < (int)sizeof(line) - 1) line[len++] = text[pos];
-            pos++;
-        }
-        pos++;
-        lines++;
-        line[len] = 0;
-        // strip # / // comments, respecting quotes (so GTF title "..." stays intact)
-        {
-            bool inStr = false;
-            for (int i = 0; i < len; i++) {
-                if (inStr) {
-                    if (line[i] == '\\' && i + 1 < len) { i++; continue; }
-                    if (line[i] == '"') inStr = false;
-                    continue;
-                }
-                if (line[i] == '"') { inStr = true; continue; }
-                if (line[i] == '#' || (line[i] == '/' && i + 1 < len && line[i + 1] == '/')) {
-                    line[i] = 0;
-                    break;
-                }
-            }
-        }
-        char* st = line;
-        while (ttSpace(*st)) st++;
-        if (!strncmp(st, "title", 5) && (st[5] == 0 || ttSpace(st[5]))) {
-            char* p = st + 5;
-            while (ttSpace(*p)) p++;
-            char* e = p + strlen(p);
-            while (e > p && ttSpace(e[-1])) --e;
-            *e = 0;
-            if (*p == '"' && e > p + 1 && e[-1] == '"') { p++; e[-1] = 0; }
-            size_t n = strlen(p);
-            if (n >= sizeof(t.title)) n = sizeof(t.title) - 1;
-            memcpy(t.title, p, n);
-            t.title[n] = 0;
-        } else if (!strncmp(st, "prologue", 8) && ttSpace(st[8])) {
-            char* p = st + 8;
-            while (ttSpace(*p)) p++;
-            size_t n = 0;
-            while (p[n] && !ttSpace(p[n]) && n + 1 < sizeof(t.prologue)) n++;
-            memcpy(t.prologue, p, n);
-            t.prologue[n] = 0;
-        } else if (!strncmp(st, "jingle", 6) && ttSpace(st[6])) {
-            char* p = st + 6;
-            while (ttSpace(*p)) p++;
-            char* e = p;
-            while (*e && !ttSpace(*e)) e++;
-            *e = 0;
-            int v = 0;
-            if (groove::parseIntStrict(p, v)) t.jingle = v;
-        } else if (!strncmp(st, "match", 5) && ttSpace(st[5])) {
-            const char* p = st + 5;
-            int w, c, r;
-            if (ttInt(p, w) && ttInt(p, c) && ttInt(p, r)) { t.world = w; t.col = c; t.row = r; }
-        }
-    }
+    bool multi=defTitle != nullptr;
+    groove::TimelineMetadata v;
+    if (!groove::parseMetadata(v,multi,text,size)) { logf("metadata: invalid timeline %s; overrides disabled",gtl); return; }
+    t.on=true; t.fallback23=fallback;
+    t.world=v.world; t.col=v.col; t.row=v.row;
+    memcpy(t.title,v.title,sizeof(t.title));memcpy(t.prologue,v.prologue,sizeof(t.prologue));t.jingle=v.jingle;
+
 }
 
 void loadTileTitles() {
-    if (gTTLoaded || !ensureFs()) return;
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held || gTTLoaded || !ensureFs()) return;
     gTTLoaded = true;
     scanTileTitle(gTT[0], kStages[0].gtl, kStages[0].disable, 9, 0, true);
     scanTileTitle(gTT[1], kStages[1].gtl, kStages[1].disable, 9, 1, false);
