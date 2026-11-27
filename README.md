@@ -1,27 +1,103 @@
-# Groove Hoop3 — independent Switch text builder
+# Groove Engine (Groove-Builder)
 
-Small, **source-only** public research project for cross-compiling the proposed
-Hoop Trundling 3 menu title / description bridge.
+Repositorio **solo de código y documentación originales** del motor Groove
+para *Rhythm Heaven Groove* en Nintendo Switch (title `0100D9F01D474000`,
+build `03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8`).
 
-It is deliberately independent of the private `RhythmHeavenGroove-Android`
-repository and can be published without original game files.
+**Estado actual: v0.5.0** (noviembre 2026). El runtime es un `subsdk4` propio
+de Atmosphere, más un parche IPS y los datos del usuario en `sd:/groove/`.
+No hace falta ningún archivo del juego en este árbol, y no debe añadirse
+ninguno (`main`, romfs, audio, `.spr`, `.tex`, `.msbt`, `.cwv`, `.rhref`, etc.).
 
-## Scope and current result
+El nombre del juego se usa solo de forma descriptiva. Este proyecto no está
+afiliado a Nintendo ni al editor del juego.
 
-- Intended cell: world **1**, column **9**, row **0**, already visually present
-  in the user's Switch. The bridge changes only this menu entry's text lookup.
-- Retains original text behavior for the other 179 tested selections.
-- Two compile variants: read-only diagnostic (default), experimental code-writing
-  patcher (explicit `--active`). Neither has passed a hardware runtime test.
-- Does **not** make the new cell a separate 54-ring gameplay level, change cues,
-  skip practice, or supply/modify the proprietary resource containing the Spanish
-  title `Pasar por el anillo 3` and matching description.
+Resumen completo en español: [`docs/GROOVE_ENGINE_RESUMEN.md`](docs/GROOVE_ENGINE_RESUMEN.md).
 
-**This is NOT an installer. Do not copy the `.nso` into an active Switch setup.**
-The slot, memory mapping, cache behavior, build identity, coexistence with other
-mods, and game Scene lifetime still need physical verification.
+## Qué hay ya en marcha
 
-## Run local source tests (Linux, g++ and Python)
+Confirmado en hardware Switch:
+
+- **Hoop Trundling 3** (mundo 1, columna 9, fila 0), con título de intro
+  «Pasar por el anillo 3».
+- **HT Double Hell** (mundo 1, columna 9, fila 1).
+- **Motor Multi** de 24 minijuegos en el anfitrión Remix 21
+  (mundo 1, columna 9, fila 4).
+
+Listo para probar en Switch (v0.4.0 + v0.5.0 + puente RHRE v0.4.1):
+
+- Cielo rojo de HT3 (GRO-7).
+- Título de HT3 / Double Hell / Multi en el panel del mapa, sin fugas
+  al salir (GRO-11).
+- Presentación de Remix 21 en mapa y prólogo, sin tocar el Remix 8 real,
+  más `prologue type_XX` y `jingle 0x158..0x16C` (GRO-12).
+- **Groove Tickflow (`.gtf`) nativo** (GRO-14): el motor lee el lenguaje
+  directamente. `tools/gtf.py` sigue sirviendo en el PC.
+- Puente **RHREfresh v0.4.1** (GRO-6) y arranque de audio en `start 0` (GRO-8).
+
+## Árbol
+
+| Ruta | Contenido |
+| --- | --- |
+| `engine/` | Código C++ del `subsdk4` v0.5.0 (`main`, timelines, Multi, parser `.gtf`). |
+| `tools/gtf.py` | Compilador / descompilador / lista de cues / pruebas de Groove Tickflow. |
+| `tools/groove_rhre.py` | Puente RHREfresh ↔ `.gtl` v0.4.1 (`rhre2gtlm`, `rhre2gtl`, `gtl2rhre`, `check`). |
+| `docs/` | Tickflow, notas de v0.4.0 y v0.5.0, puente RHRE, tabla de cues, resumen. |
+| `examples/multi/` | Ejemplos originales `.gtf` (ninguna carta oficial). |
+| `source/`, `templates/`, `tests/` | Investigación previa del constructor de texto Hoop3 (host / CI). |
+
+## Groove Tickflow
+
+```sh
+python3 tools/gtf.py compile  examples/multi/ejemplo.gtf -o multi.gtl
+python3 tools/gtf.py decompile multi.gtl -o mi_remix.gtf
+python3 tools/gtf.py cues
+python3 tools/gtf.py test
+```
+
+En la Switch, el motor busca el remix Multi en este orden (el primero que
+exista gana; el mismo orden vale para el título del mapa y el prólogo):
+
+1. `sd:/groove/multi.gtf`
+2. `sd:/groove/stages/multi/multi.gtf`
+3. `sd:/groove/multi.gtl`
+4. `sd:/groove/stages/multi/multi.gtl`
+
+Lenguaje y reglas de `switch` (2 pulsos por defecto, `hard`/`cut`, cues
+continuos sin corte): [`docs/TICKFLOW.md`](docs/TICKFLOW.md).
+
+## Instalación (haz copia de seguridad antes)
+
+1. Haz copia de tu partida con **JKSV**. El Multi usa los resultados nativos
+   del Remix 21: si dejas `results native`, tu medalla o puntuación de esa
+   casilla puede cambiar. Multi reutiliza además la identidad de texto del
+   **Remix 8 real** (índice de catálogo 1,67); el motor las distingue por la
+   casilla del mapa, pero el registro de resultados es el del anfitrión.
+   Para no escribir en ese registro, crea el archivo vacío
+   `sd:/groove/stages/multi/NO_NATIVE_RESULTS`.
+2. Copia tu `subsdk4` compilado a
+   `atmosphere/contents/0100D9F01D474000/exefs/subsdk4`.
+   Este repositorio **no** incluye el binario ni el parche IPS.
+3. No toques `subsdk1` (Orochi) ni `subsdk5` (HoopDX).
+4. Si algo falla, un archivo vacío `sd:/groove/stages/<slot>/DISABLE`
+   (ht3, doublehell o multi) desactiva ese escenario.
+
+Guías: [`docs/ENGINE_v0.5.0.md`](docs/ENGINE_v0.5.0.md),
+[`docs/ENGINE_v0.4.0.md`](docs/ENGINE_v0.4.0.md).
+
+## Compilar el motor
+
+Hace falta el toolchain público Hakkun / groove-loader (no está en este
+árbol; ver `tools/loader_pin.json` y `engine/README.md`). No copies un
+`main` del juego aquí. El `.gitignore` rechaza NSO, IPS, romfs, audio y
+extensiones del juego.
+
+## Investigación Hoop3 anterior
+
+`source/`, `templates/` y el workflow de Actions siguen siendo el
+constructor de texto Hoop3 de investigación (pruebas en host y prueba de
+compilación). Esa línea **no** es el runtime que ya corre en Switch; el
+runtime actual está en `engine/`.
 
 ```sh
 python3 -m unittest discover -s tools -p 'test_*.py' -v
@@ -34,29 +110,8 @@ g++ -std=c++17 -Wall -Wextra -Werror -fsanitize=undefined -Isource \
 /tmp/hoop3-dispatch
 ```
 
-## GitHub Actions cross-build
+## Procedencia
 
-Use **Actions → Switch Hoop3 title bridge (research cross-build) → Run workflow**.
-The workflow downloads the pinned public `groove-mod` source + LibHakkun
-standard libraries and produces a *compilation proof* only. The active artifact
-is intentionally marked unfit for installation.
-
-Actions billing or account restrictions may block the job even in a public repo.
-If the run has no steps and complains about spending limits, this is **not** a
-compiler error. Do not keep retrying builds without resolving the account issue.
-
-## Files and provenance
-
-- `source/`: own C++/ARM64 original research code, moved from a private checkout.
-- `tools/prepare.py`: source-only build generator (copies public pinned loader
-  and applies known narrow read-only fixes in a temporary copy).
-- `tools/loader_pin.json`: public loader hash/submodule integrity record.
-- `tests/`: independent original host tests, no Nintendo files.
-- `templates/`: source-only CMake preparation templates.
-- `.github/workflows/`: compile proof, no application/APK or Switch deploy.
-
-No original SPR, MSBT, ROM/NSO, title keys, SDK files, saves, private bundles,
-or commercial media belong in this repository.
-
-The application/title name is descriptive only and is not affiliated with
-Nintendo or the game's publisher.
+Código y documentación originales. No pertenecen a este repositorio:
+SPR, MSBT, ROM/NSO, claves, archivos del SDK, partidas, packs privados
+ni material comercial del juego.
