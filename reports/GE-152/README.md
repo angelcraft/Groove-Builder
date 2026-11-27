@@ -4,10 +4,10 @@
 - Task ID: GE-152 — investigación del ABI de menú, selección y guardado para el registro dinámico de niveles
 - Base branch and exact SHA: `work/groove-engine-v0.5.0` @ `61873906f016d46ac1d47d7a5016ec6e3fe93fa9`
   (coordinación: `coordination/v0.6.0` @ `0ca2c9d`, PR #4)
-- Working branch and exact head SHA: `grok/dynamic-stage-research`. El head exacto es el commit que añade este
-  archivo (un archivo no puede contener su propio SHA) y figura en la descripción del PR. Commit anterior de la
-  misma rama: `767baaf5d249cfdc3e7aed1301311f545b2bf061`.
-- PR URL: pendiente (PR en borrador contra `work/groove-engine-v0.5.0`; se anota en la descripción al abrirlo)
+- Working branch and exact head SHA: `grok/dynamic-stage-research`. El head exacto es el commit que añade esta
+  versión del archivo (un archivo no puede contener su propio SHA); se anota en el PR. Commit anterior de la
+  misma rama: `38b102d0a5cdb092cf89e9f7811df37efbf66214`.
+- PR URL: https://github.com/angelcraft/Groove-Builder/pull/5 (borrador)
 - Status: ready for review (solo investigación; no hay código de runtime)
 
 ## Changes
@@ -17,8 +17,13 @@
 | `reports/GE-152/README.md` | Esta ficha (plantilla `reports/TEMPLATE.md` de la coordinación) |
 | `reports/GE-152/dynamic-stage-research.md` | Investigación completa en español: cuadrícula del mapa, identidad, guardado nativo, diseño del registro y del guardado aislado, riesgos, fases (prototipo de 2 casillas primero) y aportación a las decisiones abiertas de `docs/GROOVE_SPEC.md` |
 | `reports/GE-152/dynamic-stage-evidence.md` | Anexo: extractos mínimos de desensamblado, tablas, referencias cruzadas y firmas |
+| `reports/GE-152/codex-pr5-answers.md` | Respuesta a las 3 preguntas de Codex en PR #5: teardown de los hijos del Runner, persistencia de `plays` con `exit` y frontera anterior a `beginPlay` |
+| `reports/GE-152/native-save-isolation.md` | Inventario de escritores del blob, escrituras de una partida `exit` y estrategia F0–F4 para cero escrituras nativas |
+| `reports/GE-152/pr6-audit.md` | Auditoría del PR #6 (GE-151 @ `07f78337`), efectos en GE-152, dependencias y propuestas |
+| `reports/GE-152/two-slot-prototype.md` | Diseño del prototipo de 2 casillas: despacho, título/prólogo/jingle, formato `.gsv` y plan de verificación |
+| `reports/GE-152/inverse-map-fix.md` | Causa de la contaminación del mapa inverso por la IPS, llamadores y efectos, corrección |
 
-No se ha modificado `engine/`, `editor/`, `docs/GROOVE_SPEC.md`, `main` ni `work/groove-engine-v0.5.0`.
+No se ha modificado `engine/`, `editor/`, `docs/GROOVE_SPEC.md`, `main`, `work/groove-engine-v0.5.0` ni la rama/runtime de Codex.
 El borrador inicial que estaba en `docs/research/` (commit `767baaf`) se ha movido aquí y esa carpeta se ha eliminado.
 
 ## Evidence
@@ -42,9 +47,19 @@ El borrador inicial que estaba en `docs/research/` (commit `767baaf`) se ha movi
     `commitResult 0x1D39D0` → `writeSave 0x3D60`. Explica por qué Multi `(1,67)` escribe el registro del Remix 8.
   - `saveState 0x3F70`: **111** llamadas `BL` directas. Firmas (2 palabras) de 40 funciones en §8.
 - Recuentos de llamadas exactos: anexo E20.
+- Iteración 3 (estática, **[V]** salvo marcas **[H]**):
+  - Los dtors `0x4290F0`/`0x4207F0` no paran ni hacen join de los hijos. `0x1363D0 → 0x5148F0` solo da de baja el
+    grupo. El join está en `0x514BC0` (estado 2 → señal → join → 3), al que se llega por el reap `0x515450` (tick de
+    la secuencia `0x132DB0`) o por la limpieza `0x515290`.
+  - `plays++` (`0x48B0`) y `+0xBB3/+0xBB4` (`launchA`) quedan en el blob en RAM. `writeSave 0x3D60` copia los
+    `0x1188` B enteros, y con `exit` además se ejecuta `commitResult` con `rank = 1` (de `initGameplay`).
+  - Frontera: F0 `cellState` (declinar), F1 `launchA 0x1D3130`, F2 `0x48B0`, F3 `0x4A30/0x4A70`, F4 `0x3D60`
+    (solo detección).
+  - Rejilla original: HT2 `(1,1,0)`, Remix 8 `(0,8,4)`. Con la IPS, `0x1CD490` cambia el mundo del Remix 8 de 0 a 1.
 
 ### Pruebas en host — NO REALIZADAS
 No se ha escrito ni ejecutado código de host (no hay prototipo del registro ni del parser de `manifest.json`).
+La auditoría del PR #6 es una lectura del diff: **no** he ejecutado `tools/run_engine_tests.py` ni sus builds.
 
 ### Build ARM64 — NO REALIZADO
 No se ha compilado `subsdk4` ni ningún prototipo.
@@ -72,6 +87,8 @@ pruebas físicas nuevas en GE-152.
 - **GE-151** (Codex, `codex/engine-v0.5.1-hardening`, reclamada en PR #3): endurecimiento de los parsers y contrato de
   validación (se mantiene GTF `start=0` y GTLM `start=2880`). Hace falta antes de aceptar timelines de terceros en el
   prototipo.
+- **PR #6 / GE-151**: rotación acotada del guardado propio (hoy tiene un límite de 64 pares `.bak/.tmp`),
+  `results: custom` en HT3/hoop y registro en el log cuando `TryLease` falla (ver `pr6-audit.md`).
 - **GE-154** (contrato, PR #4): decidir los campos propuestos (`presentation.*`, `results: "custom"` obligatorio,
   nombre de `custom-saves/`) y la política de compatibilidad con `stages/` y la IPS legada.
 - **GE-155**: instalación transaccional en `sd:/groove/levels/<id>/` (validador de PC).
@@ -80,6 +97,8 @@ pruebas físicas nuevas en GE-152.
   prototipo de 2 casillas.
 
 ## Next steps
+0. Unicorn: orden `0x4290F0` / `0x514BC0` / `0x4E04E0` en `exit` y en pausa → salir; secuencia F1–F4 con un blob
+   idéntico (`native-save-isolation.md` §4); ninguna ruta indirecta de `launchA` llega a `0x3D60`.
 1. Fase 0 (GE-152): pruebas en Unicorn de la reimplementación de `mapCell` (180 coords), `buildReverseMap` con
    `gInReverseBuild` y diferencia del blob de guardado en una partida `exit`. Resolver las preguntas de §8.1.
 2. Después de revisar GE-154 y GE-151: diseño detallado del prototipo de **2 casillas** `(0,9,0)` y `(0,9,1)`, con
