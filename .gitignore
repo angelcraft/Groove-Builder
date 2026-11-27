@@ -28,3 +28,7 @@ __pycache__/
 subsdk4
 romfs/
 *.nss
+
+# Editor (GE-153): also ignore these at repo root
+node_modules/
+coverage/
