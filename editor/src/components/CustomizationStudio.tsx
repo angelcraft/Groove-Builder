@@ -9,11 +9,19 @@ import {
   PROLOGUE_TYPES,
   TPB,
 } from '../engine/cues.ts';
-import { CustomSpriteConfig } from '../engine/groovePackage.ts';
+import {
+  CustomSpriteConfig,
+  isValidSemver,
+  RuntimeTimelineFormat,
+} from '../engine/groovePackage.ts';
 import { Timeline } from '../engine/gtfEngine.ts';
 import { StagePreview } from './StagePreview.tsx';
 
 interface CustomizationStudioProps {
+  packageId: string;
+  packageVersion: string;
+  runtimeFormat: RuntimeTimelineFormat;
+  lastExportSha256: string | null;
   timeline: Timeline;
   currentTick: number;
   bpm: number;
@@ -23,6 +31,9 @@ interface CustomizationStudioProps {
   sfxVolume: number;
   sprites: Partial<Record<GameId, CustomSpriteConfig>>;
   prologueImage?: { name: string; dataUrl: string } | null;
+  onForkProjectId: () => void;
+  onUpdatePackageVersion: (version: string) => void;
+  onUpdateRuntimeFormat: (fmt: RuntimeTimelineFormat) => void;
   onUpdateTimeline: (patch: Partial<Timeline>) => void;
   onUpdateBpm: (bpm: number) => void;
   onUpdateMusicOffset: (sec: number) => void;
@@ -33,7 +44,8 @@ interface CustomizationStudioProps {
   onUpdateSprite: (game: GameId, cfg: CustomSpriteConfig | null) => void;
   onSetPrologueImage: (img: { name: string; dataUrl: string } | null) => void;
   onPlayJingle: (code: number) => void;
-  onExportGroove: () => void;
+  onExportGrooveEditor: () => void;
+  onExportGrooveRuntime: () => void;
   onImportGrooveClick: () => void;
   onInsertAnimAtPlayhead: (game: GameId, animName: string) => void;
 }
@@ -48,6 +60,10 @@ function readFileAsDataUrl(file: File): Promise<string> {
 }
 
 export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
+  packageId,
+  packageVersion,
+  runtimeFormat,
+  lastExportSha256,
   timeline,
   currentTick,
   bpm,
@@ -57,6 +73,9 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
   sfxVolume,
   sprites,
   prologueImage,
+  onForkProjectId,
+  onUpdatePackageVersion,
+  onUpdateRuntimeFormat,
   onUpdateTimeline,
   onUpdateBpm,
   onUpdateMusicOffset,
@@ -67,7 +86,8 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
   onUpdateSprite,
   onSetPrologueImage,
   onPlayJingle,
-  onExportGroove,
+  onExportGrooveEditor,
+  onExportGrooveRuntime,
   onImportGrooveClick,
   onInsertAnimAtPlayhead,
 }) => {
@@ -543,43 +563,95 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
 
           <section className="rounded-xl border border-white/10 bg-[#141922] p-5 space-y-4">
             <div className="flex items-center gap-2.5">
-              <Package className="w-5 h-5 text-amber-400" />
+              <Package className="w-5 h-5 text-amber-400 shrink-0" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  .groove Package Bundle (Draft 0.1)
+                  .groove Package Profiles (Draft 0.2 — Preview Only)
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Preview aligned with GROOVE_SPEC.md draft 0.1 (pending GE-154 contract freeze).
+                  Draft format pending GE-154/GE-155 freeze; packages are NOT installable on Switch yet.
                 </p>
               </div>
             </div>
 
-            <div className="rounded-lg border border-white/10 bg-[#0E1117] p-3 font-mono text-xs text-slate-300 space-y-1">
-              <div>format: groove-package/1 · adapter: multi · engine_min: 0.6.0</div>
-              <div>results: custom (isolated) · bpm={bpm}</div>
-              <div>timeline.gtf · Groove Tickflow v0.1 source (&le; 60 KiB)</div>
-              <div>timeline.gtl · GTLM 1 compiled fallback</div>
-              <div>audio/ · {musicName ?? '(none attached)'}</div>
-              <div>sprites/ · {customizedCount} custom game overrides (editor preview)</div>
-              <div>intro/ · {prologueImage ? prologueImage.name : timeline.prologue || 'type_19'}</div>
+            <div className="space-y-2.5">
+              <div>
+                <div className="flex items-center justify-between gap-2 mb-1">
+                  <label className="text-xs text-slate-400">Persistent Project ID (UUID)</label>
+                  <button
+                    type="button"
+                    onClick={onForkProjectId}
+                    className="text-[11px] font-medium text-sky-400 hover:text-sky-300"
+                  >
+                    Fork / New ID
+                  </button>
+                </div>
+                <div className="h-9 px-2.5 rounded-lg border border-white/10 bg-[#0B0E14] font-mono text-[11px] text-slate-300 flex items-center truncate">
+                  {packageId}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2.5">
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Semver Version</label>
+                  <input
+                    type="text"
+                    value={packageVersion}
+                    onChange={(e) => onUpdatePackageVersion(e.target.value)}
+                    placeholder="1.0.0"
+                    className={`w-full h-9 px-2.5 rounded-lg border bg-[#0E1117] font-mono text-xs text-white ${
+                      isValidSemver(packageVersion) ? 'border-white/10' : 'border-rose-500/50'
+                    }`}
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs text-slate-400 mb-1">Runtime Primary Format</label>
+                  <select
+                    value={runtimeFormat}
+                    onChange={(e) => onUpdateRuntimeFormat(e.target.value as RuntimeTimelineFormat)}
+                    className="w-full h-9 px-2 rounded-lg border border-white/10 bg-[#0E1117] font-mono text-xs text-white"
+                  >
+                    <option value="gtf">timeline.gtf</option>
+                    <option value="gtl">timeline.gtl (GTLM 1)</option>
+                  </select>
+                </div>
+              </div>
             </div>
 
-            <div className="flex flex-wrap gap-2">
+            <div className="rounded-lg border border-white/10 bg-[#0E1117] p-3 font-mono text-[11px] text-slate-300 space-y-1">
+              <div>format: groove-package/1 · adapter: multi · engine_min: 0.6.0</div>
+              <div>authoring (editor): timeline + audio ({musicName ?? 'none'}) + {customizedCount} sprites + intro</div>
+              <div>runtime (draft 0.2): exact 2 files (manifest.json + timeline.{runtimeFormat}), results: custom</div>
+              {lastExportSha256 && (
+                <div className="text-emerald-300 break-all pt-1 border-t border-white/10">
+                  sha256: {lastExportSha256} (integrity check only, not author auth)
+                </div>
+              )}
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={onExportGroove}
-                className="flex-1 inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg bg-[#FF5A36] hover:bg-[#FF6E4E] text-xs font-semibold text-white transition-colors"
+                onClick={onExportGrooveEditor}
+                className="inline-flex items-center justify-center gap-2 h-10 px-3 rounded-lg bg-[#FF5A36] hover:bg-[#FF6E4E] text-xs font-semibold text-white transition-colors"
               >
-                Export .groove Bundle
+                Export Authoring .groove
               </button>
               <button
                 type="button"
-                onClick={onImportGrooveClick}
-                className="inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg border border-white/10 bg-[#1B2230] hover:bg-[#252E40] text-xs font-medium text-slate-200 transition-colors"
+                onClick={onExportGrooveRuntime}
+                className="inline-flex items-center justify-center gap-2 h-10 px-3 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white transition-colors"
               >
-                Import .groove
+                Export Runtime .groove
               </button>
             </div>
+            <button
+              type="button"
+              onClick={onImportGrooveClick}
+              className="w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg border border-white/10 bg-[#1B2230] hover:bg-[#252E40] text-xs font-medium text-slate-200 transition-colors"
+            >
+              Import .groove (Strict Draft 0.2 Validation)
+            </button>
           </section>
         </div>
       </div>

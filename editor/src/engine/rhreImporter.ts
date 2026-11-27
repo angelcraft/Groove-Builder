@@ -1,4 +1,3 @@
-import JSZip from 'jszip';
 import {
   canonicalGame,
   CUE_FNS,
@@ -20,6 +19,16 @@ import {
   Timeline,
   TimelineEvent,
 } from './gtfEngine.ts';
+import {
+  decodeUtf8Strict,
+  inspectAndOpenZip,
+  parseStrictJson,
+} from './zipSecurity.ts';
+
+const MAX_RHRE_ZIP_BYTES = 32 * 1024 * 1024;
+const MAX_RHRE_DECOMPRESSED_BYTES = 64 * 1024 * 1024;
+const MAX_RHRE_JSON_BYTES = 16 * 1024 * 1024;
+const MAX_RHRE_FILES = 512;
 
 interface PatternRule {
   game: GameId;
@@ -128,18 +137,46 @@ export interface RhreImportResult {
   warnings: string[];
 }
 
-export async function importRhreFile(file: File | ArrayBuffer, filename = 'remix.rhref'): Promise<RhreImportResult> {
+export async function importRhreFile(
+  file: File | ArrayBuffer | Uint8Array,
+  filename = 'remix.rhref'
+): Promise<RhreImportResult> {
+  const rawBytes =
+    file instanceof Uint8Array
+      ? file
+      : file instanceof ArrayBuffer
+      ? new Uint8Array(file)
+      : new Uint8Array(await file.arrayBuffer());
+
   let remixJson: Record<string, unknown>;
   if (filename.toLowerCase().endsWith('.json')) {
-    const text = file instanceof File ? await file.text() : new TextDecoder().decode(file);
-    remixJson = JSON.parse(text);
+    if (rawBytes.byteLength > MAX_RHRE_JSON_BYTES) {
+      throw new Error('Archivo JSON RHREfresh supera el limite de 16 MiB');
+    }
+    const text = decodeUtf8Strict(rawBytes, filename);
+    const parsed = parseStrictJson(text, 64);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('remix.json debe ser un objeto JSON');
+    }
+    remixJson = parsed as Record<string, unknown>;
   } else {
-    const buf = file instanceof File ? await file.arrayBuffer() : file;
-    const zip = await JSZip.loadAsync(buf);
-    const remixEntry = zip.file('remix.json');
-    if (!remixEntry) throw new Error('El archivo .rhref/.rhre3 no contiene remix.json');
-    const text = await remixEntry.async('string');
-    remixJson = JSON.parse(text);
+    const zip = await inspectAndOpenZip(rawBytes, {
+      maxCompressedBytes: MAX_RHRE_ZIP_BYTES,
+      maxTotalUncompressedBytes: MAX_RHRE_DECOMPRESSED_BYTES,
+      maxEntries: MAX_RHRE_FILES,
+      allowDirectories: true,
+      allowDataDescriptor: true,
+      maxEntryBytesByPath: (p) => (p === 'remix.json' ? MAX_RHRE_JSON_BYTES : MAX_RHRE_DECOMPRESSED_BYTES),
+    });
+    if (!zip.getEntry('remix.json')) {
+      throw new Error('El archivo .rhref/.rhre3 no contiene remix.json');
+    }
+    const remixBytes = await zip.readBytes('remix.json', MAX_RHRE_JSON_BYTES);
+    const parsed = parseStrictJson(remixBytes, 64);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+      throw new Error('remix.json debe ser un objeto JSON');
+    }
+    remixJson = parsed as Record<string, unknown>;
   }
   return convertRhreJsonToTimeline(remixJson);
 }

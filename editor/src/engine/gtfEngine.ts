@@ -81,6 +81,10 @@ export class GtfError extends Error {
   }
 }
 
+export interface ParseAndEmitOptions {
+  runtimeMode?: boolean;
+}
+
 export interface ValidationIssue {
   level: 'error' | 'warning';
   message: string;
@@ -392,7 +396,15 @@ function pad4(a: number[]): [number, number, number, number] {
   return [a[0] ?? 0, a[1] ?? 0, a[2] ?? 0, a[3] ?? 0];
 }
 
-function finalizeTimeline(tl: Timeline, path: string | undefined, autoEnd: boolean): void {
+function finalizeTimeline(
+  tl: Timeline,
+  path: string | undefined,
+  autoEnd: boolean,
+  runtimeMode = false
+): void {
+  if (runtimeMode && tl.results !== 0) {
+    throw new GtfError('results native no permitido en paquete runtime', undefined, path);
+  }
   if (!isValidMatchContract(tl.match)) {
     throw new GtfError('match fuera de rango (mundo -1..2, col 0..11, fila 0..4)', undefined, path);
   }
@@ -641,7 +653,12 @@ function parseCueLine(
   };
 }
 
-export function compileGtf(source: string, path = 'remix.gtf'): Timeline {
+export function compileGtf(
+  source: string,
+  path = 'remix.gtf',
+  options?: ParseAndEmitOptions
+): Timeline {
+  const runtimeMode = Boolean(options?.runtimeMode);
   const rawLines = validateSourceBounds(source, path);
   const lines: SrcLine[] = [];
   for (let i = 0; i < rawLines.length; i++) {
@@ -701,7 +718,7 @@ export function compileGtf(source: string, path = 'remix.gtf'): Timeline {
     start: 0,
     translen: 960,
     swing: 120,
-    results: 1,
+    results: runtimeMode ? 0 : 1,
     match: [-1, 9, 4],
     end: 0,
     endFade: 960,
@@ -819,13 +836,20 @@ export function compileGtf(source: string, path = 'remix.gtf'): Timeline {
       if (k === 'results') {
         if (toks.length < 2) throw new GtfError('results native|exit|custom', sl.no, path);
         const r = toks[1].toLowerCase();
-        if (r === 'native') tl.results = 1;
-        else if (r === 'exit' || r === 'custom') tl.results = 0;
+        if (r === 'native') {
+          if (runtimeMode) {
+            throw new GtfError('results native no permitido en paquete runtime', sl.no, path);
+          }
+          tl.results = 1;
+        } else if (r === 'exit' || r === 'custom') tl.results = 0;
         else throw new GtfError('results debe ser native, exit o custom', sl.no, path);
         i++;
         continue;
       }
       if (k === 'match') {
+        if (runtimeMode) {
+          throw new GtfError('directiva match prohibida en paquete runtime (el registro asigna el slot)', sl.no, path);
+        }
         if (toks.length !== 4) throw new GtfError('match MUNDO COL FILA', sl.no, path);
         let parsedMatch: [number, number, number];
         try {
@@ -1065,17 +1089,22 @@ export function compileGtf(source: string, path = 'remix.gtf'): Timeline {
   }
   if (!endSet) tl.end = 0;
   if (!finishSet) tl.finish = 0;
-  finalizeTimeline(tl, path, true);
+  finalizeTimeline(tl, path, true, runtimeMode);
   return tl;
 }
 
-export function parseGtl(source: string, path = 'multi.gtl'): Timeline {
+export function parseGtl(
+  source: string,
+  path = 'multi.gtl',
+  options?: ParseAndEmitOptions
+): Timeline {
+  const runtimeMode = Boolean(options?.runtimeMode);
   const tl: Timeline = {
     bgm: 139,
     start: 2880,
     translen: 960,
     swing: 120,
-    results: 1,
+    results: runtimeMode ? 0 : 1,
     match: [-1, 9, 4],
     end: -1,
     endFade: 960,
@@ -1129,8 +1158,12 @@ export function parseGtl(source: string, path = 'multi.gtl'): Timeline {
       } else if (k === 'swing') {
         tl.swing = parseIntStrict(parts[1]);
       } else if (k === 'results') {
-        if (parts[1] === 'native') tl.results = 1;
-        else if (parts[1] === 'exit' || parts[1] === 'custom') tl.results = 0;
+        if (parts[1] === 'native') {
+          if (runtimeMode) {
+            throw new GtfError('results native no permitido en paquete runtime', lineNo, path);
+          }
+          tl.results = 1;
+        } else if (parts[1] === 'exit' || parts[1] === 'custom') tl.results = 0;
         else throw new GtfError('results native|exit', lineNo, path);
       } else if (k === 'prologue') {
         if (!parts[1] || utf8ByteLength(parts[1]) > PROLOGUE_MAX || !isValidPrologueContract(parts[1])) {
@@ -1142,6 +1175,9 @@ export function parseGtl(source: string, path = 'multi.gtl'): Timeline {
         if (j < JINGLE_MIN || j > JINGLE_MAX) throw new GtfError('jingle fuera de rango (0x158..0x16C)', lineNo, path);
         tl.jingle = j;
       } else if (k === 'match') {
+        if (runtimeMode) {
+          throw new GtfError('directiva match prohibida en paquete runtime (el registro asigna el slot)', lineNo, path);
+        }
         const m: [number, number, number] = [parseIntStrict(parts[1]), parseIntStrict(parts[2]), parseIntStrict(parts[3])];
         if (!isValidMatchContract(m)) throw new GtfError('match fuera de rango', lineNo, path);
         tl.match = m;
@@ -1261,28 +1297,38 @@ export function parseGtl(source: string, path = 'multi.gtl'): Timeline {
   }
 
   if (!header) throw new GtfError('archivo vacio (falta GTLM 1)', undefined, path);
-  finalizeTimeline(tl, path, false);
+  finalizeTimeline(tl, path, false, runtimeMode);
   return tl;
 }
 
-export function emitGtl(tl: Timeline, sourceName = 'Groove Builder'): string {
+export function emitGtl(
+  tl: Timeline,
+  sourceName = 'Groove Builder',
+  options?: ParseAndEmitOptions
+): string {
+  const runtimeMode = Boolean(options?.runtimeMode);
   const sorted = [...tl.events].sort((a, b) => a.tick - b.tick);
   const games = gamesUsedInTimeline(tl);
+  const resultsStr = runtimeMode ? 'exit' : tl.results ? 'native' : 'exit';
   const lines: string[] = [
     'GTLM 1',
     `# Exportado por Groove Builder desde ${sourceName}`,
     `# Juegos: ${games.join(' ')}`,
     'ticks_per_beat 480',
     `bgm ${tl.bgm}`,
-    `results ${tl.results ? 'native' : 'exit'}`,
-    `match ${tl.match[0]} ${tl.match[1]} ${tl.match[2]}`,
+    `results ${resultsStr}`,
+  ];
+  if (!runtimeMode) {
+    lines.push(`match ${tl.match[0]} ${tl.match[1]} ${tl.match[2]}`);
+  }
+  lines.push(
     `start ${tl.start}`,
     `translen ${tl.translen}`,
     `swing ${tl.swing}`,
     `first ${tl.first ?? games[0] ?? 'CARS'}`,
     `end ${tl.end} ${tl.endFade}`,
-    `finish ${tl.finish}`,
-  ];
+    `finish ${tl.finish}`
+  );
   if (tl.title) lines.push(`title ${tl.title.replace(/#/g, '')}`);
   if (tl.prologue) lines.push(`prologue ${tl.prologue}`);
   if (tl.jingle >= JINGLE_MIN && tl.jingle <= JINGLE_MAX) {
@@ -1357,7 +1403,12 @@ function formatCallGtf(ev: TimelineEvent, currentGame: GameId | null): string {
   return `${prefix}${fnHex}${argStr}${tag}`;
 }
 
-export function decompileToGtf(tl: Timeline, sourceName = 'Groove Builder'): string {
+export function decompileToGtf(
+  tl: Timeline,
+  sourceName = 'Groove Builder',
+  options?: ParseAndEmitOptions
+): string {
+  const runtimeMode = Boolean(options?.runtimeMode);
   const sorted = [...tl.events].sort((a, b) => a.tick - b.tick);
   const lines: string[] = [
     `# Groove Tickflow v0.1 — ${sourceName}`,
@@ -1370,8 +1421,10 @@ export function decompileToGtf(tl: Timeline, sourceName = 'Groove Builder'): str
     lines.push(`jingle 0x${tl.jingle.toString(16).toUpperCase()}`);
   }
   lines.push(`bgm ${tl.bgm}`);
-  lines.push(`results ${tl.results ? 'native' : 'exit'}`);
-  lines.push(`match ${tl.match[0]} ${tl.match[1]} ${tl.match[2]}`);
+  lines.push(`results ${runtimeMode ? 'exit' : tl.results ? 'native' : 'exit'}`);
+  if (!runtimeMode) {
+    lines.push(`match ${tl.match[0]} ${tl.match[1]} ${tl.match[2]}`);
+  }
   lines.push(`start ${formatBeats(tl.start)}`);
   lines.push(`translen ${formatBeats(tl.translen)}`);
   if (tl.swing !== 120) lines.push(`swing ${formatBeats(tl.swing)}`);
@@ -1422,7 +1475,7 @@ export function decompileToGtf(tl: Timeline, sourceName = 'Groove Builder'): str
   return lines.join('\n') + '\n';
 }
 
-export function validateTimeline(tl: Timeline): ValidationReport {
+export function validateTimeline(tl: Timeline, options?: ParseAndEmitOptions): ValidationReport {
   const issues: ValidationIssue[] = [];
   const gamesUsed = gamesUsedInTimeline(tl);
   const calls = tl.events.filter((e) => e.op === 'call');
@@ -1430,6 +1483,9 @@ export function validateTimeline(tl: Timeline): ValidationReport {
   const fades = tl.events.filter((e) => e.op === 'fade');
   const anims = tl.events.filter((e) => e.op === 'anim');
 
+  if (options?.runtimeMode && tl.results !== 0) {
+    issues.push({ level: 'error', message: 'El perfil runtime requiere results custom/exit (no native).' });
+  }
   if (calls.length === 0) {
     issues.push({ level: 'error', message: 'El remix necesita al menos un cue (llamada X).' });
   }

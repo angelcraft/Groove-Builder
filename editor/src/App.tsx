@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Sliders, Layers, MonitorPlay, Package, FileCode2, FolderOpen, X } from 'lucide-react';
-import { beatToSec, RhythmAudioEngine, secToBeat } from './audio/rhythmAudio.ts';
+import { Sliders, Layers, MonitorPlay, Package, FileCode2, FolderOpen, X, AlertTriangle } from 'lucide-react';
+import { RhythmAudioEngine } from './audio/rhythmAudio.ts';
 import { CodeStudio } from './components/CodeStudio.tsx';
 import { CueLibrary } from './components/CueLibrary.tsx';
 import { CustomizationStudio } from './components/CustomizationStudio.tsx';
@@ -16,9 +16,15 @@ import {
   snapCueArgsToContract,
 } from './engine/engineContract.ts';
 import {
+  analyzeRuntimeExportImpact,
+  checkPackageRegistryConflict,
   CustomSpriteConfig,
   exportGroovePackage,
+  generateProjectId,
   importGroovePackage,
+  PackageRegistryEntry,
+  RuntimeConversionImpact,
+  RuntimeTimelineFormat,
 } from './engine/groovePackage.ts';
 import {
   cloneTimeline,
@@ -32,6 +38,7 @@ import {
   validateTimeline,
 } from './engine/gtfEngine.ts';
 import { importRhreFile } from './engine/rhreImporter.ts';
+import { decodeUtf8Strict } from './engine/zipSecurity.ts';
 import { useOnlineStatus } from './hooks/usePWAInstall.ts';
 
 function triggerDownload(filename: string, content: Blob | string, mime = 'text/plain;charset=utf-8') {
@@ -84,6 +91,17 @@ export function App() {
   const [snapDenominator, setSnapDenominator] = useState(4); // 1/4 beat = 120t
   const [zoomPxPerBeat, setZoomPxPerBeat] = useState(56);
 
+  // Persistent Project Identity & Package State (GE-154 Draft 0.2)
+  const [packageId, setPackageId] = useState<string>(() => generateProjectId());
+  const [packageVersion, setPackageVersion] = useState<string>('1.0.0');
+  const [runtimeFormat, setRuntimeFormat] = useState<RuntimeTimelineFormat>('gtf');
+  const [lastExportSha256, setLastExportSha256] = useState<string | null>(null);
+  const packageRegistryRef = useRef<Map<string, PackageRegistryEntry>>(new Map());
+  const [runtimeConfirmModal, setRuntimeConfirmModal] = useState<{
+    impact: RuntimeConversionImpact;
+  } | null>(null);
+  const [hasSourceZip, setHasSourceZip] = useState(false);
+
   // Customizations for .groove
   const [sprites, setSprites] = useState<Partial<Record<GameId, CustomSpriteConfig>>>({});
   const [prologueImage, setPrologueImage] = useState<{ name: string; dataUrl: string } | null>(null);
@@ -94,6 +112,23 @@ export function App() {
 
   const showToast = useCallback((text: string, kind: 'info' | 'error' = 'info') => {
     setToast({ text, kind });
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetch('/groove-builder-source.zip', { method: 'HEAD' })
+      .then((res) => {
+        if (!cancelled) {
+          const ct = res.headers.get('content-type') || '';
+          setHasSourceZip(res.ok && !ct.includes('text/html'));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setHasSourceZip(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -137,92 +172,88 @@ export function App() {
     });
   }, [timeline]);
 
-  // Playback Loop with sample-accurate cue/metronome triggering
-  const playStartPerfRef = useRef(0);
-  const playStartTickRef = useRef(0);
-  const lastProcessedTickRef = useRef(-1);
-  const lastProcessedBeatRef = useRef(-1);
+  // Live refs for AudioContext-clock lookahead scheduler
+  const eventsRef = useRef(timeline.events);
+  const finishTickRef = useRef(timeline.finish);
+  const bpmRef = useRef(bpm);
+  const musicOffsetRef = useRef(musicOffsetSec);
+  const metronomeRef = useRef(metronomeOn);
+  const cueSfxRef = useRef(cueSfxOn);
+
+  useEffect(() => {
+    eventsRef.current = timeline.events;
+    finishTickRef.current = timeline.finish;
+  }, [timeline.events, timeline.finish]);
+  useEffect(() => {
+    bpmRef.current = bpm;
+  }, [bpm]);
+  useEffect(() => {
+    musicOffsetRef.current = musicOffsetSec;
+  }, [musicOffsetSec]);
+  useEffect(() => {
+    metronomeRef.current = metronomeOn;
+  }, [metronomeOn]);
+  useEffect(() => {
+    cueSfxRef.current = cueSfxOn;
+  }, [cueSfxOn]);
 
   const stopPlayback = useCallback(() => {
     setIsPlaying(false);
-    audioRef.current?.stopMusic();
+    audioRef.current?.stopPlayback();
   }, []);
 
   const startPlayback = useCallback(() => {
     const audio = audioRef.current!;
-    const startBeat = currentTick / TPB;
-    const songSec = beatToSec(startBeat, bpm, musicOffsetSec);
-    audio.startMusic(songSec);
-    playStartPerfRef.current = performance.now();
-    playStartTickRef.current = currentTick;
-    lastProcessedTickRef.current = currentTick - 1;
-    lastProcessedBeatRef.current = Math.floor(currentTick / TPB) - 1;
+    audio.startPlayback(currentTick, {
+      getEvents: () => eventsRef.current,
+      getMaxTick: () => finishTickRef.current,
+      getBpm: () => bpmRef.current,
+      getMusicOffsetSec: () => musicOffsetRef.current,
+      getMetronomeOn: () => metronomeRef.current,
+      getCueSfxOn: () => cueSfxRef.current,
+      onReachedEnd: () => {
+        setIsPlaying(false);
+        setCurrentTick(0);
+      },
+    });
     setIsPlaying(true);
-  }, [currentTick, bpm, musicOffsetSec]);
+  }, [currentTick]);
 
   const togglePlay = useCallback(() => {
     if (isPlaying) stopPlayback();
     else startPlayback();
   }, [isPlaying, startPlayback, stopPlayback]);
 
+  // Visual 60fps playhead loop reads AudioContext clock directly (scheduling lives in RhythmAudioEngine)
   useEffect(() => {
     if (!isPlaying) return;
     let raf = 0;
-
-    const tickLoop = () => {
-      const elapsedSec = (performance.now() - playStartPerfRef.current) / 1000;
-      const deltaBeats = secToBeat(elapsedSec, bpm, 0);
-      const nextTick = Math.round(playStartTickRef.current + deltaBeats * TPB);
-
-      // Fire metronome beats crossed
-      const prevBeat = lastProcessedBeatRef.current;
-      const currBeat = Math.floor(nextTick / TPB);
-      if (metronomeOn && currBeat > prevBeat) {
-        for (let b = prevBeat + 1; b <= currBeat; b++) {
-          if (b >= 0) audioRef.current?.playMetronome(b % 4 === 0);
-        }
-        lastProcessedBeatRef.current = currBeat;
-      }
-
-      // Fire events crossed
-      const prevTick = lastProcessedTickRef.current;
-      if (cueSfxOn && nextTick > prevTick) {
-        for (const ev of timeline.events) {
-          if (ev.tick > prevTick && ev.tick <= nextTick) {
-            audioRef.current?.playCueSfx(ev);
-          }
-        }
-      }
-      lastProcessedTickRef.current = nextTick;
-
+    const drawPlayhead = () => {
+      const nextTick = audioRef.current?.getPlaybackTick(bpmRef.current) ?? 0;
       setCurrentTick(nextTick);
-
-      if (nextTick >= timeline.finish) {
-        stopPlayback();
-        setCurrentTick(0);
-        return;
+      if (nextTick < finishTickRef.current) {
+        raf = requestAnimationFrame(drawPlayhead);
       }
-      raf = requestAnimationFrame(tickLoop);
     };
-
-    raf = requestAnimationFrame(tickLoop);
+    raf = requestAnimationFrame(drawPlayhead);
     return () => cancelAnimationFrame(raf);
-  }, [isPlaying, bpm, timeline.events, timeline.finish, metronomeOn, cueSfxOn, stopPlayback]);
+  }, [isPlaying]);
+
+  useEffect(() => {
+    return () => {
+      audioRef.current?.stopPlayback();
+    };
+  }, []);
 
   const handleSeekTick = useCallback(
     (tick: number) => {
       const clamped = Math.max(0, Math.round(tick));
       setCurrentTick(clamped);
       if (isPlaying) {
-        const audio = audioRef.current!;
-        audio.startMusic(beatToSec(clamped / TPB, bpm, musicOffsetSec));
-        playStartPerfRef.current = performance.now();
-        playStartTickRef.current = clamped;
-        lastProcessedTickRef.current = clamped - 1;
-        lastProcessedBeatRef.current = Math.floor(clamped / TPB) - 1;
+        audioRef.current?.seekPlayback(clamped);
       }
     },
-    [isPlaying, bpm, musicOffsetSec]
+    [isPlaying]
   );
 
   // Cue / Event Mutations
@@ -437,13 +468,13 @@ export function App() {
       const lower = file.name.toLowerCase();
       try {
         if (lower.endsWith('.gtf')) {
-          const text = await file.text();
+          const text = decodeUtf8Strict(new Uint8Array(await file.arrayBuffer()), file.name);
           const tl = compileGtf(text, file.name);
           commitTimeline(() => tl);
           setCurrentTick(0);
           showToast(`Imported ${file.name} (${tl.events.length} events)`);
         } else if (lower.endsWith('.gtl')) {
-          const text = await file.text();
+          const text = decodeUtf8Strict(new Uint8Array(await file.arrayBuffer()), file.name);
           const tl = parseGtl(text, file.name);
           commitTimeline(() => tl);
           setCurrentTick(0);
@@ -460,6 +491,26 @@ export function App() {
           );
         } else if (lower.endsWith('.groove') || lower.endsWith('.zip')) {
           const pkg = await importGroovePackage(file);
+          if (pkg.sha256) {
+            const existing = packageRegistryRef.current.get(pkg.packageId);
+            const conflict = checkPackageRegistryConflict(existing, {
+              id: pkg.packageId,
+              version: pkg.packageVersion,
+              sha256: pkg.sha256,
+            });
+            if (conflict.status === 'version_conflict' || conflict.status === 'downgrade') {
+              throw new Error(conflict.reason);
+            }
+            packageRegistryRef.current.set(pkg.packageId, {
+              id: pkg.packageId,
+              version: pkg.packageVersion,
+              sha256: pkg.sha256,
+            });
+          }
+          setPackageId(pkg.packageId);
+          setPackageVersion(pkg.packageVersion);
+          if (pkg.runtimeFormat) setRuntimeFormat(pkg.runtimeFormat);
+          setLastExportSha256(pkg.sha256 ?? null);
           commitTimeline(() => pkg.timeline);
           setBpm(pkg.bpm);
           setMusicOffsetSec(pkg.musicOffsetSec);
@@ -470,9 +521,16 @@ export function App() {
             setMusicFile(pkg.musicFile);
             setMusicDurationSec(duration);
             setWaveformPeaks(peaks);
+          } else {
+            audioRef.current?.clearMusic();
+            setMusicFile(null);
+            setMusicDurationSec(0);
+            setWaveformPeaks(new Float32Array(0));
           }
           setCurrentTick(0);
-          showToast(`Loaded .groove package: ${pkg.timeline.title || file.name}`);
+          showToast(
+            `Loaded ${pkg.profile === 'runtime' ? 'runtime' : 'authoring'} .groove: ${pkg.timeline.title || file.name} (${pkg.packageId})`
+          );
         } else if (file.type.startsWith('audio/') || /\.(mp3|wav|ogg|flac|m4a)$/.test(lower)) {
           await handleUploadMusic(file);
         } else {
@@ -498,23 +556,83 @@ export function App() {
     showToast('Exported multi.gtl (GTLM 1)');
   }, [timeline, showToast]);
 
-  const handleExportGroove = useCallback(async () => {
-    try {
-      const blob = await exportGroovePackage({
-        timeline,
-        bpm,
-        musicOffsetSec,
-        musicFile,
-        prologueImage,
-        sprites,
-      });
-      const slug = (timeline.title || 'remix_21').toLowerCase().replace(/[^a-z0-9]+/g, '_');
-      triggerDownload(`${slug}.groove`, blob, 'application/zip');
-      showToast(`Exported ${slug}.groove bundle`);
-    } catch (e) {
-      showToast(e instanceof Error ? e.message : String(e), 'error');
+  const performGrooveExport = useCallback(
+    async (profile: 'editor' | 'runtime', rtFmt: RuntimeTimelineFormat = runtimeFormat) => {
+      try {
+        const result = await exportGroovePackage({
+          profile,
+          runtimeFormat: rtFmt,
+          packageId,
+          packageVersion,
+          timeline,
+          bpm,
+          musicOffsetSec,
+          musicFile,
+          prologueImage,
+          sprites,
+        });
+        setLastExportSha256(result.sha256);
+        packageRegistryRef.current.set(packageId, {
+          id: packageId,
+          version: packageVersion,
+          sha256: result.sha256,
+        });
+        const slug = (timeline.title || 'remix_21').toLowerCase().replace(/[^a-z0-9]+/g, '_') || 'remix_21';
+        const suffix = profile === 'runtime' ? `runtime_${rtFmt}` : 'editor';
+        triggerDownload(`${slug}.${suffix}.groove`, result.blob, 'application/zip');
+        showToast(
+          `Exported ${slug}.${suffix}.groove (Draft 0.2 preview · SHA-256 ${result.sha256.slice(0, 12)}…)`
+        );
+      } catch (e) {
+        showToast(e instanceof Error ? e.message : String(e), 'error');
+      }
+    },
+    [
+      runtimeFormat,
+      packageId,
+      packageVersion,
+      timeline,
+      bpm,
+      musicOffsetSec,
+      musicFile,
+      prologueImage,
+      sprites,
+      showToast,
+    ]
+  );
+
+  const handleExportGrooveEditor = useCallback(() => {
+    void performGrooveExport('editor');
+  }, [performGrooveExport]);
+
+  const handleExportGrooveRuntime = useCallback(() => {
+    const impact = analyzeRuntimeExportImpact({
+      packageId,
+      packageVersion,
+      timeline,
+      bpm,
+      musicOffsetSec,
+      musicFile,
+      prologueImage,
+      sprites,
+    });
+    if (impact.hasChanges) {
+      setRuntimeConfirmModal({ impact });
+    } else {
+      void performGrooveExport('runtime', runtimeFormat);
     }
-  }, [timeline, bpm, musicOffsetSec, musicFile, prologueImage, sprites, showToast]);
+  }, [
+    packageId,
+    packageVersion,
+    timeline,
+    bpm,
+    musicOffsetSec,
+    musicFile,
+    prologueImage,
+    sprites,
+    runtimeFormat,
+    performGrooveExport,
+  ]);
 
   const handleDownloadSourceZip = useCallback(async () => {
     try {
@@ -591,7 +709,9 @@ export function App() {
         onImportClick={() => importInputRef.current?.click()}
         onExportGtf={handleExportGtf}
         onExportGtl={handleExportGtl}
-        onExportGroove={handleExportGroove}
+        onExportGrooveEditor={handleExportGrooveEditor}
+        onExportGrooveRuntime={handleExportGrooveRuntime}
+        hasSourceZip={hasSourceZip}
         onDownloadSourceZip={handleDownloadSourceZip}
         onLoadTemplate={(key) => {
           const src = key === 'ejemplo' ? EXAMPLE_GTF : SHOWCASE_24_GTF;
@@ -766,6 +886,10 @@ export function App() {
 
         {activeTab === 'customize' && (
           <CustomizationStudio
+            packageId={packageId}
+            packageVersion={packageVersion}
+            runtimeFormat={runtimeFormat}
+            lastExportSha256={lastExportSha256}
             timeline={timeline}
             currentTick={currentTick}
             bpm={bpm}
@@ -775,6 +899,15 @@ export function App() {
             sfxVolume={sfxVolume}
             sprites={sprites}
             prologueImage={prologueImage}
+            onForkProjectId={() => {
+              const forked = generateProjectId();
+              setPackageId(forked);
+              setPackageVersion('1.0.0');
+              setLastExportSha256(null);
+              showToast(`Forked project identity: ${forked}`);
+            }}
+            onUpdatePackageVersion={setPackageVersion}
+            onUpdateRuntimeFormat={setRuntimeFormat}
             onUpdateTimeline={(patch) => commitTimeline((tl) => ({ ...tl, ...patch }))}
             onUpdateBpm={setBpm}
             onUpdateMusicOffset={setMusicOffsetSec}
@@ -798,7 +931,8 @@ export function App() {
             }}
             onSetPrologueImage={setPrologueImage}
             onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
-            onExportGroove={handleExportGroove}
+            onExportGrooveEditor={handleExportGrooveEditor}
+            onExportGrooveRuntime={handleExportGrooveRuntime}
             onImportGrooveClick={() => importInputRef.current?.click()}
             onInsertAnimAtPlayhead={(g, name) => {
               handleInsertAnim(g, name);
@@ -892,6 +1026,93 @@ export function App() {
       {!isOnline && (
         <div className="fixed bottom-16 lg:bottom-4 left-4 z-50 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-slate-950 shadow-lg">
           Offline Mode — Local editor active
+        </div>
+      )}
+
+      {/* Explicit Runtime .groove Export Conversion Modal */}
+      {runtimeConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
+          <div className="w-full max-w-lg rounded-2xl border border-white/15 bg-[#141922] p-5 shadow-2xl space-y-4">
+            <div className="flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+              <div>
+                <h3 className="font-display text-base font-bold text-white">
+                  Runtime .groove Conversion (Draft 0.2 — Not Installable)
+                </h3>
+                <p className="text-xs text-slate-300 mt-1">
+                  The runtime profile (<code className="font-mono text-sky-300">adapter: multi</code>) only
+                  exports <code className="font-mono">manifest.json</code> and a single{' '}
+                  <code className="font-mono">timeline.{runtimeFormat}</code>. The following editor items will
+                  not be included:
+                </p>
+              </div>
+            </div>
+
+            {runtimeConfirmModal.impact.omittedAssets.length > 0 && (
+              <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200 space-y-1">
+                <div className="font-semibold">Omitted custom editor resources:</div>
+                <ul className="list-disc list-inside space-y-0.5">
+                  {runtimeConfirmModal.impact.omittedAssets.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            {runtimeConfirmModal.impact.adjustments.length > 0 && (
+              <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-3 text-xs text-amber-200 space-y-1">
+                <div className="font-semibold">Timeline / mode adjustments:</div>
+                <ul className="list-disc list-inside space-y-0.5">
+                  {runtimeConfirmModal.impact.adjustments.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <div className="flex items-center justify-between gap-2 text-xs">
+              <span className="text-slate-400">Primary runtime timeline format:</span>
+              <select
+                value={runtimeFormat}
+                onChange={(e) => setRuntimeFormat(e.target.value as RuntimeTimelineFormat)}
+                className="h-9 px-2.5 rounded-lg border border-white/10 bg-[#0E1117] font-mono text-xs text-white"
+              >
+                <option value="gtf">timeline.gtf</option>
+                <option value="gtl">timeline.gtl (GTLM 1)</option>
+              </select>
+            </div>
+
+            <div className="flex flex-wrap justify-end gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setRuntimeConfirmModal(null)}
+                className="h-9 px-3.5 rounded-lg border border-white/10 bg-[#1B2230] text-xs font-medium text-slate-300 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setRuntimeConfirmModal(null);
+                  void performGrooveExport('editor');
+                }}
+                className="h-9 px-3.5 rounded-lg border border-amber-500/40 bg-amber-500/15 text-xs font-semibold text-amber-200 hover:bg-amber-500/25"
+              >
+                Export Authoring .groove Instead
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  const fmt = runtimeFormat;
+                  setRuntimeConfirmModal(null);
+                  void performGrooveExport('runtime', fmt);
+                }}
+                className="h-9 px-3.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white"
+              >
+                Export Runtime .groove
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

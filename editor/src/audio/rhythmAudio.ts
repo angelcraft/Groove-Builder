@@ -1,6 +1,110 @@
 import { GameId, TPB } from '../engine/cues.ts';
 import { TimelineEvent } from '../engine/gtfEngine.ts';
 
+export const LOOKAHEAD_SEC = 0.14;
+export const SCHEDULER_INTERVAL_MS = 25;
+export const STALE_CATCHUP_TOLERANCE_SEC = 0.025;
+
+export interface ScheduledBeatItem {
+  beat: number;
+  when: number;
+}
+
+export interface ScheduledEventItem {
+  ev: TimelineEvent;
+  when: number;
+}
+
+export interface LookaheadPlanParams {
+  anchorAudioTime: number;
+  anchorTick: number;
+  nowAudioTime: number;
+  bpm: number;
+  lookaheadSec?: number;
+  maxTick: number;
+  events: TimelineEvent[];
+  nextBeatToSchedule: number;
+  scheduledKeys: Set<string>;
+}
+
+export interface LookaheadPlanResult {
+  currentTick: number;
+  horizonTick: number;
+  beatsToSchedule: ScheduledBeatItem[];
+  eventsToSchedule: ScheduledEventItem[];
+  nextBeatToSchedule: number;
+  reachedEnd: boolean;
+}
+
+/**
+ * Pure AudioContext-clock lookahead planner.
+ * Separates sample-accurate Web Audio scheduling from visual rAF polling,
+ * guards against stale catchup bursts after tab suspension/backgrounding,
+ * and deduplicates via scheduledKeys across lookahead ticks.
+ */
+export function planLookaheadWindow(params: LookaheadPlanParams): LookaheadPlanResult {
+  const safeBpm = Math.max(20, params.bpm);
+  const secPerBeat = 60 / safeBpm;
+  const secPerTick = secPerBeat / TPB;
+  const lookahead = params.lookaheadSec ?? LOOKAHEAD_SEC;
+
+  const elapsedSec = Math.max(0, params.nowAudioTime - params.anchorAudioTime);
+  const currentTick = params.anchorTick + elapsedSec / secPerTick;
+  const rawHorizonTick = params.anchorTick + (elapsedSec + lookahead) / secPerTick;
+  const horizonTick = Math.min(params.maxTick, rawHorizonTick);
+
+  const minAllowedWhen = params.nowAudioTime - STALE_CATCHUP_TOLERANCE_SEC;
+
+  const beatsToSchedule: ScheduledBeatItem[] = [];
+  let nextBeat = Math.max(0, params.nextBeatToSchedule);
+  const maxBeatInWindow = Math.floor(horizonTick / TPB);
+  for (let b = nextBeat; b <= maxBeatInWindow; b++) {
+    const beatTick = b * TPB;
+    if (beatTick < params.anchorTick) {
+      nextBeat = b + 1;
+      continue;
+    }
+    const when = params.anchorAudioTime + (beatTick - params.anchorTick) * secPerTick;
+    if (when >= minAllowedWhen) {
+      beatsToSchedule.push({ beat: b, when: Math.max(params.nowAudioTime, when) });
+    }
+    nextBeat = b + 1;
+  }
+
+  const eventsToSchedule: ScheduledEventItem[] = [];
+  for (const ev of params.events) {
+    if (ev.tick < params.anchorTick) continue;
+    if (ev.tick > horizonTick) break;
+    const key = `${ev.id}:${ev.tick}`;
+    if (params.scheduledKeys.has(key)) continue;
+    params.scheduledKeys.add(key);
+
+    const when = params.anchorAudioTime + (ev.tick - params.anchorTick) * secPerTick;
+    if (when >= minAllowedWhen) {
+      eventsToSchedule.push({ ev, when: Math.max(params.nowAudioTime, when) });
+    }
+  }
+
+  return {
+    currentTick,
+    horizonTick,
+    beatsToSchedule,
+    eventsToSchedule,
+    nextBeatToSchedule: nextBeat,
+    reachedEnd: currentTick >= params.maxTick,
+  };
+}
+
+export interface PlaybackSchedulerCallbacks {
+  getEvents: () => TimelineEvent[];
+  getMaxTick: () => number;
+  getBpm: () => number;
+  getMusicOffsetSec: () => number;
+  getMetronomeOn: () => boolean;
+  getCueSfxOn: () => boolean;
+  onReachedEnd: () => void;
+}
+
 export class RhythmAudioEngine {
   private ctx: AudioContext | null = null;
   private musicBuffer: AudioBuffer | null = null;
@@ -12,9 +116,21 @@ export class RhythmAudioEngine {
   public waveformPeaks: Float32Array = new Float32Array(0);
   public musicDurationSec = 0;
 
+  private activeSfxNodes = new Set<AudioScheduledSourceNode>();
+  private schedulerTimer: ReturnType<typeof setInterval> | null = null;
+  private isScheduledPlaying = false;
+  private anchorAudioTime = 0;
+  private anchorTick = 0;
+  private nextBeatToSchedule = 0;
+  private scheduledKeys = new Set<string>();
+  private activeCallbacks: PlaybackSchedulerCallbacks | null = null;
+  private visibilityListenerAttached = false;
+
   private ensureContext(): AudioContext {
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx =
+        window.AudioContext ||
+        (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
       this.ctx = new AudioCtx();
       this.musicGain = this.ctx.createGain();
       this.musicGain.gain.value = this.musicVolume;
@@ -85,7 +201,7 @@ export class RhythmAudioEngine {
     return out;
   }
 
-  public startMusic(songTimeSec: number) {
+  public startMusic(songTimeSec: number, atAudioTime?: number) {
     this.stopMusic();
     if (!this.musicBuffer) return;
     const ctx = this.ensureContext();
@@ -95,10 +211,11 @@ export class RhythmAudioEngine {
     src.buffer = this.musicBuffer;
     src.connect(this.musicGain!);
 
+    const baseWhen = atAudioTime ?? ctx.currentTime;
     if (songTimeSec < 0) {
-      src.start(ctx.currentTime + Math.abs(songTimeSec), 0);
+      src.start(baseWhen + Math.abs(songTimeSec), 0);
     } else {
-      src.start(ctx.currentTime, songTimeSec);
+      src.start(baseWhen, songTimeSec);
     }
     this.musicSource = src;
   }
@@ -115,6 +232,128 @@ export class RhythmAudioEngine {
     }
   }
 
+  private cancelPendingSfx() {
+    for (const node of this.activeSfxNodes) {
+      try {
+        node.stop();
+        node.disconnect();
+      } catch {
+        // already stopped
+      }
+    }
+    this.activeSfxNodes.clear();
+  }
+
+  private attachVisibilityHandler() {
+    if (this.visibilityListenerAttached || typeof document === 'undefined') return;
+    this.visibilityListenerAttached = true;
+    document.addEventListener('visibilitychange', () => {
+      if (!this.isScheduledPlaying || !this.ctx || !this.activeCallbacks) return;
+      if (document.visibilityState === 'visible') {
+        void this.ctx.resume().then(() => {
+          if (!this.isScheduledPlaying || !this.activeCallbacks) return;
+          // Flush any stale queued SFX and re-run lookahead cleanly at current tick
+          this.cancelPendingSfx();
+          const currentTick = Math.max(0, Math.round(this.getPlaybackTick(this.activeCallbacks.getBpm())));
+          this.nextBeatToSchedule = Math.ceil(currentTick / TPB);
+          this.runLookaheadPass();
+        });
+      }
+    });
+  }
+
+  public startPlayback(startTick: number, callbacks: PlaybackSchedulerCallbacks) {
+    this.stopPlayback();
+    this.attachVisibilityHandler();
+
+    const ctx = this.ensureContext();
+    const startAtAudioTime = ctx.currentTime + 0.02;
+    this.isScheduledPlaying = true;
+    this.activeCallbacks = callbacks;
+    this.anchorAudioTime = startAtAudioTime;
+    this.anchorTick = Math.max(0, startTick);
+    this.nextBeatToSchedule = Math.ceil(this.anchorTick / TPB);
+    this.scheduledKeys.clear();
+
+    const songSec = beatToSec(
+      this.anchorTick / TPB,
+      callbacks.getBpm(),
+      callbacks.getMusicOffsetSec()
+    );
+    this.startMusic(songSec, startAtAudioTime);
+
+    this.runLookaheadPass();
+    this.schedulerTimer = setInterval(() => this.runLookaheadPass(), SCHEDULER_INTERVAL_MS);
+  }
+
+  public seekPlayback(targetTick: number) {
+    if (!this.isScheduledPlaying || !this.activeCallbacks) return;
+    const cb = this.activeCallbacks;
+    this.startPlayback(targetTick, cb);
+  }
+
+  public stopPlayback() {
+    this.isScheduledPlaying = false;
+    this.activeCallbacks = null;
+    if (this.schedulerTimer !== null) {
+      clearInterval(this.schedulerTimer);
+      this.schedulerTimer = null;
+    }
+    this.stopMusic();
+    this.cancelPendingSfx();
+    this.scheduledKeys.clear();
+  }
+
+  public getPlaybackTick(bpm: number): number {
+    if (!this.isScheduledPlaying || !this.ctx) return this.anchorTick;
+    const elapsedSec = Math.max(0, this.ctx.currentTime - this.anchorAudioTime);
+    return Math.round(this.anchorTick + secToBeat(elapsedSec, bpm, 0) * TPB);
+  }
+
+  private runLookaheadPass() {
+    if (!this.isScheduledPlaying || !this.ctx || !this.activeCallbacks) return;
+    const cb = this.activeCallbacks;
+    const maxTick = cb.getMaxTick();
+    const bpm = cb.getBpm();
+    const events = [...cb.getEvents()].sort((a, b) => a.tick - b.tick);
+
+    const plan = planLookaheadWindow({
+      anchorAudioTime: this.anchorAudioTime,
+      anchorTick: this.anchorTick,
+      nowAudioTime: this.ctx.currentTime,
+      bpm,
+      lookaheadSec: LOOKAHEAD_SEC,
+      maxTick,
+      events,
+      nextBeatToSchedule: this.nextBeatToSchedule,
+      scheduledKeys: this.scheduledKeys,
+    });
+
+    this.nextBeatToSchedule = plan.nextBeatToSchedule;
+
+    if (cb.getMetronomeOn()) {
+      for (const b of plan.beatsToSchedule) {
+        this.playMetronome(b.beat % 4 === 0, b.when);
+      }
+    }
+    if (cb.getCueSfxOn()) {
+      for (const item of plan.eventsToSchedule) {
+        this.playCueSfx(item.ev, item.when);
+      }
+    }
+    if (plan.reachedEnd) {
+      this.stopPlayback();
+      cb.onReachedEnd();
+    }
+  }
+
+  private trackSfxNode(node: AudioScheduledSourceNode) {
+    this.activeSfxNodes.add(node);
+    node.onended = () => {
+      this.activeSfxNodes.delete(node);
+    };
+  }
+
   public playMetronome(isDownbeat: boolean, when?: number) {
     const ctx = this.ensureContext();
     const t = when ?? ctx.currentTime;
@@ -126,6 +365,7 @@ export class RhythmAudioEngine {
     gain.gain.exponentialRampToValueAtTime(0.001, t + 0.055);
     osc.connect(gain);
     gain.connect(this.sfxGain!);
+    this.trackSfxNode(osc);
     osc.start(t);
     osc.stop(t + 0.06);
   }
@@ -178,7 +418,7 @@ export class RhythmAudioEngine {
         this.tone(t, 340, 920, 0.14, 'sine', 0.2);
         break;
       case 'CARS':
-        if (ev.fn === 0x1608F0) {
+        if (ev.fn === 0x1608f0) {
           this.tone(t, 900, 220, 0.18, 'sawtooth', 0.15);
         } else {
           this.tone(t, 160, 420, 0.18, 'sawtooth', 0.16);
@@ -233,6 +473,7 @@ export class RhythmAudioEngine {
     g.gain.exponentialRampToValueAtTime(0.001, t + dur);
     osc.connect(g);
     g.connect(this.sfxGain);
+    this.trackSfxNode(osc);
     osc.start(t);
     osc.stop(t + dur + 0.01);
   }
@@ -254,6 +495,7 @@ export class RhythmAudioEngine {
     src.connect(filt);
     filt.connect(g);
     g.connect(this.sfxGain);
+    this.trackSfxNode(src);
     src.start(t);
     src.stop(t + dur + 0.01);
   }

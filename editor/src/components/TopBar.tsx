@@ -10,7 +10,9 @@ interface TopBarProps {
   onImportClick: () => void;
   onExportGtf: () => void;
   onExportGtl: () => void;
-  onExportGroove: () => void;
+  onExportGrooveEditor: () => void;
+  onExportGrooveRuntime: () => void;
+  hasSourceZip: boolean;
   onDownloadSourceZip: () => void;
   onLoadTemplate: (key: 'ejemplo' | 'showcase') => void;
 }
@@ -21,7 +23,9 @@ export const TopBar: React.FC<TopBarProps> = ({
   onImportClick,
   onExportGtf,
   onExportGtl,
-  onExportGroove,
+  onExportGrooveEditor,
+  onExportGrooveRuntime,
+  hasSourceZip,
   onDownloadSourceZip,
   onLoadTemplate,
 }) => {
@@ -102,7 +106,7 @@ export const TopBar: React.FC<TopBarProps> = ({
           </button>
 
           {exportOpen && (
-            <div className="absolute right-0 mt-2 w-60 rounded-xl border border-white/10 bg-[#161B24] py-1.5 shadow-2xl z-50">
+            <div className="absolute right-0 mt-2 w-72 rounded-xl border border-white/10 bg-[#161B24] py-1.5 shadow-2xl z-50">
               <button
                 type="button"
                 onClick={() => {
@@ -131,18 +135,33 @@ export const TopBar: React.FC<TopBarProps> = ({
                   <div className="text-[11px] text-slate-400">Compiled GTLM 1 format</div>
                 </div>
               </button>
+              <div className="my-1 border-t border-white/10" />
               <button
                 type="button"
                 onClick={() => {
                   setExportOpen(false);
-                  onExportGroove();
+                  onExportGrooveEditor();
                 }}
                 className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs text-slate-200 hover:bg-white/5"
               >
                 <Package className="w-4 h-4 text-amber-400" />
                 <div>
-                  <div className="font-semibold">Export .groove bundle</div>
-                  <div className="text-[11px] text-slate-400">Audio, sprites &amp; GTF/GTL ZIP</div>
+                  <div className="font-semibold">Export Authoring .groove</div>
+                  <div className="text-[11px] text-slate-400">Preview bundle (audio, sprites, project)</div>
+                </div>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setExportOpen(false);
+                  onExportGrooveRuntime();
+                }}
+                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs text-slate-200 hover:bg-white/5"
+              >
+                <Package className="w-4 h-4 text-sky-400" />
+                <div>
+                  <div className="font-semibold">Export Runtime .groove (Draft 0.2)</div>
+                  <div className="text-[11px] text-slate-400">Multi · 2-file preview (not installable)</div>
                 </div>
               </button>
               <div className="my-1 border-t border-white/10" />
@@ -178,21 +197,25 @@ export const TopBar: React.FC<TopBarProps> = ({
               >
                 <span>Load 24-Game Showcase</span>
               </button>
-              <div className="my-1 border-t border-white/10" />
-              <button
-                type="button"
-                onClick={() => {
-                  setExportOpen(false);
-                  onDownloadSourceZip();
-                }}
-                className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs text-slate-200 hover:bg-white/5"
-              >
-                <Download className="w-4 h-4 text-emerald-400" />
-                <div>
-                  <div className="font-semibold">Download Source (.zip)</div>
-                  <div className="text-[11px] text-slate-400">Clean GE-153 repo bundle</div>
-                </div>
-              </button>
+              {hasSourceZip && (
+                <>
+                  <div className="my-1 border-t border-white/10" />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setExportOpen(false);
+                      onDownloadSourceZip();
+                    }}
+                    className="flex w-full items-center gap-3 px-4 py-2.5 text-left text-xs text-slate-200 hover:bg-white/5"
+                  >
+                    <Download className="w-4 h-4 text-emerald-400" />
+                    <div>
+                      <div className="font-semibold">Download Source (.zip)</div>
+                      <div className="text-[11px] text-slate-400">Clean GE-153 repo bundle</div>
+                    </div>
+                  </button>
+                </>
+              )}
             </div>
           )}
         </div>
