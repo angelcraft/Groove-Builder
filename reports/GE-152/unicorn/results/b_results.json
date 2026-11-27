@@ -1,0 +1,584 @@
+{
+ "teardown": [
+  {
+   "order": [
+    "stage",
+    "reap"
+   ],
+   "stage": "HT2",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "reap": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "reap:A66070(signal event)": 2,
+    "reap:A65FE0(wait/join thread)": 2,
+    "reap:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x2168b0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "stage",
+    "clear"
+   ],
+   "stage": "HT2",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "clear: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "runner-clear": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "runner-clear:A66070(signal event)": 2,
+    "runner-clear:A65FE0(wait/join thread)": 2,
+    "runner-clear:A65FF0(destroy thread)": 2,
+    "runner-clear:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x2168b0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "clear",
+    "stage"
+   ],
+   "stage": "HT2",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "clear: states=['freed', 'freed']",
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "runner-clear": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "runner-clear:A66070(signal event)": 2,
+    "runner-clear:A65FE0(wait/join thread)": 2,
+    "runner-clear:A65FF0(destroy thread)": 2,
+    "runner-clear:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x2168b0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "reap",
+    "stage",
+    "reap"
+   ],
+   "stage": "HT2",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "reap: states=[1, 1]",
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "reap": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "reap:A66070(signal event)": 2,
+    "reap:A65FE0(wait/join thread)": 2,
+    "reap:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x2168b0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "stage",
+    "step",
+    "reap"
+   ],
+   "stage": "HT2",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "step: states=[3, 3]",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "step2": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "step2:A66070(signal event)": 2,
+    "step2:A65FE0(wait/join thread)": 2,
+    "step2:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x2168b0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "stage",
+    "reap"
+   ],
+   "stage": "R21",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "reap": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "reap:A66070(signal event)": 2,
+    "reap:A65FE0(wait/join thread)": 2,
+    "reap:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x13adc0",
+    "0x4d7aa0",
+    "0x4d82c0",
+    "0x4d8ef0",
+    "0x4d92c0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "stage",
+    "clear"
+   ],
+   "stage": "R21",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "clear: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "runner-clear": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "runner-clear:A66070(signal event)": 2,
+    "runner-clear:A65FE0(wait/join thread)": 2,
+    "runner-clear:A65FF0(destroy thread)": 2,
+    "runner-clear:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x13adc0",
+    "0x4d7aa0",
+    "0x4d82c0",
+    "0x4d8ef0",
+    "0x4d92c0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "clear",
+    "stage"
+   ],
+   "stage": "R21",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "clear: states=['freed', 'freed']",
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "runner-clear": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "runner-clear:A66070(signal event)": 2,
+    "runner-clear:A65FE0(wait/join thread)": 2,
+    "runner-clear:A65FF0(destroy thread)": 2,
+    "runner-clear:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x13adc0",
+    "0x4d7aa0",
+    "0x4d82c0",
+    "0x4d8ef0",
+    "0x4d92c0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "reap",
+    "stage",
+    "reap"
+   ],
+   "stage": "R21",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "reap: states=[1, 1]",
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "reap": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "reap:A66070(signal event)": 2,
+    "reap:A65FE0(wait/join thread)": 2,
+    "reap:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x13adc0",
+    "0x4d7aa0",
+    "0x4d82c0",
+    "0x4d8ef0",
+    "0x4d92c0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  },
+  {
+   "order": [
+    "stage",
+    "step",
+    "reap"
+   ],
+   "stage": "R21",
+   "group_id": 1,
+   "state_after_step": [
+    1,
+    1
+   ],
+   "runner_groups_before": 1,
+   "sequence": [
+    "stage dtor returned; groups=0",
+    "stage memory poisoned (freed)",
+    "step: states=[3, 3]",
+    "reap: states=['freed', 'freed']"
+   ],
+   "step_imports": {
+    "0xa66000": 2,
+    "0xa66010": 2,
+    "0xa66030": 2,
+    "A66080(start thread)": 2
+   },
+   "join_by_phase": {
+    "step2": 2
+   },
+   "threads_freed": 2,
+   "thread_final_states": [
+    3,
+    3
+   ],
+   "os_imports": {
+    "step2:A66070(signal event)": 2,
+    "step2:A65FE0(wait/join thread)": 2,
+    "step2:A65FF0(destroy thread)": 2,
+    "reap:A66060(finalize event)": 4
+   },
+   "late_stage_access": 0,
+   "late_samples": [],
+   "unlisted": [
+    "0x13adc0",
+    "0x4d7aa0",
+    "0x4d82c0",
+    "0x4d8ef0",
+    "0x4d92c0",
+    "0x4df060",
+    "0x4df820",
+    "0x4ee330",
+    "0x4efdb0",
+    "0x504440",
+    "0x505ab0",
+    "0x6a40"
+   ]
+  }
+ ],
+ "workers": [
+  {
+   "worker": "HT2",
+   "stop_at_wait": 1,
+   "waits_seen": 1,
+   "late_stage_access": 0,
+   "late_samples": [],
+   "error": null,
+   "final_state": 2,
+   "tPop_calls": 1
+  },
+  {
+   "worker": "HT2",
+   "stop_at_wait": 2,
+   "waits_seen": 2,
+   "late_stage_access": 0,
+   "late_samples": [],
+   "error": null,
+   "final_state": 2,
+   "tPop_calls": 1
+  },
+  {
+   "worker": "HT2",
+   "stop_at_wait": 3,
+   "waits_seen": 3,
+   "late_stage_access": 0,
+   "late_samples": [],
+   "error": null,
+   "final_state": 2,
+   "tPop_calls": 1
+  },
+  {
+   "worker": "HT2",
+   "stop_at_wait": 4,
+   "waits_seen": 4,
+   "late_stage_access": 0,
+   "late_samples": [],
+   "error": null,
+   "final_state": 2,
+   "tPop_calls": 1
+  },
+  {
+   "worker": "HT2",
+   "stop_at_wait": 5,
+   "waits_seen": 5,
+   "late_stage_access": 0,
+   "late_samples": [],
+   "error": null,
+   "final_state": 2,
+   "tPop_calls": 1
+  }
+ ]
+}

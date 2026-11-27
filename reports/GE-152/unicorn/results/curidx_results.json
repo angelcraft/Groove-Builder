@@ -1,0 +1,23 @@
+{
+ "67": {
+  "desc_addr": "0xd19d98",
+  "desc+0x18": 73,
+  "returned": "0xa0000049",
+  "slot": 73
+ },
+ "41": {
+  "desc_addr": "0xd198b8",
+  "desc+0x18": 47,
+  "returned": "0xa000002f",
+  "slot": 47
+ },
+ "-1": {
+  "desc_addr": "0xd190d8",
+  "desc+0x18": 0,
+  "returned": "0xa0000000",
+  "slot": 0
+ },
+ "0x4980 mode0 curIdx=-1": 4294967295,
+ "0x4980 mode1 curIdx=-1": 4294967295,
+ "0x4980 mode=-1": 4294967295
+}

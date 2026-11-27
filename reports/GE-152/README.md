@@ -6,9 +6,9 @@
   (coordinación: `coordination/v0.6.0` @ `0ca2c9d`, PR #4)
 - Working branch and exact head SHA: `grok/dynamic-stage-research`. El head exacto es el commit que añade esta
   versión del archivo (un archivo no puede contener su propio SHA); se anota en el PR. Commit anterior de la
-  misma rama: `38b102d0a5cdb092cf89e9f7811df37efbf66214`.
+  misma rama: `8e11d7babb9ff85939dda0553a8b5407af7237d9`.
 - PR URL: https://github.com/angelcraft/Groove-Builder/pull/5 (borrador)
-- Status: ready for review (solo investigación; no hay código de runtime)
+- Status: ready for review (investigación + validación en Unicorn; no hay código de runtime ni hooks en `engine/`)
 
 ## Changes
 
@@ -22,6 +22,8 @@
 | `reports/GE-152/pr6-audit.md` | Auditoría del PR #6 (GE-151 @ `07f78337`), efectos en GE-152, dependencias y propuestas |
 | `reports/GE-152/two-slot-prototype.md` | Diseño del prototipo de 2 casillas: despacho, título/prólogo/jingle, formato `.gsv` y plan de verificación |
 | `reports/GE-152/inverse-map-fix.md` | Causa de la contaminación del mapa inverso por la IPS, llamadores y efectos, corrección |
+| `reports/GE-152/unicorn-validation.md` | Validación en Unicorn pedida en PR #5: aislamiento F0–F4 (27 casos), `curIdx=-1`, teardown del Runner, mapa inverso, dos casillas, instalación parcial y `.gsv` |
+| `reports/GE-152/unicorn/` | Harness y experimentos (solo direcciones; la imagen se pasa por argumento) y `results/` con diffs por campo |
 
 No se ha modificado `engine/`, `editor/`, `docs/GROOVE_SPEC.md`, `main`, `work/groove-engine-v0.5.0` ni la rama/runtime de Codex.
 El borrador inicial que estaba en `docs/research/` (commit `767baaf`) se ha movido aquí y esa carpeta se ha eliminado.
@@ -57,16 +59,20 @@ El borrador inicial que estaba en `docs/research/` (commit `767baaf`) se ha movi
     (solo detección).
   - Rejilla original: HT2 `(1,1,0)`, Remix 8 `(0,8,4)`. Con la IPS, `0x1CD490` cambia el mundo del Remix 8 de 0 a 1.
 
-### Pruebas en host — NO REALIZADAS
-No se ha escrito ni ejecutado código de host (no hay prototipo del registro ni del parser de `manifest.json`).
-La auditoría del PR #6 es una lectura del diff: **no** he ejecutado `tools/run_engine_tests.py` ni sus builds.
+### Pruebas en host
+Modelo Python del registro fail-closed y del `.gsv` (propuesta) con paquetes sintéticos: `unicorn/registry_model.py`,
+`unicorn/exp_c2.py` (9 casos de instalación parcial; independencia de A/B; CRC → `.bak`; id distinto → por defecto).
+**No** he ejecutado `tools/run_engine_tests.py` ni los builds de PR #6.
 
 ### Build ARM64 — NO REALIZADO
 No se ha compilado `subsdk4` ni ningún prototipo.
 
-### Emulación (Unicorn) — NO REALIZADA en GE-152
-Las referencias a Unicorn del documento citan pruebas **anteriores** de v0.4.0/v0.5.0 (85/85 y 108/108, de otra
-tarea). En §10 (fase 0) se proponen pruebas nuevas, que no se han ejecutado.
+### Emulación (Unicorn) — REALIZADA (ver `unicorn-validation.md`)
+Código real de `main` `03FF4A3B` (imagen sin la IPS) con stubs explícitos del harness. Resumen: F1–F3 → staging
+idéntico al blob inicial en todos los casos de modo de mapa 0 (incluida Perfect Campaign); F4 detecta derivas; F0
+bloquea sin escrituras; el dtor del stage no hace join (el join se hace en `step/reap/clear`, sin accesos tardíos
+al stage); mapa inverso con guard = original. **Contradicciones**: reset del cursor en modo de mapa 1,
+`0x2067B0 → 0x2E90` con `curIdx=-1` lee fuera de la tabla, y `sel` persistente tras la confirmación.
 
 ### Switch física — NO REALIZADA
 Lo único "visto en hardware" que se cita es la validación previa de las casillas HT3/DH/Multi (v0.3.x). No hay
@@ -97,10 +103,9 @@ pruebas físicas nuevas en GE-152.
   prototipo de 2 casillas.
 
 ## Next steps
-0. Unicorn: orden `0x4290F0` / `0x514BC0` / `0x4E04E0` en `exit` y en pausa → salir; secuencia F1–F4 con un blob
-   idéntico (`native-save-isolation.md` §4); ninguna ruta indirecta de `launchA` llega a `0x3D60`.
-1. Fase 0 (GE-152): pruebas en Unicorn de la reimplementación de `mapCell` (180 coords), `buildReverseMap` con
-   `gInReverseBuild` y diferencia del blob de guardado en una partida `exit`. Resolver las preguntas de §8.1.
+0. Hecho en Unicorn (`unicorn-validation.md`). Pendiente: mitigación del modo de mapa 1, ruta `0x2067B0` con
+   `curIdx=-1`, decisión sobre `sel` persistente, worker R21 y corrutinas anidadas, y todo lo que requiere Switch.
+1. Resolver las preguntas de §8.1.
 2. Después de revisar GE-154 y GE-151: diseño detallado del prototipo de **2 casillas** `(0,9,0)` y `(0,9,1)`, con
    `adapter: multi` y `results: custom`, como tarea de runtime aparte (sin crear aquí).
 3. No se promete capacidad por encima de 2 o 30 casillas hasta tener mediciones (§10, §12).
