@@ -4,7 +4,7 @@ Extractos mínimos del desensamblado (Capstone, AArch64) de la imagen local de `
 solo para documentar la interoperabilidad. Las direcciones son desplazamientos en la imagen de memoria
 (base 0). No se incluye ningún binario ni recurso del juego.
 
-Documento principal: [`dynamic-stage-registration.md`](dynamic-stage-registration.md).
+Documento principal: [`dynamic-stage-research.md`](dynamic-stage-research.md) · ficha: [`README.md`](README.md).
 
 ## E1. `mapCell` 0x1CBCA0: `grid + w*0x1E0 + c*0x28 + r*8`, sin límites (GOT 0xD99768 → 0xAE07B8)
 

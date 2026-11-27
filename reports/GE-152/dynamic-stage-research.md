@@ -1,6 +1,8 @@
 # Registro dinámico de hasta 256 niveles — investigación técnica
 
-Rama: `grok/dynamic-stage-research` (creada desde `work/groove-engine-v0.5.0`, commit `6187390`).
+Tarea: **GE-152 (Grok)**, solo investigación. Rama: `grok/dynamic-stage-research`, base `work/groove-engine-v0.5.0` @
+`61873906f016d46ac1d47d7a5016ec6e3fe93fa9`. Coordinación: `coordination/v0.6.0` @ `0ca2c9d` (PR #4).
+Ficha de la tarea (plantilla): [`README.md`](README.md).
 Juego: *Rhythm Heaven Groove* (Switch), `main` build `03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8` (`03FF4A3B`).
 Fecha: 27 de noviembre de 2026 (Europe/Amsterdam).
 
@@ -15,6 +17,13 @@ Fecha: 27 de noviembre de 2026 (Europe/Amsterdam).
 > **[H]** es una hipótesis razonada que aún hay que confirmar en Unicorn o en la consola.
 
 Anexo con las pruebas en bruto: [`dynamic-stage-evidence.md`](dynamic-stage-evidence.md).
+
+> **Alineación con `docs/GROOVE_SPEC.md` (draft 0.1) y `ROADMAP.md` (v0.7.0)**: los nombres de archivo y los
+> campos de este documento siguen el contrato propuesto (`sd:/groove/levels/<id>/manifest.json`,
+> `format: "groove-package/1"`, `id` reverse-DNS, `adapter: multi|hoop`, `results: custom`). El contrato **no está
+> congelado**: lo que aquí aparece como "propuesto" es una aportación de GE-152 a la revisión (§12), no una decisión.
+> Primero se propone un **prototipo de dos casillas** (§10); llegar a 256 queda condicionado a medir memoria,
+> layout y guardado.
 
 ---
 
@@ -43,11 +52,11 @@ Anexo con las pruebas en bruto: [`dynamic-stage-evidence.md`](dynamic-stage-evid
    contador de partidas de `kind1[67]`. Después, los resultados (`0x215210 → setPending 0x4910`) dejan el
    rango y la puntuación pendientes, y al volver al mapa `commitResult` (`0x1D39D0`) los escribe en
    `kind1[67]` con `setBest 0x47E0`, `setPerfectCount 0x4840` y `setSaveState 0x4030` **[V]**.
-6. **Diseño recomendado**: un registro estático de 256 entradas en `subsdk4` (unos 60 KiB en `.bss`,
-   sin memoria dinámica), un escáner de `sd:/groove/packs/<id>/pack.json` y una capa de guardado aislada
+6. **Diseño recomendado** (primero un prototipo de **2 casillas**, §10): un registro estático (2 entradas en el prototipo y hasta 256 en el objetivo) en `subsdk4` (unos 77 KiB en `.bss` con 256 y menos de 1 KiB en el prototipo,
+   sin memoria dinámica), un escáner de `sd:/groove/levels/<id>/manifest.json` y una capa de guardado aislada
    que, mientras haya un nivel personalizado activo, (a) intercepta `beginPlay`, `setPending` y
    `commitResult`, (b) hace una instantánea del registro nativo del anfitrión y lo restaura antes de cada
-   `writeSave` (`0x3D60`), y (c) guarda el resultado en `sd:/groove/saves/<id>.gsv`. Además le pasa
+   `writeSave` (`0x3D60`), y (c) guarda el resultado por `id` estable en `sd:/groove/custom-saves/<id>.gsv`. Además le pasa
    el estado, el récord y las medallas a los hooks del mapa.
 
 ---
@@ -305,48 +314,57 @@ Conclusión: el juego no tiene ninguna noción de "nivel personalizado". Todo se
 
 ---
 
-## 5. Paquetes en la SD y registro (hasta 256)
+## 5. Paquetes en la SD y registro (prototipo de 2 → objetivo de 256)
 
-### 5.1 Estructura en la SD
+### 5.1 Estructura en la SD (según `docs/GROOVE_SPEC.md` draft 0.1)
+
+El `.groove` es un ZIP que **valida y extrae la herramienta de PC** en un directorio ya preparado. El runtime **no** lee
+ZIP (es una decisión futura del contrato). La instalación es transaccional: se extrae en `…/<id>.tmp/`, se valida y
+se renombra a `<id>/`. Si algo falla, se borra el `.tmp` y la versión anterior sigue intacta. `stages/` (legado) no se toca.
 
 ```
-sd:/groove/packs/
-  index.txt                  # opcional: un id por línea (por si no se puede listar el directorio)
-  <id>/
-    pack.json                # manifiesto (JSON plano: solo strings y enteros)
-    stage.gtf | stage.gtl    # timeline (ring: .gtl de aros · multi: .gtf o GTLM)
-    DISABLE                  # opcional: desactiva el paquete sin borrarlo
-    assets/                  # opcional y futuro (audio o arte propio, ver riesgos)
-sd:/groove/saves/
-  <id>.gsv                   # guardado binario de 64 B con CRC32 (+ <id>.json legible, opcional)
-sd:/groove/packs.lock        # opcional: id → slot fijado (orden estable entre arranques)
+sd:/groove/levels/
+  index.txt                  # opcional, lo genera el instalador: un id por línea (por si no se puede listar el directorio)
+  <id>/                      # p. ej. org.example.demo
+    manifest.json            # groove-package/1
+    timeline.gtf | .gtl      # multi: GTF (preferido) o GTLM · hoop: GTL1
+    icon.png                 # solo vista previa del editor (el runtime no lo carga)
+    DISABLE                  # opcional
+sd:/groove/custom-saves/     # nombre propuesto (el contrato solo pide "un directorio dedicado")
+  <id>.gsv                   # 64 B con CRC32 (+ <id>.json legible, opcional)
+sd:/groove/registry.lock     # opcional: id → casilla asignada POR EL RUNTIME (orden estable)
 ```
 
-`pack.json` (ejemplo, contenido original):
+`manifest.json` (sintético, igual que el ejemplo del contrato):
 
 ```json
 {
-  "format": "groove-pack/1",
-  "id": "mi_remix_01",
-  "engine": "multi",
-  "timeline": "stage.gtf",
-  "title": "Mi Remix",
-  "description": "Remix de prueba",
-  "prologue": "type_19",
-  "jingle": "0x163",
-  "icon_from": "1,79",
-  "slot": -1,
-  "results": "native"
+  "format": "groove-package/1",
+  "id": "org.example.demo",
+  "version": "1.0.0",
+  "title": "Original Demo",
+  "engine_min": "0.6.0",
+  "adapter": "multi",
+  "timeline": { "format": "gtf", "path": "timeline.gtf" },
+  "required_capabilities": ["timeline.gtf"],
+  "results": "custom"
 }
 ```
 
-Validación (si algo falla, el paquete se ignora con una línea en el log y **no ocupa casilla**):
-`id` válido y que coincida con la carpeta; `engine ∈ {ring, multi}`; que la timeline exista y ocupe
-≤ 60 KiB; `jingle ∈ 0x158..0x16C`; `prologue` igual a una ruta nativa (`nativeProloguePath`) o a un par
-`.spr/.tex` en LayeredFS; `icon_from` = `(kind,idx)` nativo existente. El análisis completo de la timeline
-**no** se hace al escanear (es caro), sino al lanzar. Si falla entonces, se vuelve al mapa limpiamente
-(como el `DISABLE` actual).
+Lo que este documento **propone añadir** al contrato (pendiente de revisión, §12): `presentation.prologue`
+(una ruta del allowlist nativo `type_00..type_19`), `presentation.jingle` (`0x158..0x16C`) y `presentation.icon_from`
+(un icono nativo como alias, sin arte nuevo). Todos son opcionales. Si faltan, se usa lo del anfitrión **solo como
+apariencia**, nunca para la identidad.
 
+Lo que el paquete **no** puede elegir (contrato): casilla, página, anfitrión nativo `(kind,index)`, offsets, hooks ni
+slot de guardado. Las directivas heredadas `match` y `FORCE` de la timeline **se ignoran** en modo paquete.
+
+Validación en el runtime (fail closed; si falla, no ocupa casilla y queda una línea en el log): `format` exacto; `id`
+de 3–96 caracteres en minúsculas, con `[a-z0-9.-]`, sin `/`, espacios ni `..`, e igual al nombre de la carpeta; `version`
+`X.Y.Z`; `engine_min` ≤ la versión del módulo; `adapter ∈ {multi, hoop}` coherente con `timeline.format`
+(`multi`: gtf/gtlm · `hoop`: gtl1); `required_capabilities` ⊆ las soportadas; `results == "custom"` (§7);
+`manifest.json` ≤ 16 KiB; timeline ≤ 60 KiB. Si hay un **id duplicado, se rechaza** (no se sobrescribe). Las timelines
+se validan entera al lanzar con los parsers que endurece GE-151 (§12).
 ### 5.2 Descubrimiento
 
 - Ya se resuelven por nombre `OpenFile/ReadFile/...` (`kFsNames`). Habría que añadir
@@ -359,21 +377,22 @@ Validación (si algo falla, el paquete se ignora con una línea en el log y **no
 - Cuándo: la primera vez que se pinta el mapa (en el post-hook de `0x1CC550`) y no en el arranque (se mantiene la
   regla de v0.1.1: nada de FS en `hkMain`). También se puede reescanear al volver de un stage si cambia el mtime o el
   tamaño de `index.txt`. Para hacer *hot-unplug* sin reiniciar habría que reescanear en cada `0x1CC550`, que es barato si solo
-  se comprueba `pack.json`.
+  se comprueba `manifest.json`.
 
 ### 5.3 Registro en memoria (sin heap)
 
 ```cpp
 namespace groove::reg {
-constexpr int kMaxEntries   = 256;
+constexpr int kMaxEntries   = 256;     // prototipo: 2
 constexpr int kCellsPerPage = 30;        // mundos 0 y 1 × cols 9..11 × filas 0..4
 constexpr int kMaxPages     = 10;     // 9 bastan con 30/página; 10 con paginadoras (28/página, §6.3)
 
 enum class Engine : uint8_t { None, Ring, Multi };
 
-struct Entry {                 // 192 bytes, alineado a 8
+struct Entry {                 // 264 bytes, alineado a 8
     uint64_t hash;             // FNV-1a(id): identidad estable
-    char     id[32];
+    char     id[97];           // reverse-DNS, 3..96 + NUL (contrato)
+    char     _a[7];
     char     title[64];        // UTF-8 (tamaño de buffer igual que el actual)
     char     prologue[48];     // "type_XX" o ruta relativa a romfs
     int16_t  jingle;           // -1 = el del anfitrión
@@ -385,7 +404,7 @@ struct Entry {                 // 192 bytes, alineado a 8
     uint16_t gen;              // generación del escaneo en que se vio
     char     _pad[28];
 };
-static_assert(sizeof(Entry) == 192);
+static_assert(sizeof(Entry) == 264);
 
 struct SaveRec {               // 32 bytes en RAM; 64 B en la SD con cabecera y CRC
     uint64_t hash;
@@ -403,21 +422,21 @@ static_assert(sizeof(SaveRec) == 32);
 struct DynamicStageRegistry {
     uint32_t magic;            // 'GREG'
     uint16_t count, gen;
-    Entry    e[kMaxEntries];             // 49 152 B
+    Entry    e[kMaxEntries];             // 67 584 B con 256 (528 B en el prototipo de 2)
     SaveRec  s[kMaxEntries];             //  8 192 B
     int16_t  bySlot[kMaxPages * kCellsPerPage];   // 600 B, -1 = vacío
     MapCell  virt[kMaxEntries];          //  2 048 B (lo que devuelve mapCell)
     uint8_t  page;                       // página visible
-};   // ≈ 60 KiB en .bss
+};   // ≈ 77 KiB en .bss con 256; < 1 KiB con kMaxEntries = 2
 }
 ```
 
 - Un solo `static DynamicStageRegistry gReg;` sin `new` ni `malloc`. El parser de JSON es plano, de una
   sola pasada y trabaja sobre `gFileBuf` (ya existe, 64 KiB). La timeline se lee al lanzar, en ese mismo buffer.
-- **Asignación de slots**: (1) los `slot` fijados en `pack.json` o en `packs.lock`; (2) el resto, por orden de `id`
-  (estable aunque cambie el orden en que se lee el directorio). Si dos piden el mismo slot, gana el primero por `id`
-  y el otro va al primer hueco libre (queda en el log).
-- **Quitar un paquete**: en el siguiente escaneo su `Entry` no aparece → `bySlot[slot] = -1` → `mapCell` devuelve
+- **Asignación de casillas (solo el runtime)**: (1) lo que ya esté en `registry.lock` (la escribe el runtime, no el paquete);
+  (2) los paquetes nuevos, por orden de `id`, en el primer hueco libre (estable aunque cambie el orden de lectura del
+  directorio). El paquete no puede pedir casilla.
+- **Quitar un paquete** (desinstalador: renombrar a `<id>.removed` y luego borrar): en el siguiente escaneo su `Entry` no aparece → `bySlot[slot] = -1` → `mapCell` devuelve
   `(0,13)` → la casilla vuelve a estar oculta como en el juego original. Su `.gsv` **se queda** en la SD (huérfano e
   inofensivo) y se recupera si el paquete vuelve. El guardado nativo no cambia nunca, así que quitarlo no puede corromper nada.
 - Si el cursor estaba en una casilla que desaparece, el post-hook de `0x1CC550` comprueba la casilla del cursor y,
@@ -482,7 +501,7 @@ Para corregirlo sin tocar las 111 llamadas `BL` a `0x3F70`:
 
 1. `0x1D2CC0` (confirmar) → si la coord es personalizada: `gActive = {e, page, w, c, r}` (antes de `orig`).
 2. `orig` → `stashName(host)`: el hook pone el título, el prólogo y el jingle de la entrada (`fixStashForEntry`).
-3. ctor HT2/REMIX_21 → el hook busca `gActive.e` (no `match` del `.gtl`), lee `sd:/groove/packs/<id>/stage.*` y
+3. ctor HT2/REMIX_21 → el hook busca `gActive.e` (no `match` del `.gtl`), lee `sd:/groove/levels/<id>/<timeline.path>` y
    ejecuta el motor `ring` o `multi`. `match` en la timeline pasa a ser opcional e informativo.
 4. Si el `engine` del paquete no coincide con el anfitrión que se ha construido (no debería pasar), el stage nativo sigue
    como está y queda en el log (fallo seguro).
@@ -490,6 +509,15 @@ Para corregirlo sin tocar las 111 llamadas `BL` a `0x3F70`:
 ---
 
 ## 7. Guardado aislado
+
+### 7.0 Política de resultados en modo paquete (contrato)
+
+Según `docs/GROOVE_SPEC.md`, en modo paquete **los resultados nativos van desactivados** hasta que se demuestre que
+son independientes: el nivel termina con la salida limpia que ya existe (`setNextScene` + `exitToMenu`, el modo `exit`
+del motor) y la puntuación propia se guarda en `custom-saves`. Así, en las fases 1 y 2, **S1–S3 no hacen falta para
+guardar**. Se instalan solo como **guardas** (detectar y bloquear cualquier escritura en el registro del anfitrión).
+La ruta "resultados nativos aislados" (S1–S4 completos) es investigación para una fase posterior y necesita su propia
+prueba física antes de activarse.
 
 ### 7.1 Regla de oro
 
@@ -514,14 +542,15 @@ saltarse algún paso). **[H]** Hay que probarlo en Unicorn antes de elegirla.
 
 ### 7.3 Persistencia en la SD
 
-- `sd:/groove/saves/<id>.gsv`, 64 B en little endian: `magic 'GSV1'`, `u16 ver`, `u16 size`, `u64 hash`,
+- `sd:/groove/custom-saves/<id>.gsv` (por `id` estable, nunca por casilla ni por anfitrión), 64 B en little endian: `magic 'GSV1'`, `u16 ver`, `u16 size`, `u64 hash`,
   `i32 best`, `i32 plays`, `i32 clears`, `u8 state`, `u8 perfect`, `u8 lastRank`, `u8 rsv`, `u32 writes`, `u8 pad[...]`,
   `u32 crc32`. Se escribe de forma atómica: primero `.tmp`, luego `Delete` + `Rename` (como `writeSave()` del motor).
 - Se escribe **en contexto normal** (dtor del stage y `mapEnterFromStage`), nunca dentro de una corrutina de cues.
+- Si falla la escritura, el `.gsv` anterior sigue siendo válido (`.tmp` + rename), como pide el contrato.
 - `<id>.json` (opcional, legible), compatible con el formato `groove-save/1` de ahora (`plays`, `completions`,
   `aborted`) más `best`, `perfect` y `state`.
-- Migración: `sd:/groove/save/ht3.json`, `doublehell.json` y `multi.json` se importan una vez como `plays/clears`
-  de los paquetes `ht3`, `doublehell` y `multi` (que ya vendrían de serie).
+- Legado: `sd:/groove/save/ht3.json`, `doublehell.json` y `multi.json` **no se tocan**. HT3, DH y Multi siguen por la ruta
+  legada `stages/` mientras no se decida la política de compatibilidad (§12).
 - Al cargar: CRC incorrecto → se ignora el archivo y se usa `.json` o un registro vacío (nunca se borra nada).
 
 ### 7.4 Cómo vuelve al mapa
@@ -601,7 +630,7 @@ Datos:
 5. Qué evento es `0x18AE40(3,8,9..0xC)` en los Remix 6/8/14/20 (índices 65/67/73/79).
 6. Qué significan del todo los estados 3..9 (relación con `SetRank*` y `stackNN`).
 7. Si las filas 3–4 del mundo 2 se pintan o se pueden navegar (`rows[2] = 3`).
-8. Si el cargador de prólogos (`0x505DF0`) acepta rutas con montaje propio (`ht3sd:/groove/packs/...`) o solo romfs/LayeredFS.
+8. Si el cargador de prólogos (`0x505DF0`) acepta rutas con montaje propio (`ht3sd:/groove/levels/...`) o solo romfs/LayeredFS.
 9. El efecto real de `0xDACF78` (`0x215DB0`) con el mapa inverso contaminado por la IPS v0.3.9.
 
 ---
@@ -614,8 +643,8 @@ Datos:
 | Mapa inverso contaminado (avisos de desbloqueo y `0xDACF78`) | Alta con la IPS actual | Medio | `gInReverseBuild` en `0x1CD4E0`. Quitar la IPS de casillas en la fase 2 |
 | `mapCell` sustituida con un error de aritmética | Baja | Crítico (cuelgue del mapa) | Copia exacta probada con los 180 coords en Unicorn. Firma `69412408 D0005E6B`. Si no cuadra → no instalar |
 | Otro módulo (Orochi `subsdk1`, HoopDX `subsdk5`) ya engancha alguna función | Baja | Medio | `looksHooked()` como ahora y desactivar solo la función afectada |
-| Memoria de `subsdk4` (`.bss`, unos 60 KiB más) | Baja | Medio | Estructuras de tamaño fijo y `static_assert`. Comprobar el tamaño del NSO y del segmento en `GrooveHT3.nss` |
-| Tiempo de escaneo (256 × `pack.json`) en el primer pintado del mapa | Media | Bajo/Medio (tirón) | Leer solo `pack.json` (≤ 4 KiB), caché por generación, `index.txt` y escaneo incremental |
+| Memoria de `subsdk4` (`.bss`: < 1 KiB en el prototipo, unos 77 KiB con 256) | Baja | Medio | Estructuras de tamaño fijo y `static_assert`. Comprobar el tamaño del NSO y del segmento en `GrooveHT3.nss` |
+| Tiempo de escaneo (256 × `manifest.json`) en el primer pintado del mapa | Media | Bajo/Medio (tirón) | Leer solo `manifest.json` (≤ 16 KiB), caché por generación, `index.txt` y escaneo incremental |
 | El paquete desaparece con el cursor encima o a mitad de partida | Baja | Medio | El registro solo cambia al reescanear en el pintado del mapa, nunca durante un stage. Cursor recolocado (§5.3) |
 | Recursos que faltan (prólogo o `.spr/.tex` LayeredFS) | Media | Alto (pantalla negra) | Comprobar la pareja `.spr+.tex` (como `resolvePrologue`) y, si falta, usar el del anfitrión |
 | Arte nuevo (iconos o prólogos propios) | — | — | Bloqueado: la codificación de `.tex` sigue sin resolver (`bg_red/NOTES.md`). Se usan iconos nativos (`icon_from`) |
@@ -627,34 +656,57 @@ Datos:
 
 ---
 
-## 10. Plan por fases
+## 10. Plan por fases (prototipo de dos casillas primero)
 
-### Fase 1 — Registro, escáner y guardado aislado (sin tocar el mapa)
-- `groove::reg` (`registry.hpp/.cpp`): `pack.json` plano, `index.txt`, slots estables, `SaveRec` + `.gsv`.
-- Paquetes de serie `ht3`, `doublehell` y `multi` generados desde las rutas actuales (compatibilidad total con v0.5.0).
-- Hooks S1–S4 con firmas en `sigs.hpp` (`kSigsSave`). Si alguno falla → el modo `results native` para personalizados se desactiva y
-  el nivel sale con `exit` (como `NO_NATIVE_RESULTS`).
-- Pruebas en Unicorn: jugar Multi con `results native` y comprobar que el blob `mgr+0x548..+0x16D0` queda **igual byte a byte**,
-  salvo los contadores de cabecera.
-- Salida: Remix 8 a salvo y récords propios en `sd:/groove/saves/`.
+### Fase 0 — Verificación sin tocar el runtime (GE-152, siguiente paso)
+- Unicorn sobre la imagen local (no se publica): reimplementación de `mapCell` frente a la original con los **180 coords**;
+  `buildReverseMap` con y sin `gInReverseBuild`; diferencia del blob `mgr+0x548..+0x16D0` antes y después de una partida
+  simulada con `exit` en vez de resultados.
+- Localizar el handler del stick y de los gatillos, y cerrar las preguntas de §8.1.
 
-### Fase 2 — Casillas dinámicas e identidad
-- HkReplace `0x1CBCA0` + trampolín `0x1CD4E0` (mapa inverso limpio). Ya no hace falta la IPS de casillas.
-- 30 casillas (mundos 0 y 1, cols 9–11) desde el registro. Hooks `0x1CC420`, `0x3FB0` y post `0x1CC190`.
-- Identidad por entrada: título, descripción, prólogo, jingle e `icon_from` en `0x1D0130`, `stashName`, `prologueCtor` y `cachedName`.
-- Contexto activo en `0x1D2CC0` y selección del stage por entrada en los ctor HT2/REMIX_21.
-- Pruebas: los 180 coords en Unicorn (nativos iguales; personalizados → `virt`), consola: quitar o poner paquetes entre arranques.
+### Fase 1 — Prototipo de **2 casillas** (roadmap v0.7.0)
+- Dos casillas extra **fijas**: `(w=0, c=9, r=0)` y `(w=0, c=9, r=1)`. Están libres en la tabla nativa y no chocan con la
+  IPS legada (mundo 1, col 9), así que pueden convivir con HT3, DH y Multi.
+- Registro con `kMaxEntries = 2`; `mapCell` HkReplace solo para esos 2 coords y `gInReverseBuild`.
+- Anfitrión `multi` (REMIX_21) para las dos; `hoop` (HT2) después, cuando GE-151 cierre el parser GTL1.
+- Resultados: **`custom`** (sin resultados nativos). Guarda S4 en `writeSave` para detectar y bloquear cambios en
+  `kind1[67]`.
+- Lo que hay que demostrar, por separado: (1) **selección** (cada casilla lanza su `id`; título, prólogo y jingle
+  independientes); (2) **desbloqueo** (estado mínimo 2 desde `custom-saves`; quitar un paquete oculta la casilla);
+  (3) **persistencia** (`plays/clears/best` por `id` sobreviven al reinicio; el récord del Remix 8, de HT2, de Orochi y de HoopDX
+  queda **igual byte a byte**; copia JKSV antes y después).
+- Necesita: el endurecimiento de GE-151, un build ARM64 reproducible y la validación física de GE-156.
 
-### Fase 3 — Páginas hasta 256, iconos y resultados propios
-- Paginación P1 (casillas paginadoras; 28 por página, 10 páginas) y P2 cuando se localice el handler del mando.
-- Medallas, récord y rango propios en el panel y en la casilla. "Récord actualizado" (`map+0x6D60`).
-- Resultados: nombre por entrada, y quizá rango o comentarios por paquete.
-- Investigación aparte: arte propio (`.tex`), audio propio y prólogos desde la SD sin LayeredFS.
+### Fase 2 — Ampliar a las 30 casillas seguras
+- Mundos 0 y 1, cols 9–11, después de **retirar la IPS de casillas** (migrar HT3, DH y Multi a entradas del registro cuando
+  se decida la compatibilidad). Hooks `0x1CC420`, `0x3FB0` y post `0x1CC190`.
+- Medir: `.bss` real del NSO, tiempo de escaneo y pintado con 30 paquetes, y comportamiento de la cámara y el scroll en
+  las cols 10–11.
 
----
-
+### Fase 3 — Hacia 256 (solo si las mediciones lo permiten)
+- Paginación P1/P2 (§6.3), medallas y rango propios en el panel y en la casilla, y quizá resultados propios.
+- La investigación de arte, audio y prólogos desde la SD va aparte (roadmap v0.8.0+).
 ## 11. Compatibilidad y reglas del repositorio
 
 - No se publica **ningún** archivo del juego: ni `main` ni imágenes de `main`, romfs, `.spr`, `.tex`, `.msbt`, `.cwv`, `.bwav`,
-  `.bfsar`, audio, `subsdk4` compilado ni IPS. Los ejemplos de `pack.json` y `.gsv` de este documento son originales.
-- `work/groove-engine-v0.5.0` y `main` no se tocan. Esta rama solo añade `docs/research/`.
+  `.bfsar`, audio, `subsdk4` compilado ni IPS. Los ejemplos de `manifest.json` y `.gsv` de este documento son originales.
+- `work/groove-engine-v0.5.0` y `main` no se tocan. Esta rama solo añade `reports/GE-152/`. No se cambian `engine/`,
+  `editor/` ni `docs/GROOVE_SPEC.md`.
+
+---
+
+## 12. Aportación de GE-152 a las decisiones abiertas de `docs/GROOVE_SPEC.md`
+
+| Decisión abierta | Lo que dicen las pruebas (GE-152) | Propuesta para la revisión |
+|---|---|---|
+| **Capacidad real del menú** | Hay 3 mundos × 12 cols × 5 filas = 180 casillas; el layout tiene 12 columnas (`line00..11`) y la vista 12×5 widgets **[V]**. Hay 30 casillas libres seguras (mundos 0 y 1, cols 9–11) y 3 de ellas las ocupa la IPS legada | El contrato no debe prometer 256. Capacidad garantizada: **2** (prototipo); luego **30** cuando se retire la IPS. Más allá, paginación (`registry.page`) sin cambiar el layout |
+| **ABI del adaptador nativo** | Anfitriones: `multi` = `(1,67)` REMIX_21 (creador `112`, 24 escenas); `hoop` = `(1,41)` HT2 (creador `71`). Puntos de entrada: ctor, worker y dtor de cada anfitrión (ya enganchados), `stashName`/`prologueCtor` para presentar y `beginPlay`/`setPending`/`mapEnterFromStage`/`writeSave` para aislar **[V]** | El adaptador recibe `{entry*, timeline*}` del registro, nunca `(kind,idx)` del paquete. El registro fija el anfitrión según `adapter`. `match`/`FORCE` desactivados en modo paquete |
+| **Guardado y resultados** | El blob nativo es fijo (`0x1188`, versión `0x34`) y no tiene sitio para niveles nuevos; los resultados nativos escriben `kind1[host]` **[V]** | Confirma `results: "custom"` como único valor admitido en `groove-package/1` hasta tener pruebas físicas de S1–S4 |
+| **Recursos y presentación** | Prólogo = ruta del descriptor; jingle = `0xD20410[id-0x158]` (21); icono = frame por nameId **[V]**. El arte nuevo está bloqueado (`.tex`) | `presentation.{prologue,jingle,icon_from}` como **alias de recursos nativos** del allowlist. Rechazar `sprites/` y `intro/` como `required_capabilities` |
+| **Límites** | Timeline ≤ 60 KiB (`gFileBuf` 64 KiB); `.bss` estimado de 77 KiB para 256 | Mantener los límites del contrato; el valor nativo de `kMaxEntries` se fija tras medir (fase 2) |
+| **Compatibilidad de build y firmas** | Todas las direcciones son de 03FF4A3B; las firmas de las funciones nuevas están en §8 | Rechazar builds desconocidos (como ahora) y desactivar por función si la firma no cuadra |
+
+**Dependencias entre tareas**: GE-151 (Codex, `codex/engine-v0.5.1-hardening`, reclamada en PR #3) endurece los parsers y
+el contrato de validación. Se mantiene GTF `start=0` y GTLM `start=2880`, y GE-152 no reinterpreta ninguno de los dos.
+GE-154 (contrato, PR #4) decide los campos de §5.1 y §12. GE-155 (validador de PC) implementaría la instalación
+transaccional. GE-156 (usuario) hace la validación física con copia de seguridad.
