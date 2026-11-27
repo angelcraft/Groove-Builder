@@ -1,0 +1,4870 @@
+[
+ {
+  "kind": "HT2",
+  "teardown": "reap",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x138b10",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "reap",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "reap",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138810",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "clear",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x138b10",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "clear",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "clear",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138810",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "step",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x138b10",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "step",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "step",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138810",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "barrier",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x138b10",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "barrier",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "barrier",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138810",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "tstop-only",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x138b10",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "tstop-only",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "tstop-only",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 0,
+  "unlisted_in_children": [
+   "0x130830",
+   "0x136600",
+   "0x1366e0",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1384f0",
+   "0x138810",
+   "0x138b10",
+   "0x138f80",
+   "0x138ff0",
+   "0x139020",
+   "0x139070",
+   "0x139250",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "resume-after-free",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 28,
+  "late_by_phase": {
+   "teardown:T19c30": 14,
+   "teardown:T19ef0": 14
+  },
+  "late_samples": [
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4290e8",
+    "0x6831"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370c8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370f8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x137104",
+    "0x2a74"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4293d4",
+    "0x5be8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x42942c",
+    "0x2c80"
+   ]
+  ],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2,
+   "0x429330": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 16,
+   "T19ef0": 16
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x12a980",
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x136600",
+   "0x1366e0",
+   "0x1368a0",
+   "0x136af0",
+   "0x136e80",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1382a0",
+   "0x1384f0",
+   "0x138720",
+   "0x138810",
+   "0x138a20",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x138ff0",
+   "0x139000",
+   "0x139020",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x1399d0",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "resume-after-free",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 28,
+  "late_by_phase": {
+   "teardown:T19c30": 14,
+   "teardown:T19ef0": 14
+  },
+  "late_samples": [
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4290e8",
+    "0x6831"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370c8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370f8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x137104",
+    "0x2a74"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4293d4",
+    "0x5be8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x42942c",
+    "0x2c80"
+   ]
+  ],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2,
+   "0x429330": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 18,
+   "T19ef0": 18
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x12a980",
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x136600",
+   "0x1366e0",
+   "0x1368a0",
+   "0x136af0",
+   "0x136e80",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1382a0",
+   "0x1384f0",
+   "0x138720",
+   "0x138810",
+   "0x138a20",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x138ff0",
+   "0x139000",
+   "0x139020",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x1399d0",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "HT2",
+  "teardown": "resume-after-free",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 28,
+  "late_by_phase": {
+   "teardown:T19c30": 14,
+   "teardown:T19ef0": 14
+  },
+  "late_samples": [
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4290e8",
+    "0x6831"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370c8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x1370f8",
+    "0x29d8"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x137104",
+    "0x2a74"
+   ],
+   [
+    "teardown:T19c30",
+    "W",
+    "0x4293d4",
+    "0x5be8"
+   ],
+   [
+    "teardown:T19c30",
+    "R",
+    "0x42942c",
+    "0x2c80"
+   ]
+  ],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x1367f0": 2,
+   "0x42b740": 2,
+   "0x429330": 2
+  },
+  "automapped_pages": 1,
+  "waits_per_thread": {
+   "T19c30": 21,
+   "T19ef0": 21
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x12a980",
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x136600",
+   "0x1366e0",
+   "0x1368a0",
+   "0x136af0",
+   "0x136e80",
+   "0x137c30",
+   "0x137f10",
+   "0x138270",
+   "0x1382a0",
+   "0x1384f0",
+   "0x138720",
+   "0x138810",
+   "0x138a20",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x138ff0",
+   "0x139000",
+   "0x139020",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x1399d0",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x4ee970",
+   "0x4efe80",
+   "0x4f8260",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "reap",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "reap",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "reap",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "clear",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "clear",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "clear",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "step",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "step",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "step",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "barrier",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "barrier",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "barrier",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_barrier": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "tstop-only",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 1,
+   "T19ef0": 1
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "tstop-only",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 3,
+   "T19ef0": 3
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "tstop-only",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "tStop_true": [
+   1,
+   1
+  ],
+  "after_tstop": {
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    2,
+    2
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 6,
+   "T19ef0": 6
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "resume-after-free",
+  "ticks": 1,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 16,
+   "T19ef0": 16
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "resume-after-free",
+  "ticks": 3,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 18,
+   "T19ef0": 18
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ },
+ {
+  "kind": "R21",
+  "teardown": "resume-after-free",
+  "ticks": 6,
+  "nested_real": true,
+  "after_ticks": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   }
+  },
+  "after_stage_dtor": {
+   "states": [
+    1,
+    1
+   ],
+   "os": {
+    "T19c30": [
+     "blocked",
+     [
+      "ev",
+      "0xe28"
+     ]
+    ],
+    "T19ef0": [
+     "blocked",
+     [
+      "ev",
+      "0xe8"
+     ]
+    ]
+   },
+   "groups": 0
+  },
+  "final": {
+   "os": {
+    "T19c30": [
+     "done",
+     null
+    ],
+    "T19ef0": [
+     "done",
+     null
+    ]
+   },
+   "threads_freed": 2
+  },
+  "late_stage_access": 0,
+  "late_by_phase": {},
+  "late_samples": [],
+  "os_events_teardown": [
+   [
+    "main",
+    "join",
+    "T19c30",
+    "blocked"
+   ],
+   [
+    "T19c30",
+    "exit",
+    "T19c30"
+   ],
+   [
+    "main",
+    "join",
+    "T19ef0",
+    "blocked"
+   ],
+   [
+    "T19ef0",
+    "exit",
+    "T19ef0"
+   ]
+  ],
+  "child_exit_before_stage_dtor": null,
+  "tripwires": {},
+  "nested_entries": {
+   "0x1398b0": 2,
+   "0x421340": 2
+  },
+  "automapped_pages": 0,
+  "waits_per_thread": {
+   "T19c30": 21,
+   "T19ef0": 21
+  },
+  "null_page_writes": 1,
+  "unlisted_in_children": [
+   "0x130300",
+   "0x130830",
+   "0x130f90",
+   "0x1366e0",
+   "0x137b50",
+   "0x137b60",
+   "0x138b10",
+   "0x138ce0",
+   "0x138d20",
+   "0x138f80",
+   "0x139070",
+   "0x139140",
+   "0x139250",
+   "0x2171e0",
+   "0x4d7b40",
+   "0x4d9dc0",
+   "0x4d9ec0",
+   "0x4dae70",
+   "0x4dae80",
+   "0x4df040",
+   "0x4df970",
+   "0x4dfc00",
+   "0x4dfdf0",
+   "0x6a40"
+  ]
+ }
+]

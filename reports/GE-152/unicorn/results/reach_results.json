@@ -1,0 +1,32 @@
+{
+ "callers_0x2CC0": [
+  "0x1d1878",
+  "0x206a54"
+ ],
+ "callers_X_ctor": [
+  "0x398d08"
+ ],
+ "callers_factory16_ctor": [
+  "0x488c84"
+ ],
+ "X_vtable_slot_0xD1FF80": "0x2068d0",
+ "X_vtable_slot_0xD1FFB8": "0x2067b0",
+ "X_offset_to_top_0xD1FFA0": "0xffffffffffffd688",
+ "factory_cases": {
+  "16": "0x398c80",
+  "67": "0x428d70",
+  "108": "0x4202c0"
+ },
+ "R21 host (ctor/worker/dtor)": {
+  "functions_in_closure": 1192,
+  "reaches": []
+ },
+ "HT2 host": {
+  "functions_in_closure": 28235,
+  "reaches": []
+ },
+ "map confirm/launch/return": {
+  "functions_in_closure": 27590,
+  "reaches": []
+ }
+}

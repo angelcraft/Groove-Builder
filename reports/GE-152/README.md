@@ -6,7 +6,7 @@
   (coordinación: `coordination/v0.6.0` @ `0ca2c9d`, PR #4)
 - Working branch and exact head SHA: `grok/dynamic-stage-research`. El head exacto es el commit que añade esta
   versión del archivo (un archivo no puede contener su propio SHA); se anota en el PR. Commit anterior de la
-  misma rama: `8e11d7babb9ff85939dda0553a8b5407af7237d9`.
+  misma rama: `f851eca752188c25333aac6b078177922e64f2bb`.
 - PR URL: https://github.com/angelcraft/Groove-Builder/pull/5 (borrador)
 - Status: ready for review (investigación + validación en Unicorn; no hay código de runtime ni hooks en `engine/`)
 
@@ -23,6 +23,8 @@
 | `reports/GE-152/two-slot-prototype.md` | Diseño del prototipo de 2 casillas: despacho, título/prólogo/jingle, formato `.gsv` y plan de verificación |
 | `reports/GE-152/inverse-map-fix.md` | Causa de la contaminación del mapa inverso por la IPS, llamadores y efectos, corrección |
 | `reports/GE-152/unicorn-validation.md` | Validación en Unicorn pedida en PR #5: aislamiento F0–F4 (27 casos), `curIdx=-1`, teardown del Runner, mapa inverso, dos casillas, instalación parcial y `.gsv` |
+| `reports/GE-152/v0-two-slot.md` | V0 de dos casillas Multi en modo 0: 12 casos custom + 5 nativos comparados byte a byte en cada punto de escritura, alcanzabilidad de `0x2E90` y Runner con join real en el modelo |
+| `reports/GE-152/CODEX_HANDOFF.md` | Traspaso a Codex: hooks H1–H10 (direcciones, firmas, condiciones, orden, lo que no hay que hacer), barrera del Runner, casos reproducibles y bloqueos |
 | `reports/GE-152/unicorn/` | Harness y experimentos (solo direcciones; la imagen se pasa por argumento) y `results/` con diffs por campo |
 
 No se ha modificado `engine/`, `editor/`, `docs/GROOVE_SPEC.md`, `main`, `work/groove-engine-v0.5.0` ni la rama/runtime de Codex.
@@ -71,7 +73,7 @@ No se ha compilado `subsdk4` ni ningún prototipo.
 Código real de `main` `03FF4A3B` (imagen sin la IPS) con stubs explícitos del harness. Resumen: F1–F3 → staging
 idéntico al blob inicial en todos los casos de modo de mapa 0 (incluida Perfect Campaign); F4 detecta derivas; F0
 bloquea sin escrituras; el dtor del stage no hace join (el join se hace en `step/reap/clear`, sin accesos tardíos
-al stage); mapa inverso con guard = original. **Contradicciones**: reset del cursor en modo de mapa 1,
+al stage); mapa inverso con guard = original. **V0** (`v0-two-slot.md`): 17/17 casos pasan con los hooks H1–H10 del harness. **Contradicciones**: reset del cursor en modo de mapa 1,
 `0x2067B0 → 0x2E90` con `curIdx=-1` lee fuera de la tabla, y `sel` persistente tras la confirmación.
 
 ### Switch física — NO REALIZADA
@@ -103,8 +105,9 @@ pruebas físicas nuevas en GE-152.
   prototipo de 2 casillas.
 
 ## Next steps
-0. Hecho en Unicorn (`unicorn-validation.md`). Pendiente: mitigación del modo de mapa 1, ruta `0x2067B0` con
-   `curIdx=-1`, decisión sobre `sel` persistente, worker R21 y corrutinas anidadas, y todo lo que requiere Switch.
+0. V0 validada en Unicorn (`v0-two-slot.md`). El traspaso a Codex está en `CODEX_HANDOFF.md`. Pendiente: confirmar en ejecución
+   que Multi no crea el stage del caso 16, la barrera del Runner con los cuerpos del motor, la captura del mapa activo para H2,
+   la parte visual y la revisión de GE-154. **No hay que abrir hardware antes.**
 1. Resolver las preguntas de §8.1.
 2. Después de revisar GE-154 y GE-151: diseño detallado del prototipo de **2 casillas** `(0,9,0)` y `(0,9,1)`, con
    `adapter: multi` y `results: custom`, como tarea de runtime aparte (sin crear aquí).

@@ -1,5 +1,7 @@
 # GE-152 — Validación en Unicorn (aislamiento de progreso, Runner, dos casillas)
 
+> **Corrección posterior (ver `v0-two-slot.md` §3.1):** la llamada sin comprobación `0x2CC0(1, curIdx)` está en `0x2068D0` (slot `0xD1FF80` de la clase X `scene_perfect`), no en `0x2067B0`, que es un thunk de destructor. No es alcanzable por llamadas directas desde los anfitriones. Además, el modelo de join de §2 ha quedado sustituido por el planificador cooperativo de `exp_b2.py`, que ejecuta la continuación real del hijo durante el join.
+
 - **Agente**: Grok (GE-152)
 - **Tarea**: pruebas pedidas en <https://github.com/angelcraft/Groove-Builder/pull/5#issuecomment-7229540839>
 - **Rama**: `grok/dynamic-stage-research` (base de esta entrega: `8e11d7b`)

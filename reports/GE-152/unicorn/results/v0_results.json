@@ -1,0 +1,2026 @@
+{
+ "custom": {
+  "V1 A complete": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V2 B complete": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      1
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      1
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.b",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      1
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V3 A->B->A reentry": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    },
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      1
+     ]
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 6,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     3
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      1
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.b",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      1
+     ]
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     3
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     2
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 2,
+      "clears": 2,
+      "bestRank": 5,
+      "bestScore": 99,
+      "seq": 2
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 1,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 10,
+      "seq": 1
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V4 abort/reentry A": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 6,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     3
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     2
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 3,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 3
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V5 host state7 perfect=2": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V6 PC target=50": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V7 PC target=67(host)": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V8 PC none, others state6": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V9 PC target=50 cntBB4=5": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V10 mode1 rejected (A)": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": false,
+     "launched": false,
+     "note": "no launch"
+    }
+   ],
+   "write_points": 0,
+   "write_points_detail": [],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [],
+   "hook_log": [
+    [
+     "F0",
+     "mode1-reject",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V11 partial install: B off": {
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launch": false,
+     "launched": false,
+     "note": "no launch"
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launch": true,
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0
+     ]
+    }
+   ],
+   "write_points": 2,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     1
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "PASS": true
+  },
+  "V12 A then native Remix8": {
+   "plays": [],
+   "write_points": 4,
+   "write_points_detail": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 0,
+     "fields": []
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 1,
+     "fields": [
+      "hdr.saveCount"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "n_diff": 7,
+     "fields": [
+      "hdr.saveCount",
+      "kind1[67].best",
+      "kind1[67].plays",
+      "pending.rank[0]",
+      "pending.score[0]+0",
+      "sel.col[0]",
+      "sel.row[0]"
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "n_diff": 7,
+     "fields": [
+      "hdr.saveCount",
+      "kind1[67].best",
+      "kind1[67].plays",
+      "pending.rank[0]",
+      "pending.score[0]+0",
+      "sel.col[0]",
+      "sel.row[0]"
+     ]
+    }
+   ],
+   "non_writeSave_diffs": [
+    [
+     "0x9dc",
+     "kind1[67].best",
+     0,
+     64,
+     [
+      "mapEnter@0x47e4"
+     ]
+    ],
+    [
+     "0x9e0",
+     "kind1[67].plays",
+     0,
+     1,
+     [
+      "confirm@0x48e4"
+     ]
+    ],
+    [
+     "0xb9a",
+     "sel.col[0]",
+     1,
+     8,
+     [
+      "confirm@0x4898"
+     ]
+    ],
+    [
+     "0xb9c",
+     "sel.row[0]",
+     0,
+     4,
+     [
+      "confirm@0x489c"
+     ]
+    ],
+    [
+     "0xba4",
+     "pending.rank[0]",
+     0,
+     4,
+     [
+      "confirm@0x48c0",
+      "initGameplay@0x492c",
+      "results@0x492c"
+     ]
+    ],
+    [
+     "0xba8",
+     "pending.score[0]+0",
+     0,
+     85,
+     [
+      "confirm@0x48cc",
+      "initGameplay@0x4930",
+      "results@0x4930"
+     ]
+    ]
+   ],
+   "final_blob_diff": [
+    [
+     "0x560",
+     "hdr.saveCount",
+     0,
+     2
+    ],
+    [
+     "0x9dc",
+     "kind1[67].best",
+     0,
+     64
+    ],
+    [
+     "0x9e0",
+     "kind1[67].plays",
+     0,
+     1
+    ],
+    [
+     "0xb9a",
+     "sel.col[0]",
+     1,
+     8
+    ],
+    [
+     "0xb9c",
+     "sel.row[0]",
+     0,
+     4
+    ],
+    [
+     "0xba4",
+     "pending.rank[0]",
+     0,
+     4
+    ],
+    [
+     "0xba8",
+     "pending.score[0]+0",
+     0,
+     85
+    ]
+   ],
+   "hook_log": [
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ]
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "gsv": [
+    [
+     "org.example.a",
+     {
+      "state": 3,
+      "plays": 1,
+      "clears": 1,
+      "bestRank": 4,
+      "bestScore": 85,
+      "seq": 1
+     }
+    ],
+    [
+     "org.example.b",
+     {
+      "state": 2,
+      "plays": 0,
+      "clears": 0,
+      "bestRank": 0,
+      "bestScore": 0,
+      "seq": 0
+     }
+    ]
+   ],
+   "curIdx": [
+    -1,
+    -1
+   ],
+   "mode2904": -1,
+   "native_after_custom_equals_clean_native": true,
+   "native_after_custom_fields": [
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "PASS": true
+  }
+ },
+ "native": {
+  "N1 native Remix8 rank4": {
+   "identical_with_and_without_V0": true,
+   "write_points": 2,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "sel_after": [
+    0,
+    2,
+    8,
+    0,
+    4,
+    0,
+    1,
+    0
+   ],
+   "hook_log": [],
+   "PASS": true
+  },
+  "N2 native HT2 rank5": {
+   "identical_with_and_without_V0": true,
+   "write_points": 2,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[41].best",
+    "kind1[41].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.world[0]"
+   ],
+   "sel_after": [
+    1,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "hook_log": [],
+   "PASS": true
+  },
+  "N3 native Remix8 exit": {
+   "identical_with_and_without_V0": true,
+   "write_points": 2,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "sel_after": [
+    0,
+    2,
+    8,
+    0,
+    4,
+    0,
+    1,
+    0
+   ],
+   "hook_log": [],
+   "PASS": true
+  },
+  "N4 native Remix8 PC target=50": {
+   "identical_with_and_without_V0": true,
+   "write_points": 2,
+   "fields_changed": [
+    "campaign.cntBB4",
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "sel_after": [
+    0,
+    2,
+    8,
+    0,
+    4,
+    0,
+    1,
+    0
+   ],
+   "hook_log": [],
+   "PASS": true
+  },
+  "N5 native Remix8 mode1": {
+   "identical_with_and_without_V0": true,
+   "write_points": 2,
+   "fields_changed": [
+    "blob+0xCC4",
+    "hdr.saveCount",
+    "pending.rank[1]",
+    "sel.col[1]",
+    "sel.row[1]",
+    "sel.world[1]"
+   ],
+   "sel_after": [
+    0,
+    0,
+    1,
+    8,
+    0,
+    4,
+    1,
+    0
+   ],
+   "hook_log": [],
+   "PASS": true
+  }
+ },
+ "H7_0x2E90": {
+  "no_session_idx-1_slot": 0,
+  "session_idx-1_slot": 73,
+  "native_idx67_slot": 73,
+  "curIdx_unchanged": true,
+  "PASS": true
+ },
+ "H1b_reverse_map": {
+  "bytes_compared": 2448,
+  "bytes_different": 0,
+  "PASS": true
+ }
+}
