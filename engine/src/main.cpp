@@ -511,7 +511,7 @@ bool waitTicks(void* th, int ticks) {
 
 // Spawns a game thread running `body(stage, thread)` exactly like the native
 // HT2 code spawns its member threads (same allocator, ctor, vtable, trampoline).
-void spawn(void* stage, void* parent, void (*body)(void*, void*)) {
+__attribute__((noinline, used)) void spawn(void* stage, void* parent, void (*body)(void*, void*)) {
     if (tStop(parent)) return;  // rev3 §5.2 / GE-154: never append a child after cancellation
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
     if (!th) { logf("spawn: native allocation failed"); return; }
@@ -1269,7 +1269,7 @@ bool waitUntil(void* th, int base, int tick) {
 }
 
 // Same spawn as the native REMIX_21 code (its thread vtable + PMF trampoline).
-void spawnR21(void* stage, void* parent, void (*body)(void*, void*)) {
+__attribute__((noinline, used)) void spawnR21(void* stage, void* parent, void (*body)(void*, void*)) {
     if (tStop(parent)) return;  // rev3 §5.2 / GE-154: never append a child after cancellation
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
     if (!th) { logf("spawnR21: native allocation failed"); return; }
@@ -2340,6 +2340,8 @@ extern "C" __attribute__((used, retain, visibility("default"))) bool groove_emu_
     gV0Live = bindV0();
     return gV0Live;
 }
+
+extern "C" __attribute__((used, retain, visibility("default"))) int groove_emu_v0_phase() { return int(gV0Exec.phase); }
 
 extern "C" bool groove_b2_destroy_pending(void* mgr, uintptr_t lr) { return b2DestroyPending(mgr, lr); }
 

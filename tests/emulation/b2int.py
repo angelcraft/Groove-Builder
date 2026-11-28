@@ -18,6 +18,11 @@ from unicorn.arm64_const import *
 import exp_owner3 as X
 from exp_owner3 import E, G, Sched, BudgetExhausted, tstate, handle, os_state
 from harness import HEAP
+def _all_threads(h, runner, limit=128):
+    out, p = [], h.rq(runner + 8)
+    while p and len(out) < limit and p not in out: out.append(p); p = h.rq(p + 8)
+    return out
+E.all_threads = _all_threads                      # bounded: a corrupted (cyclic) list must not hang the harness
 MOD = G + 0x1800000
 N = "_ZN12_GLOBAL__N_1"
 MAIN_OS = 0x7fff8000            # nn::os::ThreadType* of the main thread (fake, non-null)
@@ -142,15 +147,21 @@ class Mod:
         s.plan = []
         for i in range(n):
             off, kind, to, bk = struct.unpack("<IIQQ", h.rd(buf + 24 * i, 24)); s.plan.append((off, kind, to, bk))
-            if kind == 0:
+            if kind == 0 and not h.is_real(off):
+                # unlisted game function: its original is a logged harness stub (never half a prologue)
+                stub = h.make_fake("orig:%#x" % off)
+                h.mu.mem_write(bk, struct.pack("<II", 0x58000050, 0xD61F0200) + struct.pack("<Q", stub) + b"\0" * 4)
+            elif kind == 0:
                 first = h.img[off:off + 4]
                 h.mu.mem_write(bk, first + struct.pack("<II", 0x58000050, 0xD61F0200) + struct.pack("<Q", G + off + 4))
+            if kind == 0:
                 d = (to - (G + off)) >> 2; assert -(1 << 25) <= d < (1 << 25)
                 h.mu.mem_write(G + off, struct.pack("<I", 0x14000000 | (d & 0x3FFFFFF)))
-            else:
+            if kind == 1:
                 d = (to - (G + off)) >> 2; assert -(1 << 25) <= d < (1 << 25)
                 h.mu.mem_write(G + off, struct.pack("<I", 0x94000000 | (d & 0x3FFFFFF)))
             if not h.is_real(off): h.add_real_range(off, off + 4)    # patched instr runs; orig continues as stub if unlisted
+        h.mu.ctl_remove_cache(G, G + 0x1400000)                     # drop translations made before the patches
         h.wq(s.g("5gBaseE"), G)
         s.v0_bound = bool(h.call(s.a("groove_emu_activate")) & 1)
         return n
@@ -213,7 +224,8 @@ class Env:
     def run_to_finish(s, b, run_sym, maxk=80):
         for k in range(maxk):
             s.tick(b, 1)
-            if s.h.ri(s.m.g(run_sym) + 12) and all(tstate(s.h, t) != 1 for t in E.all_threads(s.h, b["runner"])): return k + 1
+            fin = s.h.ri(s.m.g(run_sym) + 12) if run_sym == "4gRunE" else s.h.ri(s.m.g("5gMRunE.3"))
+            if fin and all(tstate(s.h, t) != 1 for t in E.all_threads(s.h, b["runner"])): return k + 1
         return None
     def destroy(s, b, phase="b2", lr_site=CALL_SITE, mgr=None):
         """SceneMgr::update -> bl destroyPending at 0x50A05C (LR 0x50A060): compiled H-B2 + native teardown."""
@@ -222,6 +234,7 @@ class Env:
         try: r["ret"] = S.call(lr_site, mgr or b["mgr"])
         except BudgetExhausted as e: r["returned"] = False; r["exc"] = str(e)[:120]
         r["safe_stop"] = len(m.breaks) > nbrk
+        r["hang_intact"] = r["returned"] and r.get("ret") is None   # join never completes: cooperative DEADLOCK (rev3 §4: no timeout)
         r["stage_freed"] = b["stage"] in h.freed; r["seq_freed"] = b["seq"] in h.freed
         r["late_access"] = len(h.late)
         r["child_events_after_b2"] = sum(1 for e in S.log[n0:] if e[0] != "main" and e[1] not in ("exit",))
@@ -264,9 +277,9 @@ def legacy_common(env, b, st):
 def run_stats(env):
     a = env.m.g(RUNSYM[env.kind]) if env.kind == "HT2" else None
     if env.kind == "HT2": return {k: env.h.ri(a + 4 * i) for i, k in enumerate(("started", "gameplayStarted", "reachedEnd", "finished", "stopped"))}
-    return {k: env.h.ri(env.m.g("5gMRunE") + 4 * i) for i, k in enumerate(("started", "gameplayStarted", "reachedEnd", "finished", "stopped"))}
+    return {k: mrun_field(env, i) for i, k in enumerate(("started", "gameplayStarted", "reachedEnd", "finished", "stopped"))}
 def mrun_field(env, i):
-    return env.h.ri(env.m.g("5gMRunE") + 4 * i)
+    return env.h.ri(env.m.g("5gMRunE.%d" % i))
 def p_finish(kind):
     env = Env(kind, v0=False); b = env.build(); st = {}; legacy_common(env, b, st)
     st["ticks"] = env.run_to_finish(b, RUNSYM[kind]); st["run"] = run_stats(env)
@@ -337,7 +350,7 @@ def p_late_spawn(kind):
     """GE-151 spawn()/spawnR21() with a cancelled parent: no thread object, no append (rev3 §5.2)."""
     env = Env(kind, v0=False); b = env.build(); st = {}; legacy_common(env, b, st); env.tick(b, 2)
     th = E.all_threads(env.h, b["runner"])[0]; env.h.wi(th + 0x250, 2)
-    fn = [v for k, v in env.m.sym.items() if (k.startswith(N + ("5spawnEPvS0_PFvS0_S0_E" if kind == "HT2" else "8spawnR21EPvS0_PFvS0_S0_E")))]
+    fn = [v for k, v in env.m.sym.items() if k == N + ("5spawnEPvS0_PFvS0_S0_E" if kind == "HT2" else "8spawnR21EPvS0_PFvS0_S0_E")]
     st["spawn_sym"] = bool(fn); n0 = len(E.all_threads(env.h, b["runner"])); a0 = sum(env.h.appends.values())
     env.h.phase = "late"; env.S.call(MOD + fn[0], b["stage"], th, env.code["coop"])
     st["appended"] = sum(env.h.appends.values()) - a0; st["threads_delta"] = len(E.all_threads(env.h, b["runner"])) - n0
@@ -375,16 +388,21 @@ def confirm(env, mp, slot):
     h = env.h; w, c, r = SLOTS[slot] if slot in SLOTS else slot
     h.wi(mp + 0x5274, w); h.wi(mp + 0x5298, c); h.wi(mp + 0x529C, r)
     th = h.alloc(0x300); h.phase = "confirm"; launches = []
-    h.pre[0x1D3130] = lambda hh, a: (launches.append(a[0]), None)[1]
-    h.call(ON_CONFIRM, mp, th); h.pre.pop(0x1D3130, None)
+    h.pre[0x1D3134] = lambda hh, a: (launches.append(1), None)[1]   # native launch body ran (V0 did not reject)
+    if not h.is_real(0x1D3134): h.add_real_range(0x1D3134, 0x1D3138)
+    h.call(ON_CONFIRM, mp, th); h.pre.pop(0x1D3134, None)
     return launches
 def map_back(env, mp):
     h = env.h; M = h.MGR
     h.phase = "mapDtor2"; map_init(env, mp)
     mode = 1 if h.ri(mp + 0x2A38) == 1 else 0
     outs = (mp + 0x5274, mp + 0x5298, mp + 0x529C, mp + 0x52A0); h.wi(mp + 0x52A0, 0x55)
-    h.phase = "getSel"; h.call(0x4860, M, mode, *outs); cur = tuple(h.ri(o) for o in outs)
-    h.phase = "mapEnter"; h.call(0x1D38A0, mp)
+    # getSel from its real call site in Map::init (bl 0x4860 at 0x1CE03C, LR 0x1CE040) so H6 sees the proven LR
+    h.mu.mem_write(G + 0x1CE040, struct.pack("<II", 0x58000050, 0xD61F0200) + struct.pack("<Q", RET))
+    if not h.is_real(0x1CE03C): h.add_real_range(0x1CE03C, 0x1CE050)
+    h.mu.ctl_remove_cache(G + 0x1CE000, G + 0x1CE100)
+    h.phase = "getSel"; h.call(0x1CE03C, M, mode, *outs); cur = tuple(h.ri(o) for o in outs)
+    h.phase = "mapEnter"; h.call(0x1D38A0, mp); env.phase_after_return = h.call(env.m.a("groove_emu_v0_phase"))
     h.phase = "refresh"; h.call(0x1D3CA0, mp)
     h.phase = "writeSave"; h.call(0x3D60, M, 1)
     return cur
@@ -408,6 +426,7 @@ def v0_session(slot, mode, k=3):
     st["sd_changed"] = sorted(k2 for k2 in set(files0) | set(files1) if files0.get(k2) != files1.get(k2) and not k2.startswith("groove/log/"))
     st["custom_saves"] = sorted(k2 for k2 in files1 if k2.startswith("groove/custom-saves"))
     st["blob_changed"] = [i for i, (x, y) in enumerate(zip(blob0, blob(env))) if x != y and not (0x560 - 0x548 <= i < 0x564 - 0x548)]
+    st["v0_phase_after_map_return"] = env.phase_after_return   # 4 = Pending (H9 blocked: syncDirectory not accredited)
     st["faults"] = h.call(m.a("groove_v0_fault")); st["session_active"] = h.call(m.a("groove_v0_session_active")) & 1
     # second launch in the same boot (session Pending: syncDirectory not accredited) -> must not run custom again
     h.exits.clear(); st["second_launches"] = len(confirm(env, mp, "B" if slot == "A" else "A"))
@@ -431,7 +450,7 @@ for kind in ("HT2", "R21L"):
     if "error" not in r:
         check(ok_teardown(r["A"]) and ok_teardown(r["B"]) and r["B_diverted"] and r["B_b2"]["gen"] == r["gen_A"] + 1, r["tag"] + ": retry/generation")
     r = case(kind + "/fail: stuck body", lambda: p_stuck(kind))
-    if "error" not in r: check(r["teardown"]["safe_stop"] and not r["teardown"]["stage_freed"] and not r["teardown"]["seq_freed"], r["tag"] + ": stuck body not safe-stopped")
+    if "error" not in r: check((r["teardown"]["safe_stop"] or r["teardown"]["hang_intact"]) and not r["teardown"]["stage_freed"] and not r["teardown"]["seq_freed"] and r["teardown"]["io"] == [] and r["b2_after"]["passed"] == 0, r["tag"] + ": stuck body not stopped with graph intact")
     for what in ("back", "vptr", "runner", "cycle", "state", "incoherent"):
         r = case(kind + "/fail: " + what, lambda: p_identity(kind, what))
         if "error" not in r: check(r["teardown"]["safe_stop"] and not r["teardown"]["stage_freed"] and not r["teardown"]["seq_freed"] and r["threads_untouched"], r["tag"] + ": not a non-returning safe stop " + str(r["teardown"]))
@@ -458,10 +477,12 @@ for slot in ("A", "B"):
             check(r["launches"] == 1 and r["diverted"] and r["multiV0"] == 1 and r["b2_after_ctor"]["active"] == 1, t + ": custom stage not constructed through Execution/H-open")
             if mode == "finish": check(r["mrun"]["finished"] == 1 and any(e[1] == 1 for e in r["exits"]) and r["seq_next"] == RET_SCENE and not r["retry_flag"], t + ": finish/exit")
             check(ok_teardown(r["teardown"]) and r["b2_after"]["active"] == 0, t + ": teardown")
-            check(r["cursor"][:3] == SLOTS[slot], t + ": cursor not restored " + str(r["cursor"]))
+            check(tuple(r["cursor"][:3]) == SLOTS[slot], t + ": cursor not restored " + str(r["cursor"]))
             check(r["sd_changed"] == [] and r["custom_saves"] == [], t + ": SD mutated without accredited sync " + str(r["sd_changed"]))
             check(r["blob_changed"] == [], t + ": native save blob changed")
             check(r["session_active"] == 1 and r["second_launches"] == 0, t + ": second custom launch allowed while H9 Pending")
+            check(r["v0_phase_after_map_return"] == 4, t + ": H9 not Pending after map return")
+            check(r["faults"] == 0, t + ": V0 dispatcher faults %d" % r["faults"])
 for r in R:
     print(r["tag"], "|", "ERROR " + r["error"] if "error" in r else "ok")
     if os.environ.get("B2INT_VERBOSE"): print(json.dumps({k: v for k, v in r.items() if k != "tb"}, default=str)[:3000]); print(r.get("tb", ""))
