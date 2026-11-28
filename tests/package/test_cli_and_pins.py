@@ -57,11 +57,15 @@ class CorePurity(unittest.TestCase):
     """The core must stay GUI/platform-neutral so Android (Chaquopy) can import it unchanged."""
     FORBIDDEN = ("tkinter", "_tkinter", "ctypes", "winreg", "PyQt5", "PySide6", "wx", "kivy", "jnius")
 
+    # winreg is pulled in by the Windows stdlib itself (platform/mimetypes); the static test below still
+    # forbids importing it from the core source.
+    DYNAMIC = tuple(m for m in FORBIDDEN if m != "winreg")
+
     def test_core_import_does_not_load_gui(self):
         code = ("import sys; sys.path.insert(0, sys.argv[1]); import importlib, pkgutil, groove_package;"
                 "[importlib.import_module('groove_package.' + m.name) for m in pkgutil.iter_modules(groove_package.__path__)"
                 " if m.name != '__main__'];"
-                "bad = [m for m in sys.modules if m.split('.')[0] in %r]; print(bad); sys.exit(1 if bad else 0)") % (self.FORBIDDEN,)
+                "bad = [m for m in sys.modules if m.split('.')[0] in %r]; print(bad); sys.exit(1 if bad else 0)") % (self.DYNAMIC,)
         p = subprocess.run([sys.executable, "-c", code, os.path.join(REPO, "tools")], capture_output=True, text=True)
         self.assertEqual(p.returncode, 0, p.stdout + p.stderr)
 

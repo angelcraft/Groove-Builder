@@ -1,0 +1,2 @@
+# GE-155: byte-exact on every OS (hashes are pinned; Windows autocrlf must not rewrite them)
+* -text

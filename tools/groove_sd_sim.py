@@ -80,8 +80,12 @@ def make_sd(root, marker=True):
         write(root, "groove/engine.json", (json.dumps(MARKER, indent=2) + "\n").encode())
 
 
+MUTEX = "groove/.installer.mutex"  # permanent OS mutex: byte-locked while held (unreadable on Windows)
+
+
 def snapshot(root, only=None, skip=()):
     out = {}
+    skip = tuple(skip) + (MUTEX,)
     base = os.path.join(root, only) if only else root
     for d, dirs, files in os.walk(base):
         dirs.sort()
