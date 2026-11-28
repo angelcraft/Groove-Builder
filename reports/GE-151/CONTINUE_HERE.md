@@ -52,7 +52,7 @@ notificación groove_v0_quiesced con un join real: todavía NO tiene proveedor n
 No hay nuevo hook instalado. Legacy sigue separado.
 
 Prueba reproducible: python tools/run_engine_tests.py; después construir mediante
-build_engine.py con pins previos y ejecutar tools/test_v0_arm64.py <build>.
+build_engine.py con pins previos y ejecutar tools/check_v0_arm64.py <build>.
 Requiere Unicorn 2.1.4 y pyelftools del entorno Python; no usa main privado.
 Resultado V0_ARM64_RESULTS.json: ejecuta entradas del ELF FINAL, 180 coordenadas,
 178 delegaciones, LR/SP/callee-saved y llamada original única, flags restaurados.
@@ -68,3 +68,7 @@ completas de instrucciones/IPS/visibilidad. No generar engine.json: decisiones
 Siguiente paso: lector acotado conforme a docs/GROOVE_INTEGRATION_V0_DECISIONS.md
 de coordinación, contrastar corpus GE-155 d3c971f y conectar al dispatcher existente.
 No recrear las entradas ARM64 ni presentar sus pruebas sintéticas como Horizon.
+
+Batería final: 15 métodos Python, 19 casos GTF y cuatro binarios ASan/UBSan
+(incluido el dispatcher V0) pasan. El verificador opcional ARM64 se llama
+check_v0_arm64.py para no exigir Unicorn al descubrir pruebas host con unittest.
