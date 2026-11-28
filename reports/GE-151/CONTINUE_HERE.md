@@ -72,3 +72,23 @@ No recrear las entradas ARM64 ni presentar sus pruebas sintéticas como Horizon.
 Batería final: 15 métodos Python, 19 casos GTF y cuatro binarios ASan/UBSan
 (incluido el dispatcher V0) pasan. El verificador opcional ARM64 se llama
 check_v0_arm64.py para no exigir Unicorn al descubrir pruebas host con unittest.
+
+
+## Incremento lector V0 — revisión 7239745290
+
+Leer V0_LOADER.md, V0_LOADER_RESULTS.json y V0_LOADER_STACK.json. El lector ya existe:
+engine/src/v0_loader.{hpp,cpp}; no rehacer JSON/registro ni dispatcher. Admite snapshots
+acotados A/B, corpus GE-155 d3c971f y guardas lock/journal/generación. Entrada SD retenida
+main.cpp::groove_v0_load_sd_levels, sin llamada automática ni hooks nuevos. Falta validar
+esa ruta nn::fs en contexto seguro; loader y SessionState/constructor siguen separados.
+
+18 métodos Python, 19 GTF y cinco binarios sanitizados pasan; 3 paquetes positivos,
+64 rechazos manifest/timeline y 10000 mutaciones. ELF final/NSO auditados y ejecutado
+parseRegistry ARM64 real además del dispatcher; originales sintéticos, no Horizon.
+
+Se corrigieron guardado global en contención, retorno post, consumo de cursor y
+supresión de siguiente partida nativa con IO pendiente. Faltan postcondiciones de
+confirm/reverse/bits bajo contención y proveedor all-or-none del cursor; no binding vivo.
+Siguiente: conectar snapshot/constructor solo tras frontera Stage/Runner retenida en
+éxito Y fallo; verificar no append tardío, tokens por generación y worker real. H9 durable
+pendiente, .gsv no congelado; no engine.json, hooks, instalador ni prueba física.

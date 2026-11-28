@@ -74,7 +74,7 @@ class Module:
 def verify(root):
     m=Module(root/'build/GrooveHT3.nss');backend=HEAP;slots=HEAP+0x1000;mp=HEAP+0x4000;c=HEAP+0x18000;intent=HEAP+0x19000
     ptrs=[CALLS+0x100+4*i for i in range(N)]
-    m.put(backend,struct.pack('<'+'Q'*(3+N),GAME,CALLS,CALLS+4,*ptrs));assert m.call('groove_v0_bind',backend)==1
+    m.put(backend,struct.pack('<'+'Q'*(4+N),GAME,CALLS,CALLS+4,*ptrs,0));assert m.call('groove_v0_bind',backend)==1
     b=bytearray(208)
     for i,sid in enumerate((b'org.example.alpha',b'org.example.beta')):
         b[i*104:i*104+len(sid)]=sid;b[i*104+97:i*104+99]=b'\1\1';struct.pack_into('<I',b,i*104+100,9)
@@ -105,9 +105,18 @@ def verify(root):
     assert m.call('groove_v0_save_state_entry',MGR,1,67,lr=GAME+0x1000)==0x87654321
     assert m.call('groove_v0_write_save_entry',MGR,0)==0x87654321 and m.calls[16]==1
     assert m.call('groove_v0_fault')==0
+    # Execute the linked native JSON registry reader too, not a Python model.
+    registry_symbol='_ZN6groove2v013parseRegistryEPKcjRNS0_8RegistryE'
+    registry={'format':'groove-slots/1','capacity':2,'generation':7,'slots':[
+      {'index':i,'coord':[0,9,i],'id':f'org.example.slot{i}'} for i in range(2)]}
+    raw=json.dumps(registry).encode();source=HEAP+0x30000;dest=HEAP+0x50000
+    m.put(source,raw);assert m.call(registry_symbol,source,len(raw),dest)==1
+    assert struct.unpack('<II',m.read(dest,8))==(2,7)
+    bad=b'{"format":"groove-slots/1","format":"groove-slots/1"}'
+    m.put(source,bad);assert m.call(registry_symbol,source,len(bad),dest)==0
     return {'kind':'ge151-v0-final-elf-synthetic-execution','grid_cells':tested,'native_delegations':m.calls[3],
       'original_once':True,'lr_sp_callee_saved_preserved':True,'launch_bits_restored':True,
-      'observed_callback_stack_bytes':STACK+0xF0000-m.lowsp,'transitive_native_stack_bound':False,
+      'native_registry_reader_executed':True,'observed_test_stack_bytes':STACK+0xF0000-m.lowsp,'transitive_native_stack_bound':False,
       'originals':'synthetic callbacks, not original game functions','horizon_services_executed':False,
       'switch_tested':False,'installable':False}
 if __name__=='__main__':

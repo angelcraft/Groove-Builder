@@ -88,7 +88,7 @@ public:
     }
     bool suppressSelection(uintptr_t m,uintptr_t lr,int mode,Coord c,int x) {
         if(lr!=0x1D2ED4 || !m || m!=map) return false;
-        if(session.active && session.generation==generation) {
+        if(session.active && !session.returned && session.generation==generation) {
             if(mode==0 && equal(c,session.coord)) cursor={mode,c,x,true};
             return true;
         }
@@ -97,21 +97,21 @@ public:
     }
     bool restoreCursor(uintptr_t lr,int mode,Cursor& out) {
         if(lr!=0x1CE040 || !cursor.pending || cursor.mode!=mode) return false;
-        out=cursor; cursor.pending=false; return true;
+        out=cursor; return true;
     }
     bool stageStarted(uintptr_t s) {
         if(!session.active || !s || session.stage) return false;
         session.stage=s; return true;
     }
     bool confirmFinish(uintptr_t s) {
-        if(!session.active || session.stage!=s || session.abortConfirmed || session.quiescent) return false;
+        if(!session.active || session.stage!=s || session.returned || session.abortConfirmed || session.quiescent) return false;
         session.finishConfirmed=true; return true;
     }
     bool quiesced(uintptr_t s,bool aborted) {
         if(!session.active || session.stage!=s) return false;
         session.quiescent=true; session.abortConfirmed=aborted || !session.finishConfirmed; return true;
     }
-    void mapReturned() { if(session.active) session.returned=true; }
+    void mapReturned() { if(session.active) { session.returned=true; snapshotValid=false; } }
     Close prepareSave(SaveIntent& out) {
         if(!session.active) return Close::Nothing;
         if(session.persistBusy) return Close::Busy;

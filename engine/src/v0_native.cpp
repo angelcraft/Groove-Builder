@@ -5,6 +5,7 @@ SessionState state;
 Backend backend{};
 unsigned char busy=0;
 unsigned faults=0;
+unsigned char suppressProgress=0;
 constexpr uintptr_t Manager=0x10A75F0;
 const int emptyCell[2]={0,13},hostCell[2]={1,67};
 struct Lease {
@@ -28,7 +29,7 @@ uint64_t fail(){ __atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED); return 0; }
 #define V0_EXPORT __attribute__((used,retain,visibility("default")))
 extern "C" V0_EXPORT bool groove_v0_bind(const Backend* b) {
     Lease lock; if(!lock.held || !b || !b->mainBase || !b->memory.read || !b->memory.write || state.session.active) return false;
-    backend=*b; state={}; faults=0; return true;
+    backend=*b; state={}; faults=0; __atomic_store_n(&suppressProgress,0,__ATOMIC_RELEASE); return true;
 }
 extern "C" V0_EXPORT bool groove_v0_configure(const Slot* slots) {
     Lease lock; if(!lock.held || !slots) return false;
@@ -48,6 +49,7 @@ extern "C" V0_EXPORT unsigned groove_v0_prepare_save(SaveIntent* out) {
 extern "C" V0_EXPORT bool groove_v0_ack_save(const SaveIntent* ack,bool committed) {
     Lease lock; return lock.held && ack && state.saved(*ack,committed);
 }
+extern "C" V0_EXPORT bool groove_v0_session_active(){Lease lock;return !lock.held||state.session.active;}
 extern "C" V0_EXPORT unsigned groove_v0_fault(){return __atomic_load_n(&faults,__ATOMIC_RELAXED);}
 extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
     if(!frame || number>=unsigned(Hook::Count)) return fail();
@@ -58,9 +60,20 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
     bool armed=false,restore=false;
     uint32_t before=0; uintptr_t bits=0; Cursor cursor{};
     {
-        Lease lock; if(!lock.held) return fail();
+        Lease lock; if(!lock.held) {
+            // Never fabricate a null pointer or suppress a global/native save.
+            __atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);
+            if(h==Hook::WriteSave)return call(h,f);
+            Coord c{};
+            if(h==Hook::Launch && coord(f.x[0],c,true) && slotAt(c)>=0)return 0;
+            if(h==Hook::CellState && coord(f.x[0],c) && slotAt(c)>=0)return 1;
+            if(h==Hook::MapCell && coord(f.x[0],c) && slotAt(c)>=0)return reinterpret_cast<uintptr_t>(emptyCell);
+            if((h==Hook::BeginPlay||h==Hook::CampaignA||h==Hook::CampaignB||h==Hook::CommitResult) &&
+                __atomic_load_n(&suppressProgress,__ATOMIC_ACQUIRE))return 0;
+            return call(h,f);
+        }
         switch(h) {
-        case Hook::MapInit: state.mapInit(f.x[0]); break;
+        case Hook::MapInit: state.mapInit(f.x[0]); if(!state.session.active)__atomic_store_n(&suppressProgress,0,__ATOMIC_RELEASE); break;
         case Hook::MapDtor: state.mapDtor(f.x[0]); break;
         case Hook::Confirm: if(!state.beginConfirm(f.x[0])) return fail(); break;
         case Hook::Reverse: ++state.reverseDepth; break;
@@ -91,17 +104,17 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
             if(!backend.memory.read(m+0x548,snapshot,BlobSize))return fail();
             auto decision=state.launch(f.x[0],c,mode,p0,p1,managerMode,snapshot);
             if(decision==Launch::Rejected)return 0;
-            armed=decision==Launch::Armed; if(armed){f.x[2]=0;f.x[3]=0;} break;
+            armed=decision==Launch::Armed; if(armed){__atomic_store_n(&suppressProgress,1,__ATOMIC_RELEASE);f.x[2]=0;f.x[3]=0;} break;
         }
         case Hook::BeginPlay: case Hook::CampaignA: case Hook::CampaignB: case Hook::CommitResult:
-            if(state.session.active)return 0; break;
+            if(state.session.active && !state.session.returned)return 0; break;
         case Hook::SetSel: {
             Coord c{int(f.x[2]),int(f.x[3]),int(f.x[4])};
             if(state.suppressSelection(state.confirm,lr,int(f.x[1]),c,int(f.x[5])))return 0; break;
         }
         case Hook::GetSel: restore=state.restoreCursor(lr,int(f.x[1]),cursor); break;
         case Hook::InitGameplay:
-            if(state.session.active){
+            if(state.session.active && !state.session.returned){
                 if(!state.session.stage && !state.stageStarted(f.x[0]))return fail();
                 if(state.session.stage!=f.x[0])return fail();
                 // Original setPending is still reached by native initGameplay;
@@ -110,9 +123,9 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
                 if(!read(m+0xBA0,p0)||!read(m+0xBA2,p1)||!read(m+0x2904,managerMode)||p0!=-1||p1!=-1||managerMode!=-1)return fail();
             } break;
         case Hook::PerfectSite:
-            if(state.session.active && lr==0x206A58){__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);if(int32_t(f.x[1])<0)f.x[1]=67;} break;
+            if(state.session.active && !state.session.returned && lr==0x206A58){__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);if(int32_t(f.x[1])<0)f.x[1]=67;} break;
         case Hook::PerfectCtor:
-            if(state.session.active)__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED); break;
+            if(state.session.active && !state.session.returned)__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED); break;
         case Hook::WriteSave:
             if(state.snapshotValid){
                 static uint8_t actual[BlobSize];
@@ -123,14 +136,17 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
     }
     uint64_t result=call(h,f);
     {
-        Lease lock; if(!lock.held)return fail();
+        Lease lock; if(!lock.held){__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);return result;}
         if(h==Hook::Confirm)state.endConfirm();
         if(h==Hook::Reverse){if(state.reverseDepth)--state.reverseDepth;else return fail();}
-        if(armed){uint32_t after=0;if(!read(bits,after)||!write(bits,(after&~0xEu)|(before&0xEu)))return fail();}
+        if(armed){uint32_t after=0;if(!read(bits,after)||!write(bits,(after&~0xEu)|(before&0xEu)))__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);}
         if(restore){
-            if(!write(f.x[2],cursor.coord.world)||!write(f.x[3],cursor.coord.col)||!write(f.x[4],cursor.coord.row)||!write(f.x[5],cursor.x))return fail();
+            uintptr_t dest[4]={f.x[2],f.x[3],f.x[4],f.x[5]};
+            int values[4]={cursor.coord.world,cursor.coord.col,cursor.coord.row,cursor.x};
+            if(backend.writeCursor && backend.writeCursor(dest,values))state.cursor.pending=false;
+            else __atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED); // retain cursor for retry, no partial writes
         }
-        if(h==Hook::MapReturn)state.mapReturned();
+        if(h==Hook::MapReturn){state.mapReturned();__atomic_store_n(&suppressProgress,0,__ATOMIC_RELEASE);}
     }
     return result;
 }

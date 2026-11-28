@@ -14,6 +14,8 @@ struct Backend {
     uintptr_t mainBase;
     Memory memory;
     Original original[unsigned(Hook::Count)];
+    // Validate all four destinations and commit all-or-none, in an owned phase.
+    bool (*writeCursor)(const uintptr_t*,const int*)=nullptr;
 };
 struct Acceptance {
     bool ownershipOnFailure,exclusiveRunnerMutation,noLateAppend,horizonJoin,transitiveStack,
@@ -33,4 +35,5 @@ extern "C" bool groove_v0_quiesced(uintptr_t,bool);
 extern "C" unsigned groove_v0_prepare_save(SaveIntent*);
 extern "C" bool groove_v0_ack_save(const SaveIntent*,bool);
 extern "C" unsigned groove_v0_fault();
+extern "C" bool groove_v0_session_active();
 }

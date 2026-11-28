@@ -14,6 +14,7 @@ def main():
         run(*flags,'-pthread','-Iengine/src','tests/test_engine_safety.cpp','engine/src/gtf.cpp','engine/src/multi.cpp','engine/src/timeline.cpp','-o',str(output/'safety'))
         run(str(output/'safety'))
         run(*flags,'-Iengine/src','tests/test_v0_native.cpp','engine/src/v0_native.cpp','-o',str(output/'v0'));run(str(output/'v0'))
+        run(*flags,'-Iengine/src','tests/test_v0_loader_safety.cpp','engine/src/v0_loader.cpp','engine/src/gtf.cpp','engine/src/multi.cpp','engine/src/timeline.cpp','-o',str(output/'v0-loader'));run(str(output/'v0-loader'))
         for name,extra in [('test_hoop3_text_patch_plan',[]),('test_hoop3_title_dispatch',['source/hoop3_title_bridge.cpp'])]:
             run(*flags,'-Isource','tests/'+name+'.cpp',*extra,'-o',str(output/name));run(str(output/name))
 if __name__=='__main__':main()

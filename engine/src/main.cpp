@@ -25,6 +25,8 @@
 #include "numparse.hpp"
 #include "save_replace.hpp"
 #include "metadata.hpp"
+#include "v0_loader.hpp"
+#include "v0_native.hpp"
 
 #define GROOVE_HT3_VERSION "0.5.1"
 
@@ -313,6 +315,45 @@ char* readFile(const char* path, long* outSize, long maxSize) {
     gFs.CloseFile(h);
     *outSize = size;
     return gFileBuf;
+}
+
+// V0 SD reader: dormant, never invoked by hkMain or an installed hook.
+// Uses the already mounted game-context FsApi, with independent stat/error gates.
+using V0Stat = nn::Result (*)(nn::fs::DirectoryEntryType*, const char*);
+groove::v0::Loader gV0Packages;
+V0Stat gV0Stat=nullptr;
+// Horizon FS module 2, description 1 = PathNotFound (0x202). Every other
+// failure stays unknown/blocked; OpenFile failure is NEVER treated as absence.
+int v0Path(const char* relative,char (&path)[192],bool file) {
+    if(!gFsOk || !gV0Stat || !relative || !*relative || *relative=='/' || strstr(relative,"..") || strstr(relative,"//"))return -1;
+    for(const char* c=relative;*c;++c)if(!((*c>='a'&&*c<='z')||(*c>='0'&&*c<='9')||*c=='.'||*c=='-'||*c=='/'))return -1;
+    int n=snprintf(path,sizeof(path),"ht3sd:/groove/%s",relative);if(n<=0 || n>=int(sizeof(path)))return -1;
+    // Stat every traversed component, requiring directories before the leaf.
+    for(char* c=path+7;;++c)if(*c=='/' || !*c){
+        char saved=*c;*c=0;nn::fs::DirectoryEntryType type{};auto rc=gV0Stat(&type,path);*c=saved;
+        if(rc.IsFailure())return rc.GetInnerValueForDebug()==0x202 ? 0 : -1;
+        bool leaf=saved==0;
+        if(!leaf && type!=nn::fs::DirectoryEntryType_Directory)return -1;
+        if(leaf)return !file || type==nn::fs::DirectoryEntryType_File ? 1 : -1;
+    }
+}
+bool v0Read(void*,const char* relative,char* out,unsigned cap,unsigned* got){
+    char path[192];if(!out||!got||v0Path(relative,path,true)!=1)return false;
+    nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Read).IsFailure())return false;
+    long size=0,after=0;bool ok=!gFs.GetFileSize(&size,h).IsFailure()&&size>0&&size<=long(cap);
+    if(ok)ok=!gFs.ReadFile(h,0,out,size).IsFailure()&&!gFs.GetFileSize(&after,h).IsFailure()&&after==size;
+    gFs.CloseFile(h);if(ok)*got=unsigned(size);return ok;
+}
+int v0Probe(void*,const char* relative){char path[192];return v0Path(relative,path,false);}
+// Explicit integration entry, still disconnected from menu/constructor hooks.
+// It neither mounts SD, creates directories, writes an engine marker nor enables slots.
+bool v0MultiBusy();
+extern void* gHt3Stage;
+extern "C" __attribute__((used,retain,visibility("default"))) bool groove_v0_load_sd_levels(){
+    groove::TryLease lease(gInputBusy);if(!lease.held||!gFsOk||gHt3Stage||v0MultiBusy()||groove::v0::groove_v0_session_active())return false;
+    if(!gV0Stat)gV0Stat=reinterpret_cast<V0Stat>(hk::ro::lookupSymbol("_ZN2nn2fs12GetEntryTypeEPNS0_18DirectoryEntryTypeEPKc"));
+    if(!gV0Stat)return false;
+    return gV0Packages.load({nullptr,v0Read,v0Probe},false);
 }
 
 // Multi timeline resolution (v0.5.0): .gtf first, then .gtl.
@@ -1059,6 +1100,7 @@ bool gMultiNoNative = false;
 bool gCueFnOk[groove::kCueFnCount];
 groove::MultiTimeline gMt;
 void* gMultiStage = nullptr;
+bool v0MultiBusy(){return gMultiStage!=nullptr;}
 int gSlotOf[groove::kGameNames];  // kGameName index -> REMIX_21 slot (-1 = not hosted)
 constexpr int kCueThreads = 8;
 int gThreadOf[groove::kGameNames];  // kGameName index -> cue thread

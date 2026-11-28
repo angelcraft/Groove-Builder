@@ -1,0 +1,730 @@
+{
+  "kind": "groove-arm64-stack-diagnostic-v1",
+  "diagnostic_only": true,
+  "lto_removed": true,
+  "native_callees_available": false,
+  "linked_module_bound_verified": false,
+  "installable": false,
+  "functions": [
+    {
+      "function": "src/main.cpp:673:_ZN12_GLOBAL__N_19writeSaveEv",
+      "bytes": 1200,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1367:_ZN12_GLOBAL__N_114writeMultiSaveEv",
+      "bytes": 1184,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:109:_ZN6groove2v015runtimeTimelineERKNS0_7PackageERNS_13MultiTimelineE",
+      "bytes": 896,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:320:_ZN6groove7gtfpriv11extractDefsERNS_13MultiTimelineE",
+      "bytes": 848,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:137:_ZN12_GLOBAL__N_14logfEPKcz",
+      "bytes": 832,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/a64/Assembler.h:1233:_ZN2hk4hook3a6424PseudoInstructionEmitterILb0EE18emitMovImmediate64ENS1_8IRegTypeEm",
+      "bytes": 608,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:624:_ZN6groove7gtfpriv9emitRangeERNS_13MultiTimelineEiib",
+      "bytes": 592,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:75:_ZN6groove2v013parseRegistryEPKcjRNS0_8RegistryE",
+      "bytes": 576,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_14$_11EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_S5_EEE6invokeES5_S5_",
+      "bytes": 560,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:126:_ZN6groove2v06Loader4loadERKNS0_6SourceEb",
+      "bytes": 544,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:298:_ZN6groove7gtfpriv12collectBlockEiiPKcRiRNS_13MultiTimelineE",
+      "bytes": 464,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:653:_ZN12_GLOBAL__N_117persistCustomSaveEPKcS1_ii",
+      "bytes": 432,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:91:_ZN6groove2v013parseManifestERNS0_7PackageE",
+      "bytes": 432,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:386:_ZN6groove7gtfpriv8parseCueERNS_13MultiTimelineEPPcii",
+      "bytes": 416,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:966:_ZN6groove13parseTimelineERNS_13MultiTimelineEPKcl",
+      "bytes": 336,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:71:_ZN6groove10parseMultiERNS_13MultiTimelineEPKcl",
+      "bytes": 320,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:514:_ZN6groove7gtfpriv11applyHeaderERNS_13MultiTimelineEPPciiRb",
+      "bytes": 304,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1596:_ZN12_GLOBAL__N_113scanTileTitleERNS_9TileTitleEPKcS3_iibS3_",
+      "bytes": 288,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:340:_ZN12_GLOBAL__N_16v0ReadEPvPKcPcjPj",
+      "bytes": 272,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_0EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_S5_iiiiiEEE6invokeES5_S5_iiiii",
+      "bytes": 240,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:34:groove_v0_configure",
+      "bytes": 240,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:54:groove_v0_dispatch",
+      "bytes": 240,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_3EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_S5_iiiiiEEE6invokeES5_S5_iiiii",
+      "bytes": 224,
+      "kind": "static"
+    },
+    {
+      "function": "src/timeline.cpp:37:_ZN6groove13parseTimelineERNS_8TimelineEPKcl",
+      "bytes": 224,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:347:_ZN12_GLOBAL__N_17v0ProbeEPvPKc",
+      "bytes": 208,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm69EcEEtlA69_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc99ELc111ELc114ELc101ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc112ELc114ELc105ELc109ELc47ELc86ELc101ELc99ELc79ELc112ELc101ELc114ELc97ELc116ELc105ELc111ELc110ELc115ELc46ELc104EEEELj35ELt47EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm69EcEEtlA69_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc99ELc111ELc114ELc101ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc112ELc114ELc105ELc109ELc47ELc86ELc101ELc99ELc79ELc112ELc101ELc114ELc97ELc116ELc105ELc111ELc110ELc115ELc46ELc104EEEELj87ELt47EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj211ELt29EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj212ELt29EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj213ELt29EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj302ELt33EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj358ELt33EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm64EcEEtlA64_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc104ELc111ELc111ELc107ELc47ELc97ELc54ELc52ELc47ELc65ELc115ELc115ELc101ELc109ELc98ELc108ELc101ELc114ELc46ELc104EEEELj370ELt33EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/core/include/hk/diag/diag.h:29:_ZN2hk4diag16abortReleaseImplITnNS_4util14TemplateStringEXtlNS3_ILm69EcEEtlA69_cLc47ELc98ELc117ELc105ELc108ELc100ELc47ELc103ELc114ELc111ELc111ELc118ELc101ELc45ELc101ELc110ELc103ELc105ELc110ELc101ELc47ELc115ELc121ELc115ELc47ELc104ELc97ELc107ELc107ELc117ELc110ELc47ELc99ELc111ELc114ELc101ELc47ELc105ELc110ELc99ELc108ELc117ELc100ELc101ELc47ELc104ELc107ELc47ELc112ELc114ELc105ELc109ELc47ELc86ELc101ELc99ELc79ELc112ELc101ELc114ELc97ELc116ELc105ELc111ELc110ELc115ELc46ELc104EEEELj29ELt47EEEvNS_6ResultEz",
+      "bytes": 192,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_1EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEPvS9_EEE6invokeES9_S9_",
+      "bytes": 160,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1871:hkMain",
+      "bytes": 144,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:147:_ZN6groove7gtfpriv13parseDurationEPKcRi",
+      "bytes": 144,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:30:groove_v0_bind",
+      "bytes": 144,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_4EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEPvS9_EEE6invokeES9_S9_",
+      "bytes": 128,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi0EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi1EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi2EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi3EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi4EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi5EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi6EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1190:_ZN12_GLOBAL__N_110mCueThreadILi7EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1241:_ZN12_GLOBAL__N_115mDirectorThreadEPvS0_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1218:_ZN12_GLOBAL__N_113mSwitchThreadEPvS0_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:371:_ZN12_GLOBAL__N_113readMultiFileEPl",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:506:_ZN12_GLOBAL__N_18bgThreadILi0EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:506:_ZN12_GLOBAL__N_18bgThreadILi1EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:506:_ZN12_GLOBAL__N_18bgThreadILi2EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:506:_ZN12_GLOBAL__N_18bgThreadILi3EEEvPvS1_",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_8EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEiiEEE6invokeEii",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:47:_ZN6groove9gameIndexEPKc",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:217:_ZN6groove7gtfpriv7findCueEPKciRi",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:265:_ZN6groove7gtfpriv9loadLinesEPKclRNS_13MultiTimelineE",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:874:_ZN6groove16fillTimelineViewERKNS_13MultiTimelineERNS_12TimelineViewE",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:69:_ZN6groove2v012_GLOBAL__N_12idEPKc",
+      "bytes": 112,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Replace.h:24:_ZN2hk4hook7ReplaceIPFPviEE15installAtOffsetEPKNS_2ro8RoModuleEm",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Replace.h:24:_ZN2hk4hook7ReplaceIPFvPviiEE15installAtOffsetEPKNS_2ro8RoModuleEm",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:481:_ZN12_GLOBAL__N_19cueThreadILi0EEEvPvS1_",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:481:_ZN12_GLOBAL__N_19cueThreadILi1EEEvPvS1_",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:481:_ZN12_GLOBAL__N_19cueThreadILi2EEEvPvS1_",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:481:_ZN12_GLOBAL__N_19cueThreadILi3EEEvPvS1_",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1611:_ZN12_GLOBAL__N_114loadTileTitlesEv",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_14$_10EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEPviEEE6invokeES9_i",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:26:_ZN6groove7gtfpriv11internEventEPKci",
+      "bytes": 96,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:269:_ZN12_GLOBAL__N_18flushLogEv",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:247:_ZN12_GLOBAL__N_111writeAppendEPKcS1_l",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1148:_ZN12_GLOBAL__N_113slotsFromNameEiPKcPcRii",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:761:_ZN12_GLOBAL__N_111patchSprSkyEPhPKc",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_9EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEPvS9_EEE6invokeES9_S9_",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/timeline.cpp:15:_ZN6groove12_GLOBAL__N_16internEPKci",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:15:_ZN6groove12_GLOBAL__N_16internEPKc",
+      "bytes": 80,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:352:groove_v0_load_sd_levels",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:327:_ZN12_GLOBAL__N_16v0PathEPKcRA192_cb",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1118:_ZN12_GLOBAL__N_19waitUntilEPvii",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:198:_ZN12_GLOBAL__N_18ensureFsEv",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1652:_ZN12_GLOBAL__N_19tileTitleEiiiPKcPcm",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/cue_validation.hpp:137:_ZN6groove12validCueArgsEijPKi",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/cue_validation.hpp:137:_ZN6groove12validCueArgsEijPKi",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:816:_ZN6groove7gtfpriv12parseGtfImplERNS_13MultiTimelineEPKcl",
+      "bytes": 64,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_5EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_EEE6invokeES5_",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_2EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_EEE6invokeES5_",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:897:_ZN12_GLOBAL__N_114retitleIRing01EPKc",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:60:_ZN6groove7gtfpriv6internEPKci",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:929:_ZN6groove8parseGtfERNS_13MultiTimelineEPKcl",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:23:_ZN6groove2v012_GLOBAL__N_15coordEmRNS0_5CoordEb",
+      "bytes": 48,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:1271:_ZN12_GLOBAL__N_114mLatencyThreadEPvS0_",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:527:_ZN12_GLOBAL__N_113latencyThreadEPvS0_",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/a64/Assembler.h:1304:_ZN2hk4hook3a6424PseudoInstructionEmitterILb0EE10emitBranchEmb",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_6EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagES5_PKcPiEEE6invokeES5_SB_SC_",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_13$_7EJPFPvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEiiEEE6invokeEii",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "sys/hakkun/include/hk/hook/Trampoline.h:119:_ZN2hk4hook6detail14TrampolineFuncIN12_GLOBAL__N_14$_12EJPFvOS4_NS1_23TrampolineBackupInvokerIS4_JEEENS1_19_TrampolineTypeFlagEPvEEE6invokeES9_",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/parser_support.hpp:53:_ZN6groove13validPrologueEPKc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:127:_ZN6groove7gtfpriv7unquoteEPc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:206:_ZN6groove7gtfpriv6gameIxEPKc",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:45:_ZN6groove2v012SessionState8setSlotsERA2_KNS0_4SlotE",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:49:groove_v0_ack_save",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:124:_ZN6groove2v012SessionState5savedERKNS0_10SaveIntentEb",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:78:_ZN6groove2v012SessionState6launchEmNS0_5CoordEiiiiPKh",
+      "bytes": 32,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:0:__cxx_global_var_init",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:0:__cxx_global_var_init.1",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/parser_support.hpp:14:_ZN6groove11validSourceEPKclPcm",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/parser_support.hpp:14:_ZN6groove11validSourceEPKclPcm",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:372:_ZN6groove7gtfpriv8addEventERNS_13MultiTimelineERNS_6MEventEi",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/parser_support.hpp:14:_ZN6groove11validSourceEPKclPcm",
+      "bytes": 16,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:818:grooveMulColorImpl",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/main.cpp:949:_ZN12_GLOBAL__N_113ringTypeEntryEi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/timeline.cpp:34:_ZN6groove12_GLOBAL__N_18parseIntEPKcRi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:34:_ZN6groove12_GLOBAL__N_18parseIntEPKcRi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:35:_ZN6groove12_GLOBAL__N_110parseFloatEPKcRf",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/parser_support.hpp:43:_ZN6groove14numericLiteralEPKc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.cpp:37:_ZN6groove12_GLOBAL__N_19validNameEPKc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/cue_validation.hpp:145:_ZN6groove11validLayoutEii",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:39:_ZN6groove7gtfpriv7isSpaceEc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:40:_ZN6groove7gtfpriv5lowerEc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:42:_ZN6groove7gtfpriv3ieqEPKcS2_",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:49:_ZN6groove7gtfpriv9validNameEPKci",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:69:_ZN6groove7gtfpriv12stripCommentEPKciPciRi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:101:_ZN6groove7gtfpriv8tokenizeEPcPS1_",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:142:_ZN6groove7gtfpriv8isIntTokEPKc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/numparse.hpp:10:_ZN6groove14parseIntStrictEPKcRi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:238:_ZN6groove7gtfpriv8reservedEPKc",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:250:_ZN6groove7gtfpriv7useGameERNS_13MultiTimelineEi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf.cpp:258:_ZN6groove7gtfpriv4pad4EPi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/numparse.hpp:41:_ZN6groove16parseFloatStrictEPKcRf",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/gtf_cues.hpp:247:_ZN6groove6gtfcat9layoutOffEi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/cue_validation.hpp:145:_ZN6groove11validLayoutEii",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:38:groove_v0_finish",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:41:groove_v0_quiesced",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:46:groove_v0_prepare_save",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:52:groove_v0_session_active",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_native.cpp:53:groove_v0_fault",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:55:_ZN6groove2v012SessionState7mapInitEm",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:73:_ZNK6groove2v012SessionState7stateAtENS0_5CoordEmi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_session.hpp:89:_ZN6groove2v012SessionState17suppressSelectionEmmiNS0_5CoordEi",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/multi.hpp:27:_ZN6groove13MultiTimelineC2Ev",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:146:_ZNK6groove2v06Loader7compileEjRNS_13MultiTimelineE",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:22:_ZN6groove2v012_GLOBAL__N_14Json6stringEPcj",
+      "bytes": 0,
+      "kind": "static"
+    },
+    {
+      "function": "src/v0_loader.cpp:70:_ZN6groove2v012_GLOBAL__N_17versionEPKcPj",
+      "bytes": 0,
+      "kind": "static"
+    }
+  ],
+  "blockers": [
+    "Native Runner cancellation/join/destruction bodies unavailable",
+    "Native allocator, FS, coroutine and cue callees/indirect callbacks unbounded",
+    "Actual per-thread stack capacity and peak use not established"
+  ]
+}

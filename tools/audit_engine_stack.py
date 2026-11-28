@@ -32,7 +32,9 @@ def audit(root,out):
     for line in commands:
         args=shlex.split(line)
         if '-c' in args and any(str(root/'src')+'/' in s and s.endswith('.cpp') for s in args): selected.append(args)
-    if len(selected)!=4:raise ValueError('Expected the four engine translation units')
+    expected={str(root/'src'/Path(name).name) for name in manifest['sources'] if name.startswith('engine/src/') and name.endswith('.cpp')}
+    actual={next(s for s in args if s.endswith('.cpp')) for args in selected}
+    if actual!=expected or len(selected)!=len(expected):raise ValueError('Engine translation units differ from build manifest')
     out.mkdir(parents=True)
     rows=[]
     for args in selected:
