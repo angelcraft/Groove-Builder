@@ -1,0 +1,79 @@
+{
+  "kind": "groove-v06-distribution-draft/1",
+  "installable": false,
+  "target_version": "0.6.0",
+  "compiled_version": "0.5.1-research",
+  "title_id": "0100D9F01D474000",
+  "game_build_id": "03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8",
+  "module_slot": null,
+  "module_slot_note": "Require current inventory and coexistence approval; do not assume config subsdk4 is available. Never replace subsdk1/subsdk5.",
+  "future_layout": [
+    {
+      "path": "atmosphere/contents/0100D9F01D474000/exefs/<verified-slot>",
+      "status": "OMITTED: module not approved"
+    },
+    {
+      "path": "groove/engine.json",
+      "status": "OMITTED: functional capabilities not established"
+    },
+    {
+      "path": "packages/Custom-Remix-A.groove",
+      "status": "synthetic validation fixture available"
+    },
+    {
+      "path": "packages/Custom-Remix-B.groove",
+      "status": "synthetic validation fixture available"
+    },
+    {
+      "path": "README_ES.md",
+      "status": "required with single directed A/B test"
+    },
+    {
+      "path": "SHA256SUMS",
+      "status": "required for final exact files"
+    },
+    {
+      "path": "installation-inventory.json",
+      "status": "required; no overwrite and exact owned-file restoration"
+    }
+  ],
+  "installer_owned": [
+    "groove/.installer.mutex",
+    "groove/.installer/lock",
+    "groove/.installer/journal.json",
+    "groove/slots.json",
+    "groove/levels/"
+  ],
+  "runtime_owned": [
+    "groove/custom-saves/"
+  ],
+  "blockers": [
+    {
+      "item": "B2 rev3 scheduler correction and acceptance",
+      "evidence": "Only d2cc779 rev2 fetched; GE-154 7240789328 disallows accepting budget-exhaustion as done."
+    },
+    {
+      "item": "real module owner/worker harness",
+      "evidence": "Private main image / SDK / emu_v050 not present."
+    },
+    {
+      "item": "nn::fs directory synchronization",
+      "evidence": "Native syncDirectory returns false. No false Committed."
+    },
+    {
+      "item": "durable transaction IDs and bounded normal retention",
+      "evidence": "Separated API inputs implemented; native restart/restore provider and pruning not established."
+    },
+    {
+      "item": "serialized post-lease/cursor, ABI, stack and IPS/visual acceptance",
+      "evidence": "Host and ELF synthetic tests are not physical proof."
+    }
+  ],
+  "private_inputs": {
+    "main_image": "/workspace/private/groove/main.img",
+    "original_sdk_if_required": "/workspace/private/groove/sdk.nso",
+    "module_harness": "/workspace/private/groove/emu_v050/",
+    "own_elf": "/workspace/engine-v0-bound-verified/build/GrooveHT3.nss"
+  },
+  "validation_kit_sha256": "920b5a90b811d24f247ce0a2c05d9cdb192ff1ce114094cb9790f3d9d91e7439"
+}

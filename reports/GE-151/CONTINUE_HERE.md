@@ -134,3 +134,13 @@ exhaustion antes de aceptar evidencia; origin/grok/stage-owner aún rev2 al comp
 No se instala destroyPending ni se omiten dtors. Próxima revisión: V06_DISTRIBUTION_DRAFT
 para estructura/rollback y datos privados requeridos. No esperar a Grok para IO/tests,
 pero no activar hasta evidencia; siguen pendientes sync, tx-ID nativo y retención.
+
+
+## Continuación posterior al commit 80df6db — revisión 7240789328
+
+V06_DISTRIBUTION_DRAFT.json y V06_RESTORE_ES.md preparan estructura, exclusiones,
+restauración y rutas privadas exactas. No es un ZIP instalable. Kit de remixes de
+validación preparado localmente con hash documentado; se regenera con el generador.
+Nueva consulta git fetch grok/stage-owner confirma aún d2cc779 rev2; rev3 corregida
+no disponible, así que no integrar/activar B2 todavía. No se ha detenido trabajo
+independiente ni se han solicitado nuevas capturas.
