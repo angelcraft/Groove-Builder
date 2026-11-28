@@ -1,0 +1,14 @@
+{
+  "tests": {
+    "exit_code": 0,
+    "command": "npm test"
+  },
+  "types": {
+    "exit_code": 0,
+    "command": "npm run typecheck"
+  },
+  "build": {
+    "exit_code": 0,
+    "command": "npm run build"
+  }
+}
