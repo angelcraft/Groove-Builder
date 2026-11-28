@@ -370,17 +370,6 @@ def v0_map(env):
     h = env.h; mp = h.alloc(0x8000)
     for o in (0x52D8, 0x52E0, 0x52F0, 0x2A30, 0x38C0, 0x29D8): h.wq(mp + o, h.alloc(0x400))
     bb = h.alloc(0x40); h.wq(mp + 0x6F88, bb + 0x18); h.wi(mp + 0x2A38, 0); return mp
-def v0_state(env):
-    m = env.m; ex = m.g("7gV0ExecE")
-    return {"phase": env.h.ri(m.sym.get("dummy", 0) or ex + phase_off(env)), "v0Live": m.u8("7gV0LiveE"), "multiV0": m.u8("8gMultiV0E")}
-_PH = {}
-def phase_off(env):
-    if "o" not in _PH:
-        # Execution: Package snapshot, MultiTimeline, Record, Intent, 5 bools, 2 u64, StageToken, then `phase` (public).
-        _PH["o"] = None
-    return _PH["o"]
-def v0_phase(env):
-    return env.h.ri(env.m.a("groove_emu_v0_phase") if "groove_emu_v0_phase" in env.m.sym else 0)
 def blob(env): return env.h.rd(env.h.MGR + 0x548, 0x1188)
 def map_init(env, mp):
     env.h.phase = "mapInit"; env.h.call(MAP_INIT, mp, env.h.alloc(0x100), 0)
