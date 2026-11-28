@@ -4,11 +4,10 @@ The structural rules mirror vendor/groove-runtime-manifest.draft.schema.json
 (tests cross-check against it with the jsonschema package when available) so
 no third-party dependency is needed at runtime.
 """
-import json
 import re
 import uuid
 
-from . import limits
+from . import jsonstrict, limits
 from .errors import PackageError
 from .safepath import is_dos_device
 
@@ -22,80 +21,25 @@ REQUIRED = ("format", "profile", "id", "version", "title", "engine_min",
 TIMELINES = {"gtf": "timeline.gtf", "gtl": "timeline.gtl"}
 
 
+def valid_id_syntax(pid):
+    """Exact fullmatch (a trailing newline must not pass as with re.match + '$')."""
+    return (isinstance(pid, str) and limits.ID_MIN <= len(pid) <= limits.ID_MAX
+            and ID_RE.fullmatch(pid) is not None and not is_dos_device(pid))
+
+
 def parse_version(s):
-    m = VERSION_RE.match(s) if isinstance(s, str) else None
+    m = VERSION_RE.fullmatch(s) if isinstance(s, str) else None
     return tuple(int(x) for x in m.groups()) if m else None
 
 
-def _depth_ok(text: str, max_depth: int) -> bool:
-    depth, in_str, esc = 0, False, False
-    for c in text:
-        if in_str:
-            if esc:
-                esc = False
-            elif c == "\\":
-                esc = True
-            elif c == '"':
-                in_str = False
-        elif c == '"':
-            in_str = True
-        elif c in "[{":
-            depth += 1
-            if depth > max_depth:
-                return False
-        elif c in "]}":
-            depth -= 1
-    return True
-
-
-def _no_dupes(pairs):
-    out = {}
-    for k, v in pairs:
-        if k in out:
-            raise PackageError("MANIFEST_DUPLICATE_KEY", f"duplicate key {k!r}", M)
-        out[k] = v
-    return out
-
-
-def _reject_constant(name):
-    raise PackageError("MANIFEST_JSON", f"non-standard JSON constant {name}", M)
-
-
-def _check_strings(obj):
-    """Reject lone surrogates that json.loads accepts from \\uD800 escapes."""
-    if isinstance(obj, str):
-        try:
-            obj.encode("utf-8")
-        except UnicodeEncodeError:
-            raise PackageError("MANIFEST_UTF8", "string contains an unpaired surrogate", M) from None
-    elif isinstance(obj, dict):
-        for k, v in obj.items():
-            _check_strings(k)
-            _check_strings(v)
-    elif isinstance(obj, list):
-        for v in obj:
-            _check_strings(v)
+def _jerr(kind, msg):
+    code = {"size": "MANIFEST_TOO_LARGE", "utf8": "MANIFEST_UTF8", "depth": "MANIFEST_DEPTH",
+            "duplicate": "MANIFEST_DUPLICATE_KEY", "json": "MANIFEST_JSON"}[kind]
+    return PackageError(code, msg, M)
 
 
 def load_json_strict(raw: bytes):
-    if len(raw) > limits.MAX_MANIFEST_BYTES:
-        raise PackageError("MANIFEST_TOO_LARGE", f"{len(raw)} bytes (> {limits.MAX_MANIFEST_BYTES})", M)
-    if raw.startswith(b"\xef\xbb\xbf"):
-        raise PackageError("MANIFEST_UTF8", "UTF-8 BOM not allowed", M)
-    try:
-        text = raw.decode("utf-8")
-    except UnicodeDecodeError:
-        raise PackageError("MANIFEST_UTF8", "manifest is not valid UTF-8", M) from None
-    if not _depth_ok(text, limits.MAX_JSON_DEPTH):
-        raise PackageError("MANIFEST_DEPTH", f"nesting deeper than {limits.MAX_JSON_DEPTH}", M)
-    try:
-        obj = json.loads(text, object_pairs_hook=_no_dupes, parse_constant=_reject_constant)
-    except PackageError:
-        raise
-    except (ValueError, RecursionError) as e:
-        raise PackageError("MANIFEST_JSON", f"invalid JSON: {e}", M) from None
-    _check_strings(obj)
-    return obj
+    return jsonstrict.loads(raw, limits.MAX_MANIFEST_BYTES, _jerr, limits.MAX_JSON_DEPTH)
 
 
 def _is_str(v):
@@ -123,12 +67,12 @@ def validate_manifest(obj):
         raise PackageError("MANIFEST_UNKNOWN_KEY", f"unknown keys {extra}", M)
 
     pid = obj["id"]
-    if not _is_str(pid) or not (limits.ID_MIN <= len(pid) <= limits.ID_MAX) or not ID_RE.match(pid):
+    if not _is_str(pid) or not (limits.ID_MIN <= len(pid) <= limits.ID_MAX) or not valid_id_syntax(pid):
         raise PackageError("MANIFEST_BAD_ID", "id must be lowercase reverse-DNS-like, 3-96 chars", M)
     if is_dos_device(pid):
         raise PackageError("MANIFEST_BAD_ID", "id starts with a reserved Windows device name", M)
     if not UUID_RE.search(pid):
-        warnings.append("id does not contain a UUID; Draft 0.2 asks for a cryptographic UUID generated once")
+        warnings.append("id does not contain a UUIDv4 (accepted legacy reverse-DNS id; new ids must use a cryptographic UUIDv4)")
     else:
         u = UUID_RE.search(pid).group(0)
         if uuid.UUID(u).version != 4:

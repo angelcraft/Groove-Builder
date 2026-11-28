@@ -7,11 +7,9 @@ import tempfile
 import unittest
 
 from _util import valid, make_sd, snapshot, A10, A11, B10
-from groove_package.engine import EngineTarget
 from groove_package.fsops import FS, SimulatedCrash
 from groove_package.installer import SD
 
-T = EngineTarget("0.6.0", 1, "03FF4A3B", "test")
 ID_A = "org.groovebuilder.e291e52f-c146-41b0-823e-40b9fccb1338"
 INFRA_DIRS = {os.path.normpath(p) for p in ("groove/levels", "groove/.installer", "groove/backups", "groove/backups/saves")}
 
@@ -24,16 +22,16 @@ def state(root):
     return {k: v for k, v in s.items() if not (v == "DIR" and k in INFRA_DIRS)}
 
 
-def backups(root):
-    return snapshot(os.path.join(root, "groove", "backups")) if os.path.isdir(os.path.join(root, "groove", "backups")) else {}
-
-
 def setup_empty(sd):
     pass
 
 
 def setup_a(sd):
-    sd.install(valid(A10), target=T)
+    sd.install(valid(A10))
+
+
+def setup_a_unassigned(sd):
+    sd.install(valid(A10), slot=None)
 
 
 def setup_corrupt_slots(sd):
@@ -43,11 +41,12 @@ def setup_corrupt_slots(sd):
 
 
 SCENARIOS = {
-    "install-first": (setup_empty, lambda sd: sd.install(valid(A10), target=T)),
-    "install-second": (setup_a, lambda sd: sd.install(valid(B10), target=T)),
-    "upgrade": (setup_a, lambda sd: sd.install(valid(A11), target=T)),
+    "install-first": (setup_empty, lambda sd: sd.install(valid(A10))),
+    "install-second": (setup_a, lambda sd: sd.install(valid(B10))),
+    "upgrade": (setup_a, lambda sd: sd.install(valid(A11))),
     "uninstall-keep-saves": (setup_a, lambda sd: sd.uninstall(ID_A)),
-    "uninstall-purge-saves": (setup_a, lambda sd: sd.uninstall(ID_A, purge_saves=True)),
+    "assign": (setup_a_unassigned, lambda sd: sd.assign(ID_A, 1)),
+    "init-slots": (setup_empty, lambda sd: sd.init_slots()),
     "unassign": (setup_a, lambda sd: sd.unassign(ID_A)),
     "reset-corrupt-slots": (setup_corrupt_slots, lambda sd: sd.init_slots(reset_corrupt=True)),
 }
@@ -101,8 +100,10 @@ class Transactions(unittest.TestCase):
                     except OSError:
                         failed = True
                     sd = SD(root)
-                    self.assertFalse(os.path.exists(sd.lock_path), "lock must be released")
+                    if not os.path.exists(sd.journal_path):
+                        self.assertFalse(os.path.exists(sd.lock_path), "lock file must be removed")
                     if os.path.exists(sd.journal_path):
+                        # lock FILE stays (runtime gate closed) but the OS lock is free: recover can take it
                         # Fault hit post-commit cleanup: op reported success, recover rolls forward.
                         self.assertFalse(failed)
                         self.assertEqual(sd.recover(), "rolled-forward")
@@ -133,7 +134,7 @@ class Transactions(unittest.TestCase):
                         self.assertIn(state(root), (pre, post))
 
     def test_saves_survive_every_crash(self):
-        """custom-saves/ is byte-identical after any crash+recover, except an explicitly committed purge."""
+        """custom-saves/ is byte-identical after any crash + recover (V0: the installer never deletes saves)."""
         for name, (setup, op) in SCENARIOS.items():
             _, _, n = self.reference(setup, op)
             for k in range(1, n + 1):
@@ -143,14 +144,7 @@ class Transactions(unittest.TestCase):
                 with self.assertRaises(SimulatedCrash):
                     op(SD(root, FS(crash_at=k)))
                 SD(root).recover()
-                after = snapshot(saves)
-                if name == "uninstall-purge-saves" and after != before:
-                    # purge committed: every removed save has a byte-identical backup
-                    removed = {p: h for p, h in before.items() if p not in after}
-                    self.assertEqual(set(removed), {ID_A + ".gsv", ID_A + ".gsv.bak"})
-                    self.assertEqual(sorted(removed.values()), sorted(v for v in backups(root).values() if v != "DIR"))
-                else:
-                    self.assertEqual(after, before, f"{name} crash_at={k}")
+                self.assertEqual(snapshot(saves), before, f"{name} crash_at={k}")
 
 
 if __name__ == "__main__":

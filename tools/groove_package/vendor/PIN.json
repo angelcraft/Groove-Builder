@@ -1,8 +1,12 @@
 {
-  "note": "Vendored verbatim; do not edit. Re-pin when GE-151 / GE-154 publish new revisions.",
+  "note": "Vendored verbatim; do not edit. Contract = Draft 0.2 profile + Draft 0.3 V0 decisions (GE-154). Re-pin when GE-151 / GE-154 publish new revisions; once PR #6 is integrated, import the single authoritative tools/ implementation and keep this snapshot only for a differential test.",
+  "contract": "groove-package/1 runtime profile, Draft 0.2 + Draft 0.3 V0 decisions",
+  "coordination_head": "1e9855c (coordination/v0.6.0; TASKS.md records Grok ownership of GE-155)",
   "files": {
     "gtf.py": {"source": "angelcraft/Groove-Builder codex/engine-v0.5.1-hardening:tools/gtf.py", "commit": "9b56aab4e791a9434b36548e0cee39c9ee0e2785", "sha256": "ac96a08eacd01aafeaeeab9c7e7e68bb8b34a1dea05b589e4f54c80520964fa7"},
     "engine_contract.json": {"source": "angelcraft/Groove-Builder codex/engine-v0.5.1-hardening:tools/engine_contract.json", "commit": "9b56aab4e791a9434b36548e0cee39c9ee0e2785", "sha256": "09e1770c4c9e193db7f957b75e22cdca2e807b2eb2768294b0ec11a64d6239ba"},
-    "groove-runtime-manifest.draft.schema.json": {"source": "angelcraft/Groove-Builder coordination/v0.6.0:docs/schema/groove-runtime-manifest.draft.schema.json", "commit": "7a5fe22cd277de569a9deae0e4917611de5cdfbf", "sha256": "695e01aec0005223487ebb76eacacc731457b038431d9624c2ac18116b26f16c"}
+    "groove-runtime-manifest.draft.schema.json": {"source": "angelcraft/Groove-Builder coordination/v0.6.0:docs/schema/groove-runtime-manifest.draft.schema.json", "commit": "3642b7ea43ff149d82f13db458b146abe51feda4", "sha256": "695e01aec0005223487ebb76eacacc731457b038431d9624c2ac18116b26f16c", "unchanged_since": "7a5fe22"},
+    "GROOVE_PROFILE_DRAFT_02.md": {"source": "angelcraft/Groove-Builder coordination/v0.6.0:docs/GROOVE_PROFILE_DRAFT_02.md", "commit": "3642b7ea43ff149d82f13db458b146abe51feda4", "sha256": "55e60936d9e8ae5c06b152c1b0c8f0bb98230e4e51f180d293fa0e5cd3cec09b"},
+    "GROOVE_INTEGRATION_V0_DECISIONS.md": {"source": "angelcraft/Groove-Builder coordination/v0.6.0:docs/GROOVE_INTEGRATION_V0_DECISIONS.md", "commit": "3642b7ea43ff149d82f13db458b146abe51feda4", "sha256": "82d4e8cac5095b85344541a3e9d0c6adef9a917462b9ef30b688867497237853"}
   }
 }

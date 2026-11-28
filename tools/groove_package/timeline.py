@@ -1,7 +1,7 @@
 """Timeline validation using the GE-151 hardened parser (vendored, pinned).
 
 Adds the Draft 0.2 runtime rules on top of the native-equivalent grammar:
-explicit start and results, no explicit match, no native results, GTLM 1 only
+explicit single start and 'results exit' (Draft 0.3), no explicit match, no native results, GTLM 1 only
 for .gtl (GTL1/Hoop is legacy), exact size/line/token limits.
 """
 from . import limits
@@ -56,19 +56,27 @@ def validate_timeline(raw: bytes, fmt: str, path: str):
         raise PackageError("TIMELINE_INVALID", e.message + (f" (line {e.line})" if e.line else ""), path) from None
     except (ValueError, RecursionError) as e:
         raise PackageError("TIMELINE_INVALID", str(e), path) from None
-    keys = {}
+    seen = {}
     for no, k, toks in dirs:
-        keys.setdefault(k, no)
+        seen.setdefault(k, []).append((no, toks))
         if k in ("force", "disable"):
             raise PackageError("TIMELINE_FORBIDDEN", f"{toks[0]} is not allowed (line {no})", path)
-    if "match" in keys:
-        raise PackageError("TIMELINE_MATCH", f"explicit match directive (line {keys['match']}); the registry assigns the slot", path)
-    if "start" not in keys:
+    if "match" in seen:
+        raise PackageError("TIMELINE_MATCH", f"explicit match directive (line {seen['match'][0][0]}); "
+                                             "the registry assigns the slot", path)
+    for k in ("start", "results"):
+        if len(seen.get(k, [])) > 1:
+            raise PackageError("TIMELINE_DUPLICATE_DIRECTIVE",
+                               f"{k} appears {len(seen[k])} times (lines {[n for n, _ in seen[k]]})", path)
+    if "start" not in seen:
         raise PackageError("TIMELINE_NO_START", "explicit start required (GTF default 0 vs GTLM default 2880)", path)
-    if "results" not in keys:
-        raise PackageError("TIMELINE_NO_RESULTS", "explicit 'results exit' (or custom) required", path)
-    if tl.results == 1:
+    if "results" not in seen:
+        raise PackageError("TIMELINE_NO_RESULTS", "explicit 'results exit' required", path)
+    rtoks = seen["results"][0][1]
+    if len(rtoks) >= 2 and rtoks[1].lower() == "native" or tl.results == 1:
         raise PackageError("NATIVE_RESULTS", "results native is not allowed in runtime packages", path)
+    if len(rtoks) != 2 or rtoks[1] != "exit":
+        raise PackageError("TIMELINE_RESULTS_NOT_EXIT", f"results must be exactly 'results exit' (got {' '.join(rtoks)})", path)
     info = {"title": tl.title, "start": tl.start, "end": tl.end, "finish": tl.finish,
             "games": tl.games_used(), "events": len(tl.events)}
     return tl, info

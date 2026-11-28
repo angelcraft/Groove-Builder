@@ -61,13 +61,11 @@ def _parse_extra(buf: bytes, name: str):
 
 
 def _decode_name(raw: bytes, flags: int) -> str:
+    # Draft 0.3 / decision D: exact ASCII member names (the UTF-8 flag is tolerated, non-ASCII is not).
     try:
-        if flags & FLAG_UTF8:
-            return raw.decode("utf-8")
-        name = raw.decode("ascii")  # CP437 vs UTF-8 is ambiguous: require ASCII or the UTF-8 flag
-        return name
+        return raw.decode("ascii")
     except UnicodeDecodeError:
-        raise PackageError("ZIP_BAD_NAME", "member name is not valid UTF-8/ASCII") from None
+        raise PackageError("ZIP_BAD_NAME", "member names must be ASCII") from None
 
 
 def read_members(data: bytes, max_entries: int = limits.MAX_ENTRIES_AUTHORING):
@@ -113,6 +111,8 @@ def read_members(data: bytes, max_entries: int = limits.MAX_ENTRIES_AUTHORING):
         raw_name = data[p:p + nlen]
         extra = data[p + nlen:p + nlen + elen]
         p += nlen + elen + clen2
+        if clen2 != 0:
+            raise PackageError("ZIP_COMMENT", "member comments are not allowed")
         if nlen == 0 or nlen > limits.MAX_NAME_BYTES:
             raise PackageError("ZIP_BAD_NAME", "member name length out of range")
         name = _decode_name(raw_name, flags)
@@ -172,7 +172,7 @@ def read_members(data: bytes, max_entries: int = limits.MAX_ENTRIES_AUTHORING):
         ls = m.offset + _LOC.size
         if ls + nlen + elen > cd_off:
             raise PackageError("ZIP_TRUNCATED", "local header truncated", m.name)
-        if data[ls:ls + nlen] != m.name.encode("utf-8" if m.flags & FLAG_UTF8 else "ascii"):
+        if data[ls:ls + nlen] != m.name.encode("ascii"):
             raise PackageError("ZIP_HEADER_MISMATCH", "local name differs from central directory", m.name)
         if flags != m.flags or method != m.method:
             raise PackageError("ZIP_HEADER_MISMATCH", "local flags/method differ from central directory", m.name)
@@ -248,8 +248,8 @@ def write_canonical(files, deflate: bool = True) -> bytes:
     out = bytearray()
     cen = bytearray()
     for name, body in files:
-        raw = name.encode("utf-8")
-        flags = 0 if raw.isascii() else FLAG_UTF8
+        raw = name.encode("ascii")
+        flags = 0
         crc = zlib.crc32(body) & 0xFFFFFFFF
         if deflate:
             c = zlib.compressobj(9, zlib.DEFLATED, -15)

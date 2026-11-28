@@ -52,7 +52,18 @@ def snapshot(root, exclude=()):
     return out
 
 
-def make_sd(root):
+BUILD_ID = "03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8"
+CAPS = ["package.runtime/1", "registry.slots/1", "adapter.multi", "timeline.gtf", "timeline.gtl"]
+
+
+def marker(**over):
+    m = {"format": "groove-engine/1", "engine_version": "0.6.0", "engine_contract": 1,
+         "build_id": BUILD_ID, "capabilities": list(CAPS)}
+    m.update(over)
+    return (json.dumps(m) + "\n").encode()
+
+
+def make_sd(root, with_marker=True):
     """A synthetic SD with legacy Groove files, other mods and existing custom saves.
     All bytes are placeholders; nothing here is game data."""
     files = {
@@ -65,6 +76,8 @@ def make_sd(root):
         "JKSV/Rhythm Paradise Groove/backup/placeholder.txt": b"user backup placeholder",
         "switch/other-homebrew/config.ini": b"[x]\n",
     }
+    if with_marker:  # synthetic fixture root: stands in for the marker GE-151 will publish
+        files["groove/engine.json"] = marker()
     for rel, b in files.items():
         p = os.path.join(root, *rel.split("/"))
         os.makedirs(os.path.dirname(p), exist_ok=True)
@@ -73,4 +86,4 @@ def make_sd(root):
     return files
 
 
-TARGET = dict(engine_version="0.6.0", engine_contract=1, build_id="03FF4A3B")
+

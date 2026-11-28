@@ -130,12 +130,13 @@ def raw_zip(entries):
         usize = o.get("usize", len(body))
         flags = o.get("flags", 0)
         extra = o.get("extra", b"")
+        comment = o.get("comment", b"")
         off = len(out)
         out += struct.pack("<IHHHHHIIIHH", 0x04034B50, 20, flags, method, 0, 0x21, crc, len(comp), usize,
                            len(name), len(extra)) + name + extra + comp
         cen += struct.pack("<IHHHHHHIIIHHHHHII", 0x02014B50, o.get("made_by", (3 << 8) | 20), 20, flags, method,
-                           0, 0x21, crc, len(comp), usize, len(name), len(extra), 0, 0, 0,
-                           o.get("external", 0o100644 << 16), off) + name + extra
+                           0, 0x21, crc, len(comp), usize, len(name), len(extra), len(comment), 0, 0,
+                           o.get("external", 0o100644 << 16), off) + name + extra + comment
     cd = len(out)
     out += cen + struct.pack("<IHHHHIIH", 0x06054B50, 0, 0, len(entries), len(entries), len(cen), cd, 0)
     return bytes(out)
@@ -152,9 +153,10 @@ def invalid():
     stored = pkg(mA, TL_A, deflate=False)
     M = mjson(mA)
     cases = {}
+    section = ["archive"]
 
     def add(name, code, data):
-        cases[name] = (code, data)
+        cases[name] = (code, data, section[0])
 
     # --- archive structure
     add("truncated", "ZIP_TRUNCATED", good[:40])
@@ -210,6 +212,7 @@ def invalid():
                                                           (b"timeline.gtf", TL_A, {"method": 8, "comp": deflate(TL_A) + b"xx"})]))
     add("too-many-members", "ZIP_TOO_MANY", raw_zip([(f"f{i}.txt".encode(), b"", {}) for i in range(257)]))
     # --- content policy / member set
+    section[0] = "member-set"
     add("extra-member", "UNEXPECTED_MEMBER", pkg(mA, TL_A, extra=[("icon.txt", b"synthetic")]))
     add("second-timeline", "UNEXPECTED_MEMBER", pkg(mA, TL_A, extra=[("timeline.gtl", TL_B)]))
     add("missing-manifest", "MANIFEST_MISSING", write_canonical([("timeline.gtf", TL_A)]))
@@ -222,6 +225,7 @@ def invalid():
     add("nested-archive", "FORBIDDEN_CONTENT", pkg(mA, TL_A, extra=[("inner.zip", good)]))
     add("rhref", "FORBIDDEN_CONTENT", pkg(mA, TL_A, extra=[("ref.rhref", b"synthetic")]))
     # --- manifest
+    section[0] = "manifest"
     def mcase(name, code, raw_or_dict, tl=TL_A, fmt="gtf"):
         add(name, code, pkg(raw_or_dict, tl, fmt))
     mcase("editor-profile", "NOT_RUNTIME_PROFILE", manifest(ID_A, "1.0.0", "A", profile="editor"))
@@ -266,6 +270,7 @@ def invalid():
           manifest(ID_A, "1.0.0", "A", required_capabilities=["timeline.gtf", "audio.custom"]))
     mcase("results-native", "NATIVE_RESULTS", manifest(ID_A, "1.0.0", "A", results="native"))
     # --- timeline
+    section[0] = "timeline"
     def tcase(name, code, tl, fmt="gtf"):
         add(name, code, pkg(manifest(ID_A, "1.0.0", "Synthetic Pulse A", fmt), tl, fmt))
     tcase("tl-explicit-match", "TIMELINE_MATCH", TL_A.replace(b"start 0\n", b"start 0\nmatch -1 9 4\n"))
@@ -287,6 +292,25 @@ def invalid():
     tcase("gtl-match", "TIMELINE_MATCH", TL_B.replace(b"start 0\n", b"start 0\nmatch -1 9 4\n"), "gtl")
     tcase("gtl-no-start", "TIMELINE_NO_START", TL_B.replace(b"start 0\n", b""), "gtl")
     tcase("gtl-as-gtf", "TIMELINE_INVALID", TL_B)
+    # --- Draft 0.3 / GE-154 V0 decisions (review 7230925053)
+    section[0] = "archive"
+    add("member-comment", "ZIP_COMMENT", raw_zip([(b"manifest.json", M, {}),
+                                                  (b"timeline.gtf", TL_A, {"comment": b"hidden"})]))
+    add("utf8-flag-non-ascii-name", "ZIP_BAD_NAME", raw_zip([(b"manifest.json", M, {}),
+                                                            ("tímeline.gtf".encode(), TL_A, {"flags": 0x0800})]))
+    section[0] = "manifest"
+    mcase("id-trailing-newline", "MANIFEST_BAD_ID", manifest(ID_A + "\n", "1.0.0", "A"))
+    mcase("version-trailing-newline", "MANIFEST_BAD_VERSION", manifest(ID_A, "1.0.0\n", "A"))
+    section[0] = "timeline"
+    tcase("tl-duplicate-start", "TIMELINE_DUPLICATE_DIRECTIVE", TL_A.replace(b"start 0\n", b"start 0\nstart 0\n"))
+    tcase("tl-conflicting-start", "TIMELINE_DUPLICATE_DIRECTIVE", TL_A.replace(b"start 0\n", b"start 0\nstart 2\n"))
+    tcase("tl-duplicate-results", "TIMELINE_DUPLICATE_DIRECTIVE",
+          TL_A.replace(b"results exit\n", b"results exit\nresults exit\n"))
+    tcase("tl-results-custom", "TIMELINE_RESULTS_NOT_EXIT", TL_A.replace(b"results exit", b"results custom"))
+    tcase("gtl-no-results", "TIMELINE_NO_RESULTS", TL_B.replace(b"results exit\n", b""), "gtl")
+    tcase("gtl-duplicate-results", "TIMELINE_DUPLICATE_DIRECTIVE",
+          TL_B.replace(b"results exit\n", b"results exit\nresults exit\n"), "gtl")
+    tcase("gtl-results-native", "NATIVE_RESULTS", TL_B.replace(b"results exit", b"results native"), "gtl")
     return cases
 
 
@@ -294,8 +318,8 @@ def build():
     out = {"valid": {}, "invalid": {}}
     for n, b in valid().items():
         out["valid"][n] = b
-    for n, (code, b) in invalid().items():
-        out["invalid"][n + ".groove"] = (code, b)
+    for n, (code, b, cat) in invalid().items():
+        out["invalid"][n + ".groove"] = (code, b, cat)
     return out
 
 
@@ -303,16 +327,17 @@ def main(argv):
     check = "--check" in argv
     root = os.path.join(HERE, "fixtures")
     data = build()
-    corpus = {"note": "GE-155 synthetic corpus (DRAFT 0.2). Expected codes are installer codes; other "
-                      "implementations should at least reject every invalid entry.",
+    corpus = {"note": "GE-155 synthetic corpus (Draft 0.2 + Draft 0.3 V0 decisions @ 3642b7e). Shared with GE-153: "
+                      "other implementations must accept every valid file byte-for-byte and reject every invalid "
+                      "one; 'category' is the coordinated error category, 'expect' the GE-155 code.",
               "ids": {"A": ID_A, "B": ID_B}, "valid": {}, "invalid": {}}
     files = {}
     for n, b in data["valid"].items():
         files[os.path.join("valid", n)] = b
         corpus["valid"][n] = hashlib.sha256(b).hexdigest()
-    for n, (code, b) in sorted(data["invalid"].items()):
+    for n, (code, b, cat) in sorted(data["invalid"].items()):
         files[os.path.join("invalid", n)] = b
-        corpus["invalid"][n] = {"expect": code, "sha256": hashlib.sha256(b).hexdigest()}
+        corpus["invalid"][n] = {"expect": code, "category": cat, "sha256": hashlib.sha256(b).hexdigest()}
     files["src/synthetic-b.gtl"] = TL_B
     files["corpus.json"] = (json.dumps(corpus, indent=2, sort_keys=True) + "\n").encode()
     bad = 0
