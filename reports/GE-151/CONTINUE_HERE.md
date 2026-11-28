@@ -144,3 +144,22 @@ validación preparado localmente con hash documentado; se regenera con el genera
 Nueva consulta git fetch grok/stage-owner confirma aún d2cc779 rev2; rev3 corregida
 no disponible, así que no integrar/activar B2 todavía. No se ha detenido trabajo
 independiente ni se han solicitado nuevas capturas.
+
+
+## Continuación interina Grok — rama grok/engine-b2-integration (base 98112a9)
+
+Codex sin cuota; el propietario autorizó a Grok a continuar GE-151 temporalmente siguiendo
+GE-154 7241433453. La rama codex/* NO se modificó. Leer B2_INTEGRATION.md y
+B2_INTEGRATION_RESULTS.json. Ya hecho (no rehacer): H-B2 C++ (b2_owner.hpp, b2_entries.S),
+15 tripwires + firmas kSigsB2/kSigsV0, dtors sin I/O, tStop antes de spawn, salida Quit
+nativa sin retry implícito, gate syncCapable antes de mutar SD, binding vivo V0
+(r21CtorHook→Execution, bindV0/installV0) y guard InitGameplay corregido (launchA pone
+mgr+0x2904=modo). run_engine_tests rc 0; check_v0_arm64/verify_engine_artifacts pasan;
+b2int.py 44/44 con ELF final + main privado (cooperativo, no Horizon, no Switch).
+
+Siguiente paso para Codex: revisar el diff 98112a9..HEAD (sobre todo main.cpp B2/V0),
+decidir si integrarlo en su rama (sin reescribir autoría). Pendiente: syncDirectory
+acreditado (hoy H9 Pending = una partida custom por arranque), diseño de retry de pausa
+V0, tx-ID entre reinicios, herramienta de engine.json, IPS/visibilidad, y evidencia
+Horizon/física (GE-156) cuando se autorice. No candidato instalable; no hardware.
+No subir main.img, .nss/.nso, subsdk, IPS ni romfs.

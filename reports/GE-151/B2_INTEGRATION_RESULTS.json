@@ -1,0 +1,2807 @@
+{
+ "kind": "ge151-interim-b2-integration-emulation",
+ "author": "Grok Bot (GE-151 interim, Codex sin cuota)",
+ "engine_commit": "cb81ec5 + limpieza harness",
+ "build_id": "03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8",
+ "main_image_sha256_private_not_published": "6b2f77bfb3111ebb58b5554254a8a5564384db2f91e081b1bc498191cbd734c5",
+ "elf_sha256_not_published": "1942fa8608434342444ab48e4a7c87056ba6d6b7f12ef4931d32f5ba1e245e69",
+ "nso_sha256_not_published": "59f0cc3dfee548af3c1d6879d57d39351982bf6a5393c5297db2228a5a4c2411",
+ "harness": "tests/emulation/b2int.py (Unicorn, main real + ELF final, planificador cooperativo)",
+ "limits": {
+  "horizon_services_executed": false,
+  "switch_tested": false,
+  "gpu_audio_executed": false,
+  "scheduler": "cooperativo determinista, no preemptivo",
+  "nn_fs": "FakeSD sobre copia temporal",
+  "installable": false,
+  "hardware_validated": false
+ },
+ "cases": 44,
+ "failures": 0,
+ "results": [
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "ticks": 7,
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T21230",
+     "enablePause"
+    ],
+    [
+     "tick:T21230",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "flags_after": 0,
+   "io_before_b2": 36,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "branches": [
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "log_b2": [
+    "[0009] B2 open: gen=1 kind=ht2 seq=0x4000b540 stage=0x40015b80 main=0x7fff8000",
+    "[0015] exit: quit to return scene 7 (no retry flag)",
+    "[0016] B2 barrier: gen=1 kind=ht2 rounds=1 per_round=4,0,0 listed=4 before=0/0/4/0 after=0/0/4/0 passed=1 branches=0/0/0/1"
+   ],
+   "tag": "HT2/finish"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 0,
+    "finished": 0,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T21230",
+     "enablePause"
+    ]
+   ],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/doublehell.json.tmp.0 -> ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "HT2/abandon@2"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 0,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T21230",
+     "enablePause"
+    ]
+   ],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/doublehell.json.tmp.0 -> ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "HT2/abandon@3"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "A": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/doublehell.json.tmp.0 -> ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "gen_A": 1,
+   "B_b2": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 2,
+    "seq": 1074421632,
+    "stage": 1074464192
+   },
+   "B_diverted": true,
+   "B_ticks": 7,
+   "B": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 1,
+    "gen": 2,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "HT2/retry(A->B)"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "module_threads": 3,
+   "teardown": {
+    "returned": true,
+    "ret": null,
+    "safe_stop": false,
+    "hang_intact": true,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 5,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 2,
+     "1": 2
+    }
+   },
+   "b2_after": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "tag": "HT2/fail: stuck body"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 3,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: back"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 3,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: vptr"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 3,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: runner"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 3,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: cycle"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "7": 1,
+     "1": 2,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: state"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 3,
+     "2": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "HT2/fail: incoherent"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x7fff3000 did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 1,
+     "0": 3
+    }
+   },
+   "tag": "HT2/fail: LR"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "foreign": {
+    "returned": true,
+    "ret": 0,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 1,
+     "0": 3
+    }
+   },
+   "after_foreign": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "nonext": {
+    "returned": true,
+    "ret": 0,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 1,
+     "0": 3
+    }
+   },
+   "after_nonext": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "own": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/doublehell.json.tmp.0 -> ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "branches": [
+    0,
+    1,
+    1,
+    1,
+    0
+   ],
+   "tag": "HT2/decision: foreign + no-next"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "HT2/tripwire: seq"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "HT2/tripwire: stage"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "HT2/tripwire: thunk"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "HT2/tripwire: mgr"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "spawn_sym": true,
+   "appended": 0,
+   "threads_delta": 0,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/doublehell.json.tmp.0 -> ht3sd:/groove/save/doublehell.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "HT2/late spawn after cancel"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 0,
+    "passed": 0,
+    "kind": 0,
+    "gen": 0,
+    "seq": 0,
+    "stage": 0
+   },
+   "diverted": false,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "HT2/B2 not ready -> native"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 1,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "ticks": 7,
+   "exits": [
+    [
+     "tick:T21230",
+     "enablePause"
+    ],
+    [
+     "tick:T21230",
+     "enablePause"
+    ]
+   ],
+   "seq_next": -1,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "HT2/exit without return scene"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "ticks": 5,
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T243f0",
+     "enablePause"
+    ],
+    [
+     "tick:T243f0",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "flags_after": 0,
+   "io_before_b2": 34,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "branches": [
+    0,
+    0,
+    0,
+    1,
+    0
+   ],
+   "log_b2": [
+    "[0011] B2 open: gen=1 kind=r21 seq=0x4000b540 stage=0x40015b80 main=0x7fff8000",
+    "[0017] exit: quit to return scene 7 (no retry flag)",
+    "[0018] B2 barrier: gen=1 kind=r21 rounds=1 per_round=5,0,0 listed=5 before=0/0/5/0 after=0/0/5/0 passed=1 branches=0/0/0/1"
+   ],
+   "tag": "R21L/finish"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 0,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T243f0",
+     "enablePause"
+    ]
+   ],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/multi.json.tmp.0 -> ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "R21L/abandon@2"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "run": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T243f0",
+     "enablePause"
+    ],
+    [
+     "tick:T243f0",
+     1
+    ]
+   ],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "R21L/abandon@3"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "A": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "gen_A": 1,
+   "B_b2": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 2,
+    "seq": 1074570048,
+    "stage": 1074612608
+   },
+   "B_diverted": true,
+   "B_ticks": 5,
+   "B": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 2,
+    "seq": 0,
+    "stage": 0
+   },
+   "tag": "R21L/retry(A->B)"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "module_threads": 4,
+   "teardown": {
+    "returned": true,
+    "ret": null,
+    "safe_stop": false,
+    "hang_intact": true,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 3,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "b2_after": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "tag": "R21L/fail: stuck body"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: back"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: vptr"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: runner"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: cycle"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "7": 1,
+     "2": 3,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: state"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x50a05c did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "2": 4,
+     "1": 1
+    }
+   },
+   "threads_untouched": true,
+   "tag": "R21L/fail: incoherent"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": false,
+    "exc": "main call 0x7fff3000 did not return (pc=0x21820ce4)",
+    "safe_stop": true,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 2,
+     "2": 3
+    }
+   },
+   "tag": "R21L/fail: LR"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "foreign": {
+    "returned": true,
+    "ret": 0,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 2,
+     "2": 3
+    }
+   },
+   "after_foreign": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "nonext": {
+    "returned": true,
+    "ret": 0,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": false,
+    "seq_freed": false,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": true,
+    "threads": {
+     "1": 2,
+     "2": 3
+    }
+   },
+   "after_nonext": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "own": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/multi.json.tmp.0 -> ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "branches": [
+    0,
+    1,
+    1,
+    1,
+    0
+   ],
+   "tag": "R21L/decision: foreign + no-next"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "R21L/tripwire: seq"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "R21L/tripwire: stage"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "R21L/tripwire: thunk"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "returned": false,
+   "safe_stop": true,
+   "stage_freed": false,
+   "seq_freed": false,
+   "trips": 1,
+   "tag": "R21L/tripwire: mgr"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "spawn_sym": true,
+   "appended": 0,
+   "threads_delta": 0,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "create",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.tmp.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json.bak.0"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "rename",
+      "ht3sd:/groove/save/multi.json.tmp.0 -> ht3sd:/groove/save/multi.json"
+     ],
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "R21L/late spawn after cancel"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 0,
+    "passed": 0,
+    "kind": 0,
+    "gen": 0,
+    "seq": 0,
+    "stage": 0
+   },
+   "diverted": false,
+   "nullcalls": {},
+   "unmapped": [],
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "R21L/B2 not ready -> native"
+  },
+  {
+   "plan_hooks": 42,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073788224,
+    "stage": 1073830784
+   },
+   "diverted": true,
+   "nullcalls": {},
+   "unmapped": [],
+   "ticks": 5,
+   "exits": [
+    [
+     "tick:T243f0",
+     "enablePause"
+    ],
+    [
+     "tick:T243f0",
+     "enablePause"
+    ]
+   ],
+   "seq_next": -1,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "tag": "R21L/exit without return scene"
+  },
+  {
+   "slot": "A",
+   "mode": "finish",
+   "v0_bound": true,
+   "log_mapinit": [],
+   "launches": 1,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073828224,
+    "stage": 1073870784
+   },
+   "multiV0": 1,
+   "diverted": true,
+   "ticks": 4,
+   "mrun": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T2e030",
+     "enablePause"
+    ],
+    [
+     "tick:T2e030",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "retry_flag": false,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "cursor": [
+    0,
+    9,
+    0,
+    0
+   ],
+   "v0_log": [
+    "[0005] v0: map init levels=1 saves=1 configured=1 A=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 B=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2",
+    "[0008] v0: construct ok id=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 phase=2 stage=0x4001f7c0",
+    "[0012] v0: finish confirmed=1",
+    "[0013] exit: quit to return scene 7 (no retry flag)",
+    "[0014] B2 barrier: gen=1 kind=r21 rounds=1 per_round=5,0,0 listed=5 before=0/0/5/0 after=0/0/5/0 passed=1 branches=0/0/0/1",
+    "[0015] v0: quiesced=1 aborted=0",
+    "[0018] v0: map init with a session still open (phase=2): slots unchanged"
+   ],
+   "sd_changed": [],
+   "custom_saves": [],
+   "blob_changed": [],
+   "v0_phase_after_map_return": 4,
+   "faults": 0,
+   "session_active": 1,
+   "second_launches": 0,
+   "nullcalls": {},
+   "unmapped": [],
+   "tag": "V0/A/finish"
+  },
+  {
+   "slot": "A",
+   "mode": "abandon",
+   "v0_bound": true,
+   "log_mapinit": [],
+   "launches": 1,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073828224,
+    "stage": 1073870784
+   },
+   "multiV0": 1,
+   "diverted": true,
+   "mrun": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T2e030",
+     "enablePause"
+    ],
+    [
+     "tick:T2e030",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "retry_flag": false,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "cursor": [
+    0,
+    9,
+    0,
+    0
+   ],
+   "v0_log": [
+    "[0005] v0: map init levels=1 saves=1 configured=1 A=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 B=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2",
+    "[0008] v0: construct ok id=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 phase=2 stage=0x4001f7c0",
+    "[0012] v0: finish confirmed=1",
+    "[0013] exit: quit to return scene 7 (no retry flag)",
+    "[0014] B2 barrier: gen=1 kind=r21 rounds=1 per_round=5,0,0 listed=5 before=0/1/4/0 after=0/0/5/0 passed=1 branches=0/0/0/1",
+    "[0015] v0: quiesced=1 aborted=0",
+    "[0018] v0: map init with a session still open (phase=2): slots unchanged"
+   ],
+   "sd_changed": [],
+   "custom_saves": [],
+   "blob_changed": [],
+   "v0_phase_after_map_return": 4,
+   "faults": 0,
+   "session_active": 1,
+   "second_launches": 0,
+   "nullcalls": {},
+   "unmapped": [],
+   "tag": "V0/A/abandon"
+  },
+  {
+   "slot": "B",
+   "mode": "finish",
+   "v0_bound": true,
+   "log_mapinit": [],
+   "launches": 1,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073828224,
+    "stage": 1073870784
+   },
+   "multiV0": 1,
+   "diverted": true,
+   "ticks": 4,
+   "mrun": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T2e030",
+     "enablePause"
+    ],
+    [
+     "tick:T2e030",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "retry_flag": false,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "cursor": [
+    0,
+    9,
+    1,
+    0
+   ],
+   "v0_log": [
+    "[0005] v0: map init levels=1 saves=1 configured=1 A=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 B=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2",
+    "[0008] v0: construct ok id=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2 phase=2 stage=0x4001f7c0",
+    "[0012] v0: finish confirmed=1",
+    "[0013] exit: quit to return scene 7 (no retry flag)",
+    "[0014] B2 barrier: gen=1 kind=r21 rounds=1 per_round=5,0,0 listed=5 before=0/0/5/0 after=0/0/5/0 passed=1 branches=0/0/0/1",
+    "[0015] v0: quiesced=1 aborted=0",
+    "[0018] v0: map init with a session still open (phase=2): slots unchanged"
+   ],
+   "sd_changed": [],
+   "custom_saves": [],
+   "blob_changed": [],
+   "v0_phase_after_map_return": 4,
+   "faults": 0,
+   "session_active": 1,
+   "second_launches": 0,
+   "nullcalls": {},
+   "unmapped": [],
+   "tag": "V0/B/finish"
+  },
+  {
+   "slot": "B",
+   "mode": "abandon",
+   "v0_bound": true,
+   "log_mapinit": [],
+   "launches": 1,
+   "b2_after_ctor": {
+    "active": 1,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 1073828224,
+    "stage": 1073870784
+   },
+   "multiV0": 1,
+   "diverted": true,
+   "mrun": {
+    "started": 1,
+    "gameplayStarted": 1,
+    "reachedEnd": 1,
+    "finished": 1,
+    "stopped": 0
+   },
+   "exits": [
+    [
+     "tick:T2e030",
+     "enablePause"
+    ],
+    [
+     "tick:T2e030",
+     1
+    ]
+   ],
+   "seq_next": 7,
+   "retry_flag": false,
+   "teardown": {
+    "returned": true,
+    "ret": 1,
+    "safe_stop": false,
+    "hang_intact": false,
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_after_b2": 0,
+    "io": [
+     [
+      "b2",
+      "open1",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "open6",
+      "ht3sd:/groove/log/ht3.log"
+     ],
+     [
+      "b2",
+      "write",
+      "ht3sd:/groove/log/ht3.log"
+     ]
+    ],
+    "global_list_has_stage": false,
+    "threads": {}
+   },
+   "b2_after": {
+    "active": 0,
+    "passed": 0,
+    "kind": 2,
+    "gen": 1,
+    "seq": 0,
+    "stage": 0
+   },
+   "cursor": [
+    0,
+    9,
+    1,
+    0
+   ],
+   "v0_log": [
+    "[0005] v0: map init levels=1 saves=1 configured=1 A=org.groovebuilder.v0.a.4c38ff8c-158a-48e3-bc61-d1a17efac6c8 B=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2",
+    "[0008] v0: construct ok id=org.groovebuilder.v0.b.3a503e65-932b-4716-aadc-774575d26ca2 phase=2 stage=0x4001f7c0",
+    "[0012] v0: finish confirmed=1",
+    "[0013] exit: quit to return scene 7 (no retry flag)",
+    "[0014] B2 barrier: gen=1 kind=r21 rounds=1 per_round=5,0,0 listed=5 before=0/1/4/0 after=0/0/5/0 passed=1 branches=0/0/0/1",
+    "[0015] v0: quiesced=1 aborted=0",
+    "[0018] v0: map init with a session still open (phase=2): slots unchanged"
+   ],
+   "sd_changed": [],
+   "custom_saves": [],
+   "blob_changed": [],
+   "v0_phase_after_map_return": 4,
+   "faults": 0,
+   "session_active": 1,
+   "second_launches": 0,
+   "nullcalls": {},
+   "unmapped": [],
+   "tag": "V0/B/abandon"
+  }
+ ]
+}

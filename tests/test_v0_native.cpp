@@ -82,7 +82,9 @@ int main(){
  // Original confirm may reenter SetSel: state lease must not span original.
  run(Hook::Confirm,{{reinterpret_cast<uintptr_t>(mapA)}});assert(calls[unsigned(Hook::SetSel)]==0);
  uintptr_t stage=0x999999;
+ set(mgr,0x2904,int(0)); // native launchA 0x1D3430 writes the map mode before gameplay
  run(Hook::InitGameplay,{{stage,0}});assert(calls[unsigned(Hook::InitGameplay)]==1);
+ set(mgr,0x2904,int(-1));
  assert(!groove_v0_finish(stage+1));assert(groove_v0_finish(stage));
  SaveIntent intent{};assert(groove_v0_prepare_save(&intent)==unsigned(Close::Waiting));
  run(Hook::MapDtor,{{reinterpret_cast<uintptr_t>(mapA)}});run(Hook::MapInit,{{reinterpret_cast<uintptr_t>(mapA)}});

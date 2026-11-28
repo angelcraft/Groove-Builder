@@ -65,6 +65,7 @@ extern "C" V0_EXPORT unsigned groove_v0_fault(){return __atomic_load_n(&faults,_
 extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
     if(!frame || number>=unsigned(Hook::Count)) return fail();
     Hook h=Hook(number); Frame f=*frame;
+    if(h==Hook::MapInit && backend.mapInitHook) backend.mapInitHook(); // outside the lease; may (re)load levels
     uintptr_t m=backend.mainBase+Manager;
     uintptr_t lr=f.lr>=backend.mainBase?f.lr-backend.mainBase:0;
     // The short lease never spans an original call: originals can reenter hooks.
@@ -131,7 +132,10 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
                 // Original setPending is still reached by native initGameplay;
                 // rev2 relies on its verified negative-index guard. Recheck it.
                 int16_t p0=0,p1=0; int managerMode=0;
-                if(!read(m+0xBA0,p0)||!read(m+0xBA2,p1)||!read(m+0x2904,managerMode)||p0!=-1||p1!=-1||managerMode!=-1)return fail();
+                // Native launchA stores the map mode in mgr+0x2904 (0x1D3430) before beginPlay, so during gameplay it is 0/1,
+                // not -1 (GE-151 interim, found by tests/emulation/b2int.py). setPending 0x4910 writes only if mode>=0 AND
+                // curIdx[mode]>=0 (E10), so curIdx[0]=curIdx[1]=-1 with mode in {-1,0,1} keeps the write impossible.
+                if(!read(m+0xBA0,p0)||!read(m+0xBA2,p1)||!read(m+0x2904,managerMode)||p0!=-1||p1!=-1||managerMode<-1||managerMode>1)return fail();
             } break;
         case Hook::PerfectSite:
             if(state.session.active && !state.session.returned && lr==0x206A58){__atomic_add_fetch(&faults,1u,__ATOMIC_RELAXED);if(int32_t(f.x[1])<0)f.x[1]=67;} break;
@@ -165,7 +169,7 @@ extern "C" V0_EXPORT uint64_t groove_v0_dispatch(uint64_t number,Frame* frame) {
         }
         if(h==Hook::MapReturn){state.mapReturned();__atomic_store_n(&suppressProgress,0,__ATOMIC_RELEASE);}
     }
-    if(h==Hook::MapReturn && backend.execution)backend.execution->mapReturned(backend.execution->token());
+    if(h==Hook::MapReturn && backend.execution){backend.execution->mapReturned(backend.execution->token());if(backend.persistOnMapReturn)groove_v0_persist_bound();}
     return result;
 }
 extern "C" V0_EXPORT bool groove_v0_construct_bound_multi(uintptr_t self,uintptr_t seq,const int* args){

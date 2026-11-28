@@ -24,7 +24,7 @@ struct FileApi {
  bool ready(){return true;}int probe(const char* p){assert(std::strcmp(p,".installer.mutex"));return !std::strcmp(p,".installer/lock")?int(sentinel):int(journal);}
  gsv::Read read(const char* p,uint8_t* b,unsigned cap,unsigned& n){return store.read(p,b,cap,n);}
  bool createNew(const char* p,const uint8_t* b,unsigned n){return store.create(p,b,n);}
- bool flush(const char* p){return store.flush(p);}bool syncDirectory(){return syncSupported&&store.sync();}
+ bool flush(const char* p){return store.flush(p);}bool syncDirectory(){return syncSupported&&store.sync();}bool syncCapable(){return syncSupported;}
  bool renameNoReplace(const char* a,const char* b){return store.rename(a,b);}bool remove(const char* p){return store.remove(p);}
 };
 namespace binding {
@@ -89,7 +89,7 @@ int main(){
  // Shared nn::fs policy: permanent mutex ignored, sentinel gates, no invented sync.
  FileApi api;FileIO<FileApi> policy(api);api.sentinel=true;assert(!policy.lock(A));api.sentinel=false;
  assert(policy.lock(A));assert(!policy.lock(A));uint8_t one=1;assert(!policy.create("custom-saves/org.example.beta.gsv",&one,1));policy.unlock();
- api.syncSupported=false;assert(gsv::commit(policy,A,first)==gsv::Status::Pending);assert(!api.store.files.count(paths.main));api.syncSupported=true;assert(gsv::commit(policy,A,first)==gsv::Status::Committed);
+ api.syncSupported=false;{auto before=api.store.files;assert(gsv::commit(policy,A,first)==gsv::Status::Pending);assert(api.store.files==before); /* GE-154 7241433453: no SD mutation without accredited sync */}assert(!api.store.files.count(paths.main));api.syncSupported=true;assert(gsv::commit(policy,A,first)==gsv::Status::Committed);
  // Same session snapshot -> constructor -> confirmed finish -> H9, all in one harness.
  FS fs;Resources resources;resources.package(A,"RING.hoop");resources.package(B,"RING.hoop 2 0");
  resources.files["slots.json"]="{\"format\":\"groove-slots/1\",\"capacity\":2,\"generation\":0,\"slots\":[{\"index\":0,\"coord\":[0,9,0],\"id\":\"org.example.alpha\"},{\"index\":1,\"coord\":[0,9,1],\"id\":\"org.example.beta\"}]}";

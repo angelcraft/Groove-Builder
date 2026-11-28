@@ -25,6 +25,7 @@ public:
  gsv::Read read(const char* p,uint8_t* b,unsigned cap,unsigned& n)override{return scoped(p)&&gate()?api.read(p,b,cap,n):gsv::Read::Error;}
  bool create(const char* p,const uint8_t* b,unsigned n)override{return scoped(p)&&gate()&&api.createNew(p,b,n);}
  bool flush(const char* p)override{return scoped(p)&&gate()&&api.flush(p);}
+ bool syncCapable()override{return api.syncCapable();}
  bool sync()override{return __atomic_load_n(&busy,__ATOMIC_ACQUIRE)&&gate()&&api.syncDirectory();}
  bool rename(const char* a,const char* b)override{return scoped(a)&&scoped(b)&&gate()&&api.renameNoReplace(a,b);}
  bool remove(const char* p)override{char pending[168];std::snprintf(pending,sizeof(pending),"custom-saves/%s.gsv.pending",id);return scoped(p)&&!std::strcmp(p,pending)&&gate()&&api.remove(p);}
