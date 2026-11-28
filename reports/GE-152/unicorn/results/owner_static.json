@@ -1,0 +1,155 @@
+{
+ "factory_0x488940_callers": [
+  "0x2ab4a4",
+  "0x2ab8f0",
+  "0x2abd50",
+  "0x2ac1b0",
+  "0x2ac604"
+ ],
+ "ht2_ctor_callers": [
+  "0x489898"
+ ],
+ "r21_ctor_callers": [
+  "0x48902c"
+ ],
+ "seq_A078_refs": [
+  [
+   "0x2ab4a8",
+   "str"
+  ],
+  [
+   "0x2ab524",
+   "ldr"
+  ],
+  [
+   "0x2ab52c",
+   "str"
+  ],
+  [
+   "0x2ab7a0",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ab8f4",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ab984",
+   "ldr"
+  ],
+  [
+   "0x2ab98c",
+   "str"
+  ],
+  [
+   "0x2abc00",
+   "mov #0xa078"
+  ],
+  [
+   "0x2abd54",
+   "mov #0xa078"
+  ],
+  [
+   "0x2abde4",
+   "ldr"
+  ],
+  [
+   "0x2abdec",
+   "str"
+  ],
+  [
+   "0x2ac060",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ac1b4",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ac244",
+   "ldr"
+  ],
+  [
+   "0x2ac24c",
+   "str"
+  ],
+  [
+   "0x2ac4c0",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ac608",
+   "str"
+  ],
+  [
+   "0x2ac684",
+   "ldr"
+  ],
+  [
+   "0x2ac68c",
+   "str"
+  ],
+  [
+   "0x2ac900",
+   "mov #0xa078"
+  ],
+  [
+   "0x2ac920",
+   "mov #0xa078"
+  ]
+ ],
+ "stage_vptr": {
+  "HT2": "0xd4d258",
+  "R21_deleting_slot_ptr": [
+   "0xd4cc20"
+  ],
+  "HT2_deleting_slot_ptr": [
+   "0xd4d268"
+  ]
+ },
+ "destroy_callers": [
+  "0x50a05c"
+ ],
+ "create_next_callers": [
+  "0x50a090"
+ ],
+ "runner_dtor_0x515040_callers": [
+  "0x12849c",
+  "0x5150a0"
+ ],
+ "base30_dtor_from_seq_base": [
+  "0x1284c4",
+  "0x1284d4",
+  "0x1302e8"
+ ],
+ "secondary_deleting_thunks": {
+  "0x4291d0": [
+   "0xd4d358"
+  ],
+  "0x429200": [
+   "0xd4d378"
+  ],
+  "0x429230": [
+   "0xd4d398"
+  ],
+  "0x429260": [
+   "0xd4d3b8"
+  ],
+  "0x420c70": [
+   "0xd4cd40"
+  ],
+  "0x420ca0": [
+   "0xd4cd60"
+  ],
+  "0x420cd0": [
+   "0xd4cd80"
+  ],
+  "0x420d00": [
+   "0xd4cda0"
+  ]
+ },
+ "r21_spawn_site": [
+  "0x4207ac"
+ ],
+ "FAILURES": []
+}

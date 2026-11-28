@@ -26,6 +26,7 @@
 | `reports/GE-152/v0-two-slot.md` | V0 de dos casillas Multi en modo 0: 12 casos custom + 5 nativos comparados byte a byte en cada punto de escritura, alcanzabilidad de `0x2E90` y Runner con join real en el modelo |
 | `reports/GE-152/review-7230247601.md` | Respuesta a la revisión 7230247601 (puntos 1 y 3): aserciones con bytes completos y `exit ≠ 0`, autopruebas, H0–H7 rev 2, trazas de automap y página nula, 20 subhilos de R21 y barrera de punto fijo |
 | `reports/GE-152/CODEX_HANDOFF.md` | Traspaso a Codex: hooks H1–H10 (direcciones, firmas, condiciones, orden, lo que no hay que hacer), barrera del Runner, casos reproducibles y bloqueos |
+| `reports/GE-152/STAGE_OWNER.md` | Respuesta a GE-151 (#5, 7240048944) y GE-154 (7230634264): propietario nativo del Stage (`Seq+0xA078`), cadena gestor de escenas → `Seq` → deleting dtor → join del Runner, frontera de retención B1, incógnitas y prueba de confirmación; `unicorn/exp_owner*.py` |
 | `reports/GE-152/unicorn/` | Harness y experimentos (solo direcciones; la imagen se pasa por argumento) y `results/` con diffs por campo |
 
 No se ha modificado `engine/`, `editor/`, `docs/GROOVE_SPEC.md`, `main`, `work/groove-engine-v0.5.0` ni la rama/runtime de Codex.
