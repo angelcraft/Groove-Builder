@@ -1,0 +1,14 @@
+{
+  "kind": "ge151-v0-final-elf-synthetic-execution",
+  "grid_cells": 180,
+  "native_delegations": 178,
+  "original_once": true,
+  "lr_sp_callee_saved_preserved": true,
+  "launch_bits_restored": true,
+  "observed_callback_stack_bytes": 336,
+  "transitive_native_stack_bound": false,
+  "originals": "synthetic callbacks, not original game functions",
+  "horizon_services_executed": false,
+  "switch_tested": false,
+  "installable": false
+}

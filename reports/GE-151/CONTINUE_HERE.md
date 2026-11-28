@@ -41,3 +41,30 @@ Resultados/hashes en SAVE_FOLLOWUP_RESULTS.json. No candidato instalable ni prue
 Siguiente paso: traza de reap/join/último acceso y diferencias de guardado desde antes
 del launch, normal/abort/reinicio. No confundir objetos host ni capacidad 64 KiB con
 vida útil o cota de pila nativas verificadas.
+
+## V0 en curso — decisiones 3642b7e / GE-155 d3c971f
+
+Entradas ARM64 reales en v0_entries.S y dispatcher en v0_native.cpp, enlazados en
+el módulo final (sin instalación ni binding desde hkMain). v0_session.hpp contiene
+H0/generación, A/B exactos, contexto confirm, cursor, identidad de sesión copiada,
+resultado/quiescencia y confirmación de persistencia por ID/token. No confundir la
+notificación groove_v0_quiesced con un join real: todavía NO tiene proveedor nativo.
+No hay nuevo hook instalado. Legacy sigue separado.
+
+Prueba reproducible: python tools/run_engine_tests.py; después construir mediante
+build_engine.py con pins previos y ejecutar tools/test_v0_arm64.py <build>.
+Requiere Unicorn 2.1.4 y pyelftools del entorno Python; no usa main privado.
+Resultado V0_ARM64_RESULTS.json: ejecuta entradas del ELF FINAL, 180 coordenadas,
+178 delegaciones, LR/SP/callee-saved y llamada original única, flags restaurados.
+Originales y memoria son fixtures sintéticos. 336 bytes observados son solamente
+este recorrido de callback; NO cota transitiva del juego. La prueba host integrada
+también cubre retorno de mapa, A/B sucesivos en el mismo proceso, IO fallida y retry.
+
+Pendiente, NO implementado: lector nativo estricto slots.json/manifest/timeline,
+adaptador SD con lock/journal, conexión del constructor Multi por paquete, proveedor
+real de retención Stage/registro exclusivo/join, persistencia durable H9 y guardas
+completas de instrucciones/IPS/visibilidad. No generar engine.json: decisiones
+3642b7e prohíben marcador para investigación sin loader funcional. .gsv160 no aprobado.
+Siguiente paso: lector acotado conforme a docs/GROOVE_INTEGRATION_V0_DECISIONS.md
+de coordinación, contrastar corpus GE-155 d3c971f y conectar al dispatcher existente.
+No recrear las entradas ARM64 ni presentar sus pruebas sintéticas como Horizon.
