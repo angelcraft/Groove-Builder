@@ -110,103 +110,6 @@ def teardown(h, S, b, st):
 def no_dep_freed(r): return not any(l.startswith(("stage", "seq", "thread", "runner", "mgr")) for l in r.get("freed_labels", {}))
 def intact(h, S, b):
     s = E.snapshot(h, b); return s["global_list_has_stage"] and s["parent_list_has_stage"] and s["group_registered"] and not h.freed.get(b["stage"]) and b["seq"] not in h.freed
-R, F = [], []
-def check(c, m): (None if c else F.append(m))
-def run(tag, fn):
-    try: r = fn()
-    except Exception as e: r = {"error": repr(e)[:300]}
-    r["tag"] = tag; R.append(r)
-    if "error" in r: F.append(tag + ": " + r["error"])
-    return r
-# ---------------------------------------------------------------- 1. B2 rev3 success matrix (ticks 1/3/6 -> threads in state 0/1/2)
-def s_success(kind, ticks):
-    h, S, b = prepare(kind, ticks); st = {"kind": kind, "ticks": ticks}
-    st["states_before"] = dict(collections.Counter(tstate(h, t) for t in b["kids"]))
-    h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"]); st["appends_during_barrier"] = h.appends.get("barrier", 0)
-    st["intact_after_barrier"] = intact(h, S, b)
-    teardown(h, S, b, st); st["sched_events"] = collections.Counter(e[1] for e in S.log if e[1] in ("RUNAWAY", "preempt", "MAIN_BUDGET", "DEADLOCK"))
-    return st
-for kind in ("HT2", "R21"):
-    for ticks in (1, 3, 6):
-        r = run("%s/B2-rev3/ticks%d" % (kind, ticks), lambda: s_success(kind, ticks))
-        if "error" in r: continue
-        t = r["tag"]
-        check(r["barrier"]["quiescent"], t + ": barrier failed " + str(r["barrier"].get("why")))
-        check(r["intact_after_barrier"], t + ": barrier tore down a dependency")
-        check(r["stage_freed"] and r["seq_freed"] and r["threads_freed"] == len(r["barrier"].get("final", {})), t + ": native teardown incomplete")
-        check(r["late_access"] == 0 and r["child_events_during_teardown"] == 0 and not r["global_list_has_stage"], t + ": late access / child event / dangling global")
-        check(r["appends_during_barrier"] == 0, t + ": spawn after cancel")
-        check(not r["sched_events"], t + ": scheduler budget/deadlock event in a success run " + str(r["sched_events"]))
-# ---------------------------------------------------------------- 2. other Seq group: a Seq-group coroutine that references the Stage
-def add_seq_thread(h, S, b):
-    gid_seq = h.ri(b["seq"] + 0xEB0 + 0x10)
-    b["seqth"] = new_thread(h, S, b["runner"], gid_seq, b["code"]["coop"], b["stage"]); b["gid_seq"] = gid_seq
-def s_seqgroup(rev):
-    h, S, b = prepare("HT2", 3, add_seq_thread); st = {"rev": rev, "gid_seq": b["gid_seq"], "seqth_state_before": tstate(h, b["seqth"])}
-    h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"], gid=None if rev == 3 else b["gid"])
-    st["seqth_state_after_barrier"] = tstate(h, b["seqth"]); teardown(h, S, b, st); return st
-r2 = run("HT2/seq-group-thread/rev2-barrier(Stage group only)", lambda: s_seqgroup(2))
-r3 = run("HT2/seq-group-thread/rev3-barrier(whole Runner)", lambda: s_seqgroup(3))
-if "error" not in r2: check(r2["late_access"] > 0 and r2["child_events_during_teardown"] > 0, r2["tag"] + ": control did not show the rev2 gap")
-if "error" not in r3: check(r3["barrier"]["quiescent"] and r3["late_access"] == 0 and r3["child_events_during_teardown"] == 0 and r3["stage_freed"] and r3["seq_freed"], r3["tag"] + ": rev3 did not cover the Seq group")
-# ---------------------------------------------------------------- 3. runaway worker (infinite loop after resume)
-def add_runaway(h, S, b): b["rth"] = new_thread(h, S, b["runner"], b["gid"], b["code"]["runaway"], 0)
-def s_runaway(legacy):
-    h, S, b = prepare("HT2", 3, add_runaway, legacy=legacy); st = {"legacy_sched": legacy}
-    nf = len(h.freed); h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"])
-    st["runaway_os_state"] = os_state(S, b["rth"]); st["runaway_tstate"] = tstate(h, b["rth"])
-    st["sched_events"] = collections.Counter(e[1] for e in S.log if e[1] in ("RUNAWAY", "preempt", "DEADLOCK"))
-    if st["barrier"]["quiescent"]: teardown(h, S, b, st)
-    else: st["policy"] = "safe-stop"; st["intact"] = intact(h, S, b); st["freed"] = len(h.freed) - nf; st["freed_labels"] = collections.Counter(h.lbl(p) for p in list(h.freed)[nf:])
-    return st
-ra = run("HT2/control-runaway-worker/fixed-sched", lambda: s_runaway(False))
-rl = run("HT2/control-runaway-worker/LEGACY-sched(rev2 bug)", lambda: s_runaway(True))
-if "error" not in ra: check(not ra["barrier"]["quiescent"] and ra["runaway_os_state"] == "runaway" and ra["intact"] and no_dep_freed(ra) and ra["sched_events"].get("RUNAWAY") == 1, ra["tag"] + ": runaway not detected / something destroyed")
-if "error" not in rl: check(rl["barrier"]["quiescent"] and rl["runaway_os_state"] == "done", rl["tag"] + ": legacy control did not reproduce the false 'done'")
-# ---------------------------------------------------------------- 4. truncated main return
-def s_main_trunc():
-    h = E.mk("HT2"); S = Sched(h); code = install_code(h); st = {}
-    try: S.call(code["spin"]); st["sched_call"] = "returned (BUG)"
-    except BudgetExhausted as e: st["sched_call"] = "BudgetExhausted"
-    try: h.call(code["spin"], count=200000); st["h_call"] = "returned (BUG)"
-    except BudgetExhausted as e: st["h_call"] = "BudgetExhausted"
-    h2 = E.mk("HT2"); L = LegacySched(h2); code2 = install_code(h2); st["legacy_sched_call"] = "returned x0=%#x (false return)" % L.call(code2["spin"])
-    return st
-rm = run("control-truncated-main", s_main_trunc)
-if "error" not in rm: check(rm["sched_call"] == "BudgetExhausted" and rm["h_call"] == "BudgetExhausted" and rm["legacy_sched_call"].startswith("returned"), rm["tag"] + ": truncation not explicit")
-# ---------------------------------------------------------------- 5. real fixed-point exhaustion (each exiting child appends a LIVE sibling)
-def s_exhaust():
-    pool = []
-    def mkpool(h, S, b):
-        for _ in range(12):
-            t = new_thread(h, S, b["runner"], b["gid"], b["code"]["coop"], 0, append=False); pool.append(t)
-        h.phase = "pool-start"
-        for t in pool: S.call(STEP, t)                         # started: state 1, blocked in its wait (not listed yet)
-    h, S, b = prepare("HT2", 3, mkpool); st = {"pool": len(pool), "pool_states": [tstate(h, t) for t in pool]}
-    linked = []
-    def on_exit(hh, a):                                      # block 0x514A5C = thread entry after the body returned
-        if hh.phase.startswith("barrier") and len(linked) < len(pool):
-            t = pool[len(linked)]; link_tail(hh, b["runner"], t); linked.append(t)
-    h.pre[0x514A5C] = on_exit
-    nf = len(h.freed); h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"])
-    st["linked"] = len(linked); st["linked_states"] = [(tstate(h, t), os_state(S, t)) for t in linked]
-    st["intact"] = intact(h, S, b); st["freed"] = len(h.freed) - nf; st["freed_labels"] = collections.Counter(h.lbl(p) for p in list(h.freed)[nf:])
-    return st
-rx = run("HT2/fixed-point-exhaustion(real, live siblings)", s_exhaust)
-if "error" not in rx:
-    bx = rx["barrier"]
-    check(not bx["quiescent"] and bx.get("rounds") == CAP and bx.get("pending") == 1, rx["tag"] + ": cap not enforced at round %d" % CAP)
-    check(rx["linked"] == CAP and rx["linked_states"][-1] == (1, "blocked") and all(s == (2, "done") for s in rx["linked_states"][:-1]), rx["tag"] + ": round 9 started or chain state wrong")
-    check(rx["intact"] and no_dep_freed(rx), rx["tag"] + ": safe-stop destroyed something")
-# ---------------------------------------------------------------- 6. self-join: the guard evaluated from a child context must refuse
-def s_selfjoin():
-    h, S, b = prepare("HT2", 3); st = {"main": on_main(h, S, b["runner"])}; seen = []
-    h.pre[TSTOP] = lambda hh, a: (seen.append(on_main(hh, S, b["runner"])), None)[1]
-    h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"]); st["child_evals"] = len(seen); st["child_true"] = sum(seen)
-    return st
-rs = run("HT2/self-join-guard", s_selfjoin)
-if "error" not in rs: check(rs["main"] and rs["child_evals"] > 0 and rs["child_true"] == 0 and rs["barrier"]["quiescent"], rs["tag"] + ": guard not effective")
-# ---------------------------------------------------------------- 7. retry: same scene id -> old Seq destroyed, new Seq+Stage created; session tokens
 class Sess:
     """Python model of the module's gSess policy (CODEX_HANDOFF_rev3 §3)."""
     def __init__(s): s.active = False; s.gen = 0; s.log = []
@@ -217,41 +120,141 @@ class Sess:
         if lr != 0x50A060 or h.rq(cur + 0xA078) != s.stage: return "safe-stop"
         if nxt < 0: return "orig"                               # 0x5096F0 destroys nothing when mgr+0x18 < 0
         return "barrier"
-def s_retry(kind):
-    h, S, b = prepare(kind, 3); ss = Sess(); ss.open(b["seq"], b["stage"]); st = {"kind": kind}
-    st["decisions"] = {"foreign_scene": None, "bad_lr": ss.pre_destroy(h, b["mgr"], 0x509728), "no_next": None}
-    h.wi(b["mgr"] + 0x18, -1); st["decisions"]["no_next"] = ss.pre_destroy(h, b["mgr"], 0x50A060); h.wi(b["mgr"] + 0x18, 5)
-    other = h.alloc(0x40); h.wq(b["mgr"] + 0x10, other); st["decisions"]["foreign_scene"] = ss.pre_destroy(h, b["mgr"], 0x50A060); h.wq(b["mgr"] + 0x10, b["seq"])
-    d = ss.pre_destroy(h, b["mgr"], 0x50A060); st["decisions"]["own_valid"] = d
-    h.phase = "barrier"; st["barrier_A"] = barrier3(h, S, b["runner"])["quiescent"]
-    teardown(h, S, b, st); ss.active = False                    # post of 0x5096F0: session closed (gen kept)
-    st["A"] = {k: st.pop(k) for k in ("stage_freed", "seq_freed", "late_access", "child_events_during_teardown", "global_list_has_stage")}
-    gen_a = ss.gen
-    # B: the factory (0x509740 at 0x50A090, same frame) builds a new Seq+Stage for the same id on the same harness
-    h.phase = "build-B"; b2 = E.build(h, S, kind, 0); ss.open(b2["seq"], b2["stage"]); h.phase = "tick-B"
-    for _ in range(3):
-        for th in E.all_threads(h, b2["runner"]): S.call(STEP, th)
-    b2["kids"] = E.all_threads(h, b2["runner"]); h.late.clear()
-    st["B_gen"] = ss.gen; st["B_decision"] = ss.pre_destroy(h, b2["mgr"], 0x50A060)
-    st["stale_A_seq_rejected"] = (ss.seq != b["seq"])
-    h.phase = "barrier"; st["barrier_B"] = barrier3(h, S, b2["runner"])["quiescent"]
-    teardown(h, S, b2, st); st["gen_A"] = gen_a
-    return st
-for kind in ("HT2", "R21"):
-    rr = run("%s/retry(A destroyed -> B created -> B destroyed)" % kind, lambda: s_retry(kind))
-    if "error" in rr: continue
-    check(rr["decisions"] == {"foreign_scene": "orig", "bad_lr": "safe-stop", "no_next": "orig", "own_valid": "barrier"}, rr["tag"] + ": policy table " + str(rr["decisions"]))
-    check(rr["A"]["stage_freed"] and rr["A"]["seq_freed"] and rr["A"]["late_access"] == 0 and not rr["A"]["global_list_has_stage"], rr["tag"] + ": A teardown")
-    check(rr["B_gen"] == rr["gen_A"] + 1 and rr["B_decision"] == "barrier" and rr["stale_A_seq_rejected"] and rr["barrier_B"], rr["tag"] + ": session B")
-    check(rr["stage_freed"] and rr["seq_freed"] and rr["late_access"] == 0 and rr["child_events_during_teardown"] == 0 and not rr["global_list_has_stage"], rr["tag"] + ": B teardown")
-# ---------------------------------------------------------------- report
-for r in R:
-    keep = {k: v for k, v in r.items() if k not in ("barrier",)}
-    bb = r.get("barrier") or {}
-    print(r["tag"], "| barrier", bb.get("quiescent"), bb.get("why", ""), "rounds", bb.get("rounds"), bb.get("per_round"),
-          "|", {k: v for k, v in keep.items() if k in ("states_before", "appends_during_barrier", "stage_freed", "seq_freed", "threads_freed", "late_access",
-          "child_events_during_teardown", "global_list_has_stage", "runaway_os_state", "intact", "freed", "sched_call", "h_call", "legacy_sched_call",
-          "linked", "linked_states", "child_evals", "child_true", "decisions", "A", "B_gen", "gen_A", "sched_events", "error")})
-print("FAILURES:", len(F)); [print(" -", f) for f in F]
-if OUT: json.dump({"results": R, "FAILURES": F}, open(OUT, "w"), indent=1, default=str)
-sys.exit(1 if F else 0)
+def main():
+    global R, F
+    R, F = [], []
+    def check(c, m): (None if c else F.append(m))
+    def run(tag, fn):
+        try: r = fn()
+        except Exception as e: r = {"error": repr(e)[:300]}
+        r["tag"] = tag; R.append(r)
+        if "error" in r: F.append(tag + ": " + r["error"])
+        return r
+    # ---------------------------------------------------------------- 1. B2 rev3 success matrix (ticks 1/3/6 -> threads in state 0/1/2)
+    def s_success(kind, ticks):
+        h, S, b = prepare(kind, ticks); st = {"kind": kind, "ticks": ticks}
+        st["states_before"] = dict(collections.Counter(tstate(h, t) for t in b["kids"]))
+        h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"]); st["appends_during_barrier"] = h.appends.get("barrier", 0)
+        st["intact_after_barrier"] = intact(h, S, b)
+        teardown(h, S, b, st); st["sched_events"] = collections.Counter(e[1] for e in S.log if e[1] in ("RUNAWAY", "preempt", "MAIN_BUDGET", "DEADLOCK"))
+        return st
+    for kind in ("HT2", "R21"):
+        for ticks in (1, 3, 6):
+            r = run("%s/B2-rev3/ticks%d" % (kind, ticks), lambda: s_success(kind, ticks))
+            if "error" in r: continue
+            t = r["tag"]
+            check(r["barrier"]["quiescent"], t + ": barrier failed " + str(r["barrier"].get("why")))
+            check(r["intact_after_barrier"], t + ": barrier tore down a dependency")
+            check(r["stage_freed"] and r["seq_freed"] and r["threads_freed"] == len(r["barrier"].get("final", {})), t + ": native teardown incomplete")
+            check(r["late_access"] == 0 and r["child_events_during_teardown"] == 0 and not r["global_list_has_stage"], t + ": late access / child event / dangling global")
+            check(r["appends_during_barrier"] == 0, t + ": spawn after cancel")
+            check(not r["sched_events"], t + ": scheduler budget/deadlock event in a success run " + str(r["sched_events"]))
+    # ---------------------------------------------------------------- 2. other Seq group: a Seq-group coroutine that references the Stage
+    def add_seq_thread(h, S, b):
+        gid_seq = h.ri(b["seq"] + 0xEB0 + 0x10)
+        b["seqth"] = new_thread(h, S, b["runner"], gid_seq, b["code"]["coop"], b["stage"]); b["gid_seq"] = gid_seq
+    def s_seqgroup(rev):
+        h, S, b = prepare("HT2", 3, add_seq_thread); st = {"rev": rev, "gid_seq": b["gid_seq"], "seqth_state_before": tstate(h, b["seqth"])}
+        h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"], gid=None if rev == 3 else b["gid"])
+        st["seqth_state_after_barrier"] = tstate(h, b["seqth"]); teardown(h, S, b, st); return st
+    r2 = run("HT2/seq-group-thread/rev2-barrier(Stage group only)", lambda: s_seqgroup(2))
+    r3 = run("HT2/seq-group-thread/rev3-barrier(whole Runner)", lambda: s_seqgroup(3))
+    if "error" not in r2: check(r2["late_access"] > 0 and r2["child_events_during_teardown"] > 0, r2["tag"] + ": control did not show the rev2 gap")
+    if "error" not in r3: check(r3["barrier"]["quiescent"] and r3["late_access"] == 0 and r3["child_events_during_teardown"] == 0 and r3["stage_freed"] and r3["seq_freed"], r3["tag"] + ": rev3 did not cover the Seq group")
+    # ---------------------------------------------------------------- 3. runaway worker (infinite loop after resume)
+    def add_runaway(h, S, b): b["rth"] = new_thread(h, S, b["runner"], b["gid"], b["code"]["runaway"], 0)
+    def s_runaway(legacy):
+        h, S, b = prepare("HT2", 3, add_runaway, legacy=legacy); st = {"legacy_sched": legacy}
+        nf = len(h.freed); h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"])
+        st["runaway_os_state"] = os_state(S, b["rth"]); st["runaway_tstate"] = tstate(h, b["rth"])
+        st["sched_events"] = collections.Counter(e[1] for e in S.log if e[1] in ("RUNAWAY", "preempt", "DEADLOCK"))
+        if st["barrier"]["quiescent"]: teardown(h, S, b, st)
+        else: st["policy"] = "safe-stop"; st["intact"] = intact(h, S, b); st["freed"] = len(h.freed) - nf; st["freed_labels"] = collections.Counter(h.lbl(p) for p in list(h.freed)[nf:])
+        return st
+    ra = run("HT2/control-runaway-worker/fixed-sched", lambda: s_runaway(False))
+    rl = run("HT2/control-runaway-worker/LEGACY-sched(rev2 bug)", lambda: s_runaway(True))
+    if "error" not in ra: check(not ra["barrier"]["quiescent"] and ra["runaway_os_state"] == "runaway" and ra["intact"] and no_dep_freed(ra) and ra["sched_events"].get("RUNAWAY") == 1, ra["tag"] + ": runaway not detected / something destroyed")
+    if "error" not in rl: check(rl["barrier"]["quiescent"] and rl["runaway_os_state"] == "done", rl["tag"] + ": legacy control did not reproduce the false 'done'")
+    # ---------------------------------------------------------------- 4. truncated main return
+    def s_main_trunc():
+        h = E.mk("HT2"); S = Sched(h); code = install_code(h); st = {}
+        try: S.call(code["spin"]); st["sched_call"] = "returned (BUG)"
+        except BudgetExhausted as e: st["sched_call"] = "BudgetExhausted"
+        try: h.call(code["spin"], count=200000); st["h_call"] = "returned (BUG)"
+        except BudgetExhausted as e: st["h_call"] = "BudgetExhausted"
+        h2 = E.mk("HT2"); L = LegacySched(h2); code2 = install_code(h2); st["legacy_sched_call"] = "returned x0=%#x (false return)" % L.call(code2["spin"])
+        return st
+    rm = run("control-truncated-main", s_main_trunc)
+    if "error" not in rm: check(rm["sched_call"] == "BudgetExhausted" and rm["h_call"] == "BudgetExhausted" and rm["legacy_sched_call"].startswith("returned"), rm["tag"] + ": truncation not explicit")
+    # ---------------------------------------------------------------- 5. real fixed-point exhaustion (each exiting child appends a LIVE sibling)
+    def s_exhaust():
+        pool = []
+        def mkpool(h, S, b):
+            for _ in range(12):
+                t = new_thread(h, S, b["runner"], b["gid"], b["code"]["coop"], 0, append=False); pool.append(t)
+            h.phase = "pool-start"
+            for t in pool: S.call(STEP, t)                         # started: state 1, blocked in its wait (not listed yet)
+        h, S, b = prepare("HT2", 3, mkpool); st = {"pool": len(pool), "pool_states": [tstate(h, t) for t in pool]}
+        linked = []
+        def on_exit(hh, a):                                      # block 0x514A5C = thread entry after the body returned
+            if hh.phase.startswith("barrier") and len(linked) < len(pool):
+                t = pool[len(linked)]; link_tail(hh, b["runner"], t); linked.append(t)
+        h.pre[0x514A5C] = on_exit
+        nf = len(h.freed); h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"])
+        st["linked"] = len(linked); st["linked_states"] = [(tstate(h, t), os_state(S, t)) for t in linked]
+        st["intact"] = intact(h, S, b); st["freed"] = len(h.freed) - nf; st["freed_labels"] = collections.Counter(h.lbl(p) for p in list(h.freed)[nf:])
+        return st
+    rx = run("HT2/fixed-point-exhaustion(real, live siblings)", s_exhaust)
+    if "error" not in rx:
+        bx = rx["barrier"]
+        check(not bx["quiescent"] and bx.get("rounds") == CAP and bx.get("pending") == 1, rx["tag"] + ": cap not enforced at round %d" % CAP)
+        check(rx["linked"] == CAP and rx["linked_states"][-1] == (1, "blocked") and all(s == (2, "done") for s in rx["linked_states"][:-1]), rx["tag"] + ": round 9 started or chain state wrong")
+        check(rx["intact"] and no_dep_freed(rx), rx["tag"] + ": safe-stop destroyed something")
+    # ---------------------------------------------------------------- 6. self-join: the guard evaluated from a child context must refuse
+    def s_selfjoin():
+        h, S, b = prepare("HT2", 3); st = {"main": on_main(h, S, b["runner"])}; seen = []
+        h.pre[TSTOP] = lambda hh, a: (seen.append(on_main(hh, S, b["runner"])), None)[1]
+        h.phase = "barrier"; st["barrier"] = barrier3(h, S, b["runner"]); st["child_evals"] = len(seen); st["child_true"] = sum(seen)
+        return st
+    rs = run("HT2/self-join-guard", s_selfjoin)
+    if "error" not in rs: check(rs["main"] and rs["child_evals"] > 0 and rs["child_true"] == 0 and rs["barrier"]["quiescent"], rs["tag"] + ": guard not effective")
+    # ---------------------------------------------------------------- 7. retry: same scene id -> old Seq destroyed, new Seq+Stage created; session tokens
+    def s_retry(kind):
+        h, S, b = prepare(kind, 3); ss = Sess(); ss.open(b["seq"], b["stage"]); st = {"kind": kind}
+        st["decisions"] = {"foreign_scene": None, "bad_lr": ss.pre_destroy(h, b["mgr"], 0x509728), "no_next": None}
+        h.wi(b["mgr"] + 0x18, -1); st["decisions"]["no_next"] = ss.pre_destroy(h, b["mgr"], 0x50A060); h.wi(b["mgr"] + 0x18, 5)
+        other = h.alloc(0x40); h.wq(b["mgr"] + 0x10, other); st["decisions"]["foreign_scene"] = ss.pre_destroy(h, b["mgr"], 0x50A060); h.wq(b["mgr"] + 0x10, b["seq"])
+        d = ss.pre_destroy(h, b["mgr"], 0x50A060); st["decisions"]["own_valid"] = d
+        h.phase = "barrier"; st["barrier_A"] = barrier3(h, S, b["runner"])["quiescent"]
+        teardown(h, S, b, st); ss.active = False                    # post of 0x5096F0: session closed (gen kept)
+        st["A"] = {k: st.pop(k) for k in ("stage_freed", "seq_freed", "late_access", "child_events_during_teardown", "global_list_has_stage")}
+        gen_a = ss.gen
+        # B: the factory (0x509740 at 0x50A090, same frame) builds a new Seq+Stage for the same id on the same harness
+        h.phase = "build-B"; b2 = E.build(h, S, kind, 0); ss.open(b2["seq"], b2["stage"]); h.phase = "tick-B"
+        for _ in range(3):
+            for th in E.all_threads(h, b2["runner"]): S.call(STEP, th)
+        b2["kids"] = E.all_threads(h, b2["runner"]); h.late.clear()
+        st["B_gen"] = ss.gen; st["B_decision"] = ss.pre_destroy(h, b2["mgr"], 0x50A060)
+        st["stale_A_seq_rejected"] = (ss.seq != b["seq"])
+        h.phase = "barrier"; st["barrier_B"] = barrier3(h, S, b2["runner"])["quiescent"]
+        teardown(h, S, b2, st); st["gen_A"] = gen_a
+        return st
+    for kind in ("HT2", "R21"):
+        rr = run("%s/retry(A destroyed -> B created -> B destroyed)" % kind, lambda: s_retry(kind))
+        if "error" in rr: continue
+        check(rr["decisions"] == {"foreign_scene": "orig", "bad_lr": "safe-stop", "no_next": "orig", "own_valid": "barrier"}, rr["tag"] + ": policy table " + str(rr["decisions"]))
+        check(rr["A"]["stage_freed"] and rr["A"]["seq_freed"] and rr["A"]["late_access"] == 0 and not rr["A"]["global_list_has_stage"], rr["tag"] + ": A teardown")
+        check(rr["B_gen"] == rr["gen_A"] + 1 and rr["B_decision"] == "barrier" and rr["stale_A_seq_rejected"] and rr["barrier_B"], rr["tag"] + ": session B")
+        check(rr["stage_freed"] and rr["seq_freed"] and rr["late_access"] == 0 and rr["child_events_during_teardown"] == 0 and not rr["global_list_has_stage"], rr["tag"] + ": B teardown")
+    # ---------------------------------------------------------------- report
+    for r in R:
+        keep = {k: v for k, v in r.items() if k not in ("barrier",)}
+        bb = r.get("barrier") or {}
+        print(r["tag"], "| barrier", bb.get("quiescent"), bb.get("why", ""), "rounds", bb.get("rounds"), bb.get("per_round"),
+              "|", {k: v for k, v in keep.items() if k in ("states_before", "appends_during_barrier", "stage_freed", "seq_freed", "threads_freed", "late_access",
+              "child_events_during_teardown", "global_list_has_stage", "runaway_os_state", "intact", "freed", "sched_call", "h_call", "legacy_sched_call",
+              "linked", "linked_states", "child_evals", "child_true", "decisions", "A", "B_gen", "gen_A", "sched_events", "error")})
+    print("FAILURES:", len(F)); [print(" -", f) for f in F]
+    if OUT: json.dump({"results": R, "FAILURES": F}, open(OUT, "w"), indent=1, default=str)
+    sys.exit(1 if F else 0)
+if __name__ == "__main__": main()

@@ -294,10 +294,13 @@ Reproducir: `python exp_owner2.py $IMG results/owner2_results.json` (`exit 0`, `
    - HOME no destruye nada;
    - el apagado no ejecuta dtors (bucle `0x50D060` sin salida);
    - `~SceneMgr 0x509640` queda como tripwire.
-5. **`exp_owner3.py`:** 17 escenarios, `exit 0`, `FAILURES: 0`:
+5. **`exp_owner3.py`:** 15 entradas en el JSON (el control de `main` truncado agrupa 3 comprobaciones), `exit 0`,
+   `FAILURES: 0`:
    - éxito con ticks 1/3/6 (R21 con 10 hilos en estado 0);
    - worker en bucle infinito (no quiescente, grafo intacto) y su control con el scheduler legacy (falso `done`);
    - `main` truncado;
    - agotamiento real del punto fijo (falla tras 8 rondas sin empezar la 9.ª);
    - guarda de self-join;
    - reintento A → B con generación de sesión.
+
+6. **T10** (cuerpos reales de GE-151 compilados, `98112a9`): ver [`T10_RESULTS.md`](T10_RESULTS.md).

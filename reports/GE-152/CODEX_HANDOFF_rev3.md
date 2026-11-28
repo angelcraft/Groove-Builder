@@ -33,7 +33,10 @@ Sin pruebas físicas ni cambios en la Switch (no autorizadas).
 
 ## 1. Evidencia de esta revisión
 
-Comando: `python exp_owner3.py $IMG results/owner3_results.json` → **`exit 0`, `FAILURES: 0`**, 17 escenarios.
+Comando: `python exp_owner3.py $IMG results/owner3_results.json` → **`exit 0`, `FAILURES: 0`**. El JSON tiene **15 entradas**
+(no 17, como se dijo por error en el comentario de rev3): 6 de éxito, 2 del grupo `Seq` (rev2 y rev3), 2 de worker en
+bucle (corregido y legacy), 1 de `main` truncado que agrupa 3 comprobaciones (`Sched.call`, `H.call` y legacy),
+1 de agotamiento, 1 de self-join y 2 de reintento.
 También se repitieron, con el scheduler corregido:
 
 | Script | Salida | Diferencia con rev2 |
@@ -235,6 +238,27 @@ Por qué es suficiente [S + U]:
     Stage lo quita su propio dtor base (`0x4EE330(stage+0x2B20)`) antes del `free`, en el hilo principal.
   - Ningún hilo del Runner corre durante el teardown tras la barrera (0 eventos medidos).
 
+### 4.1 Requisitos de la implementación real (revisión GE-154 7241265172)
+
+El modelo cooperativo **no prueba la exclusión multinúcleo**. En el módulo:
+1. **Límites antes de escribir.** Comprobar `n < MAX` antes de `kids[n++]` y `nseen < MAX` antes de `seen[nseen++]`.
+   Si se desborda: `safe_stop("barrier: MAX")`.
+2. **Ciclos en la lista.** Limitar cada recorrido de `r->head → t->next` a `MAX` pasos (o usar Floyd). Un ciclo o un
+   puntero no alineado o fuera del heap da `safe_stop`.
+3. **Estados y handles.**
+   - `state ∉ {0,1,2,3}` → `safe_stop`.
+   - `state == 0` con `osHandle != 0`, o `state == 1` con `osHandle == 0` → `safe_stop`, porque es incoherente con
+     `0x514E00`.
+4. **Identidad e hilo.** Hacer las comprobaciones de §3.1 **antes** de leer la lista, y repetir `on_runner_thread()`
+   justo antes de cada join.
+5. **Sincronización nativa.**
+   - Las escrituras `state = 2` deben ser visibles antes de `signal`. Usar la propia señal del juego (`0x4DFC70`)
+     después de una barrera `std::atomic_thread_fence(std::memory_order_seq_cst)`.
+   - Hacer el join solo con `0x4DFB60` (WaitThread + DestroyThread nativos).
+   - No leer `t->state` de un hilo en ejecución sin haber hecho su join, salvo en la postcondición, que se evalúa
+     después de todos los joins.
+6. Las recomendaciones de §5.4 (E/S en el teardown) se confirman con el módulo real en `T10_RESULTS.md`.
+
 ## 5. Contrato de los hilos del motor (GE-151)
 
 1. Cada espera (`tWait`, `waitTicks`, `oWaitReady`, `oWaitAudio`, `oPlayBgm`, `oWaitSlotLoaded`, `oSwitchCut`) va
@@ -289,7 +313,7 @@ Tripwires (H-tw-*): mismo `safe_stop`, con el motivo `"tw:<dir>"`.
 | T7 | Guarda de self-join desde contexto hijo | Unicorn | **pasa** [U] |
 | T8 | Reintento (A → B), tabla de decisión y generación de sesión | Unicorn | **pasa** [U] |
 | T9 | Clases de `Seq` 0–4, nativo, B1 (control negativo), detector (control positivo) | Unicorn `exp_owner2` | **pasa** [U] |
-| T10 | Cuerpos reales de GE-151 compilados (HT3 y Multi) con B2 | harness privado de GE-151 + imagen local | **pendiente (Codex)** |
+| T10 | Cuerpos reales de GE-151 compilados (HT3 y Multi) con B2 | `exp_t10.py` + ELF real de `98112a9` + imagen local | **pasa** [U], ejecutado por GE-152 (ver `T10_RESULTS.md`). Codex debe reproducirlo con su ELF. |
 | T11 | H-B2 en modo solo registro sobre hardware: finalizar / Salir / Reintentar / HOME | Switch | **no autorizado** |
 | T12 | H-B2 activo sobre hardware | Switch | **no autorizado** |
 
@@ -320,7 +344,8 @@ Tripwires (H-tw-*): mismo `safe_stop`, con el motivo `"tw:<dir>"`.
 2. Qué botón de la pausa corresponde a cada `setNextScene` (`0x138F58`, `0x132E74`, `0x133070`, `0x13350C`) [H].
    No afecta a B2: todos convergen en `0x5096F0`.
 3. Si hay escritores de `mgr+0x18` fuera del SceneMgr, y el lock residual entre `0x50A060` y `0x50A090` [H].
-4. Los cuerpos reales de GE-151 compilados (T10).
+4. T10 ejecutado por GE-152 con el ELF real de `98112a9` (`T10_RESULTS.md`). Falta que GE-151 lo reproduzca con su
+   build y su implementación de H-B2 en C++.
 5. Cómo pasa Hakkun el LR al hook (§9.2).
 
 ## Reproducir
