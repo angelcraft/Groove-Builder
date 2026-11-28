@@ -1,4 +1,4 @@
-# Task report: GE-155 (ronda 2: Draft 0.3 + revisión de seguridad + GUI Windows)
+# Task report: GE-155 (ronda 3: revisión 7239548049 + ejecutable Windows + SD simulada)
 
 - Agent: Grok
 - Task ID: GE-155 — validador e instalador de paquetes `.groove` (host: Windows / Android)
@@ -7,7 +7,26 @@
 - Working branch: `grok/groove-package-validator`
 - Status: ready for review (BORRADOR; decisiones V0 implementadas, sin congelación final)
 
-## Cambios de esta ronda
+## Ronda 3 (revisión GE-154 de `d3c971f`, PR #8 comentario 7239548049)
+| Ruta | Qué |
+|---|---|
+| `tools/groove_package/installer.py`, `validator.py`, `engine.py` | `assign` revalida el nivel instalado bajo el lock (`validate_installed` + `check_compat`); contrato en `check_registry_capable`; la recuperación mueve la evidencia a `groove/backups/recovery-<tx>/`; el archivo de lock se conserva si queda diario/tmp o hay interrupción. |
+| `tools/groove_package/lock.py` | Limpieza completa si falla `ftruncate`/`write`/`fsync`, escrituras completas, token por adquisición, nunca borra el lock de otro proceso (POSIX: inodo; Windows: token). |
+| `tools/groove_sd_sim.py` | Validación sobre una SD simulada (7 escenarios + CLI congelada con `--cli`). |
+| `tools/windows/` | `GrooveInstaller.spec` (GUI + CLI), `build_windows.ps1`, `requirements-build.txt` (PyInstaller fijado). |
+| `.github/workflows/package-installer.yml` | Manual: matriz + SD simulada + job `windows-exe` (artefacto temporal). No ejecutado. |
+| `tests/package/test_review_7239548049.py`, `test_sd_sim.py` | 33 pruebas nuevas. |
+| `reports/GE-155/WINDOWS_VALIDATION.md` | Procedimiento manual en Windows (JKSV primero). |
+
+| Python | Pruebas | Fallos/errores | Subpruebas OK | Omitidas |
+|---|---|---|---|---|
+| 3.13.5 (sistema, sin tkinter) | 93 | 0 | 1053 | 1 (vista GUI) |
+| 3.13.18 + Tk 9.0 (xvfb) | 93 | 0 | 1053 | 0 |
+| 3.9.25 + Tk 8.6 + jsonschema (xvfb) | 93 | 0 | 1053 | 0 |
+
+SD simulada: 7/7 escenarios (3.13.5 y 3.13.18); 8/8 con la CLI congelada por PyInstaller en Linux (3.9.25, solo comprobación; no se publica).
+
+## Cambios de la ronda 2
 | Ruta | Qué |
 |---|---|
 | `tools/groove_package/` | Decisiones A–F de Draft 0.3 y correcciones de la revisión (ver `FORMAT_QUESTIONS.md` y el README del módulo). Nuevos `jsonstrict.py`, `safefs.py`, `lock.py`. `engine.py`, `slots.py`, `installer.py` reescritos. |

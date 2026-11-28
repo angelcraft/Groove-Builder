@@ -1,4 +1,7 @@
-name: GE-155 package installer tests (manual)
+name: GE-155 package installer (manual)
+# Manual only (workflow_dispatch): run it ONLY with the repository owner's explicit authorization.
+# Nothing here touches game files; the fixtures are synthetic. Executables are uploaded as a short-lived
+# workflow artifact for testing and are never committed to the repository.
 on:
   workflow_dispatch:
 permissions:
@@ -17,4 +20,42 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
       - run: python -m pip install jsonschema
-      - run: python -m unittest discover -s tests/package -v
+      - name: Unit tests (exact counts)
+        run: python tests/package/run_all.py test-results.json
+      - name: Simulated SD validation
+        run: python tools/groove_sd_sim.py --report sd-sim-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: results-${{ matrix.os }}-py${{ matrix.python }}
+          path: |
+            test-results.json
+            sd-sim-report.json
+          retention-days: 14
+
+  windows-exe:
+    needs: test
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Build and validate (tools/windows/build_windows.ps1)
+        shell: pwsh
+        run: ./tools/windows/build_windows.ps1
+      - name: Smoke test the frozen CLI
+        shell: pwsh
+        run: |
+          ./build-out/dist/GrooveInstall.exe --json validate tests/package/fixtures/valid/synthetic-a-1.0.0.groove
+          if ($LASTEXITCODE -ne 0) { throw "frozen CLI validate failed" }
+      - uses: actions/upload-artifact@v4
+        with:
+          name: GrooveInstaller-windows-DRAFT
+          path: |
+            build-out/dist/GrooveInstaller.exe
+            build-out/dist/GrooveInstall.exe
+            build-out/SHA256SUMS.txt
+            build-out/sd-sim-report.json
+            build-out/test-results.json
+          retention-days: 7

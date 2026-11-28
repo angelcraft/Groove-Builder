@@ -15,8 +15,14 @@ El núcleo no importa tkinter ni nada de Windows, así que una app Android (Chaq
 
 Sin `sd:/groove/engine.json` (publicado por GE-151 junto con un motor con cargador) **no se puede instalar**: la v0.5.x no lee `levels/`.
 
-## Ejecutable (opcional, no incluido)
-Hay que construirlo en Windows. En `GrooveInstaller.spec` están los comandos de PyInstaller; el `.exe` no se sube al repositorio.
+## Ejecutable para Windows (no incluido en el repo)
+`tools/windows/GrooveInstaller.spec` genera con PyInstaller dos `.exe` de un solo archivo:
+`GrooveInstaller.exe` (esta GUI, sin consola) y `GrooveInstall.exe` (la CLI, con `--json`).
+- **Oficial**: job `windows-exe` del workflow manual `.github/workflows/package-installer.yml` (artefacto
+  temporal de 7 días con los `.exe`, `SHA256SUMS.txt` y los informes). Solo se ejecuta con autorización del dueño.
+- **Local**: `powershell -ExecutionPolicy Bypass -File tools\windows\build_windows.ps1` (crea `build-out\`,
+  ignorado por git; ejecuta las pruebas, construye y valida la CLI congelada sobre una SD simulada).
+Los `.exe` nunca se suben al repositorio. Procedimiento de validación: `reports/GE-155/WINDOWS_VALIDATION.md`.
 
 ## Estado de las pruebas
 Solo se ha probado en Linux con Xvfb (Python 3.9.25 + Tk 8.6): `tests/package/test_gui.py`. **No se ha ejecutado en Windows real.**

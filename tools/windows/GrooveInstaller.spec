@@ -1,21 +1,27 @@
-# PyInstaller spec for the GE-155 Windows GUI (DRAFT). Build on Windows from the repo root:
-#   py -3 -m pip install pyinstaller
-#   py -3 -m PyInstaller tools/groove_gui/GrooveInstaller.spec --distpath build-out/dist --workpath build-out/work
-# Do NOT commit the resulting .exe (public repo policy: no binaries).
+# PyInstaller spec for the GE-155 Windows build (DRAFT). Produces two one-file executables:
+#   GrooveInstaller.exe  - tkinter GUI (tools/GrooveInstaller.pyw), no console window
+#   GrooveInstall.exe    - command line (tools/groove_install.py), same core, --json output
+# Build on Windows with tools/windows/build_windows.ps1 (or the "windows-exe" job of
+# .github/workflows/package-installer.yml). Output goes to build-out/ which is git-ignored.
+# Do NOT commit the resulting .exe files (public repo policy: no binaries).
 import os
 
 ROOT = os.path.abspath(os.path.join(SPECPATH, "..", ".."))
 TOOLS = os.path.join(ROOT, "tools")
 VENDOR = os.path.join(TOOLS, "groove_package", "vendor")
+# gtf.py loads engine_contract.json next to itself at import time; PIN.json documents the pinned SHAs.
+DATAS = [(os.path.join(VENDOR, "engine_contract.json"), "groove_package/vendor"),
+         (os.path.join(VENDOR, "PIN.json"), "groove_package/vendor")]
+HIDDEN = ["groove_package.vendor.gtf"]
+EXCLUDES = ["jsonschema", "unittest", "pydoc", "test"]
 
-a = Analysis(
-    [os.path.join(TOOLS, "GrooveInstaller.pyw")],
-    pathex=[TOOLS],
-    # gtf.py loads engine_contract.json next to itself at import time
-    datas=[(os.path.join(VENDOR, "engine_contract.json"), "groove_package/vendor"),
-           (os.path.join(VENDOR, "PIN.json"), "groove_package/vendor")],
-    hiddenimports=["groove_package.vendor.gtf"],
-    excludes=["jsonschema"],
-)
-pyz = PYZ(a.pure)
-exe = EXE(pyz, a.scripts, a.binaries, a.datas, name="GrooveInstaller", console=False, upx=False)
+
+def build(script, name, console, excludes):
+    a = Analysis([os.path.join(TOOLS, script)], pathex=[TOOLS], datas=DATAS, hiddenimports=HIDDEN,
+                 excludes=excludes, noarchive=False)
+    pyz = PYZ(a.pure)
+    return EXE(pyz, a.scripts, a.binaries, a.datas, name=name, console=console, upx=False, strip=False)
+
+
+gui = build("GrooveInstaller.pyw", "GrooveInstaller", False, EXCLUDES)
+cli = build("groove_install.py", "GrooveInstall", True, EXCLUDES + ["tkinter", "_tkinter"])
