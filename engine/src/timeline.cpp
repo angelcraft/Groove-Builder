@@ -1,6 +1,7 @@
 // Groove Engine HT3 - .gtl parser. Own code.
 #include "timeline.hpp"
 #include "numparse.hpp"
+#include "parser_support.hpp"
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -10,23 +11,8 @@ namespace groove {
 namespace {
 // Static string interning: the game may keep pointers to comment tags, so
 // every string we hand to it lives for the whole process.
-constexpr int kPoolSize = 4096;
-char sPool[kPoolSize];
-int sPoolUsed = 0;
-
-const char* intern(const char* s, int len) {
-    for (int i = 0; i < sPoolUsed;) {
-        int l = (int)strlen(sPool + i);
-        if (l == len && memcmp(sPool + i, s, len) == 0) return sPool + i;
-        i += l + 1;
-    }
-    if (sPoolUsed + len + 1 > kPoolSize) return nullptr;
-    char* d = sPool + sPoolUsed;
-    memcpy(d, s, len);
-    d[len] = 0;
-    sPoolUsed += len + 1;
-    return d;
-}
+PersistentStrings<4096> sStrings;
+const char* intern(const char* s, int len) { return sStrings.intern(s, len); }
 
 bool isSpace(char c) { return c == ' ' || c == '\t' || c == '\r'; }
 
@@ -41,14 +27,19 @@ int tokenize(char* line, char* tok[4]) {
         while (*p && !isSpace(*p)) p++;
         if (*p) *p++ = 0;
     }
-    return n;
+    while (isSpace(*p)) ++p;
+    return *p ? -1 : n;
 }
 
 bool parseInt(const char* s, int& out) { return parseIntStrict(s, out); }
 } // namespace
 
 bool parseTimeline(Timeline& tl, const char* text, long size) {
+    ParseGuard guard;
+    if (!guard.held) return false;
+    StringTransaction<4096> strings(sStrings);
     tl.valid = false;
+    tl.ticksPerBeat = 480;
     tl.cueCount = tl.bgCount = tl.hoops = tl.comments = 0;
     tl.error[0] = 0;
     tl.title[0] = 0;
@@ -61,6 +52,7 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
     for (Part& p : tl.parts) p = Part{};
     bool explicitParts = false;
     int cur = 0;  // current part index
+    if (!validSource(text, size, tl.error, sizeof(tl.error))) return false;
     static char line[256];
     long pos = 0;
     int lineNo = 0;
@@ -89,7 +81,7 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
             tl.title[0] = 0;
             if (*p) {
                 size_t ntitle = strlen(p);
-                if (ntitle >= sizeof(tl.title)) ntitle = sizeof(tl.title) - 1;
+                if (ntitle >= sizeof(tl.title)) { snprintf(tl.error,sizeof(tl.error),"title too long"); return false; }
                 memcpy(tl.title, p, ntitle);
                 tl.title[ntitle] = 0;
             }
@@ -97,15 +89,22 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
         }
         char* tok[4] = {};
         int n = tokenize(line, tok);
+        if (n < 0) { snprintf(tl.error, sizeof(tl.error), "line %d: too many tokens", lineNo); return false; }
         if (n == 0) continue;
         if (!header) {
-            if (strcmp(tok[0], "GTL1") != 0) {
+            if (strcmp(tok[0], "GTL1") != 0 || n != 1) {
                 snprintf(tl.error, sizeof(tl.error), "line %d: missing GTL1 header", lineNo);
                 return false;
             }
             header = true;
             continue;
         }
+        int expected=0;
+        if (!strcmp(tok[0],"part")) { if (n<2 || n>4) expected=-1; }
+        else if (!strcmp(tok[0],"match")) expected=4;
+        else if (!strcmp(tok[0],"end") || !strcmp(tok[0],"H") || !strcmp(tok[0],"C") || !strcmp(tok[0],"A")) expected=3;
+        else expected=2;
+        if (expected<0 || (expected && expected!=n)) { snprintf(tl.error,sizeof(tl.error),"wrong argument count"); return false; }
         int a = 0, b = 0;
         const char* k = tok[0];
         if (!strcmp(k, "ticks_per_beat") && n >= 2 && parseInt(tok[1], a)) tl.ticksPerBeat = a;
@@ -128,7 +127,11 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
             if (cur == 0) tl.bgm = a;
             lastCue = lastBg = -1;
         }
-        else if (!strcmp(k, "results") && n >= 2) tl.resultsMode = !strcmp(tok[1], "native") ? 1 : 0;
+        else if (!strcmp(k, "results") && n == 2) {
+            if (!strcmp(tok[1], "native")) tl.resultsMode = 1;
+            else if (!strcmp(tok[1], "exit") || !strcmp(tok[1], "custom")) tl.resultsMode = 0;
+            else { snprintf(tl.error, sizeof(tl.error), "bad results mode"); return false; }
+        }
         else if (!strcmp(k, "match") && n >= 4 && parseInt(tok[1], tl.matchWorld) && parseInt(tok[2], tl.matchCol) && parseInt(tok[3], tl.matchRow)) {}
         else if (!strcmp(k, "end") && n >= 3 && parseInt(tok[1], a) && parseInt(tok[2], b)) { tl.endTick = a; tl.endFade = b; }
         else if (!strcmp(k, "finish") && n >= 2 && parseInt(tok[1], a)) tl.finishTick = a;
@@ -138,6 +141,7 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
                 return false;
             }
             Event& e = tl.cue[tl.cueCount];
+            if (a < 0) { snprintf(tl.error, sizeof(tl.error), "negative tick"); return false; }
             e.tick = a; e.part = (uint8_t)cur;
             tl.parts[cur].cueCount++;
             if (k[0] == 'H') {
@@ -160,6 +164,7 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
                 return false;
             }
             Event& e = tl.bg[tl.bgCount];
+            if (a < 0) { snprintf(tl.error, sizeof(tl.error), "negative tick"); return false; }
             e.tick = a; e.mask = 0; e.part = (uint8_t)cur;
             tl.parts[cur].bgCount++;
             if (k[0] == 'A') {
@@ -174,9 +179,13 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
             return false;
         }
     }
+    if (tl.ticksPerBeat != 480 || tl.bgm < 0 || tl.bgm > 65535 || tl.endFade < 0 || !validMatch(tl.matchWorld, tl.matchCol, tl.matchRow)) { snprintf(tl.error, sizeof(tl.error), "invalid metadata"); return false; }
+    for (int i=0; i<tl.partCount; ++i) if (tl.parts[i].bgm<0 || tl.parts[i].bgm>65535) { snprintf(tl.error,sizeof(tl.error),"bad part bgm"); return false; }
+    const Part& lastPart=tl.parts[tl.partCount-1];
+    if (lastPart.bgCount && tl.bg[lastPart.bgFirst+lastPart.bgCount-1].tick>tl.endTick) { snprintf(tl.error,sizeof(tl.error),"bg after end"); return false; }
     if (!header) { snprintf(tl.error, sizeof(tl.error), "empty file"); return false; }
     if (tl.endTick <= 0 || tl.finishTick < tl.endTick) { snprintf(tl.error, sizeof(tl.error), "end/finish missing or invalid"); return false; }
-    if (tl.cueCount && tl.cue[tl.cueCount - 1].tick > tl.endTick) { snprintf(tl.error, sizeof(tl.error), "cue after end"); return false; }
+    if (lastPart.cueCount && tl.cue[lastPart.cueFirst+lastPart.cueCount-1].tick > tl.endTick) { snprintf(tl.error, sizeof(tl.error), "cue after end"); return false; }
     for (int i = 0; i + 1 < tl.partCount; i++) {
         Part& p = tl.parts[i];
         if (p.next <= 0) { snprintf(tl.error, sizeof(tl.error), "part %d: missing next", i); return false; }
@@ -186,6 +195,7 @@ bool parseTimeline(Timeline& tl, const char* text, long size) {
     }
     if (tl.partCount == 1 && !explicitParts) { tl.parts[0].cueCount = tl.cueCount; tl.parts[0].bgCount = tl.bgCount; tl.parts[0].hoops = tl.hoops; }
     if (tl.hoops == 0) { snprintf(tl.error, sizeof(tl.error), "no hoops"); return false; }
+    strings.commit = true;
     tl.valid = true;
     return true;
 }

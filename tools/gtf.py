@@ -7,6 +7,8 @@
 from __future__ import annotations
 
 import argparse
+import json
+import re
 import sys
 import traceback
 from dataclasses import dataclass, field
@@ -18,6 +20,13 @@ VERSION = "0.1"
 TPB = 480
 MAX_EVENTS = 2048
 MAX_GAMES = 24
+MAX_FILE_BYTES = 60*1024
+MAX_LINES = 4096
+MAX_LINE_BYTES = 255
+MAX_TOKENS = 12
+MAX_WORK = 32768
+MAX_TICK = 0x7fffffff
+CONTRACT = json.loads(Path(__file__).with_name("engine_contract.json").read_text())
 TITLE_MAX = 95
 PROLOGUE_MAX = 95
 JINGLE_MIN, JINGLE_MAX = 0x158, 0x16C
@@ -258,7 +267,7 @@ class GtfError(Exception):
 
 
 def parse_int(s: str) -> int:
-    t = s.strip()
+    t = s
     if not t:
         raise ValueError("numero vacio")
     neg = False
@@ -268,12 +277,10 @@ def parse_int(s: str) -> int:
         if not t:
             raise ValueError(s)
     if t.lower().startswith("0x"):
-        if len(t) == 2:
-            raise ValueError(s)
+        if not re.fullmatch(r"0[xX][0-9A-Fa-f]+", t): raise ValueError(s)
         v = int(t, 16)
     else:
-        if not t.isdigit():
-            raise ValueError(s)
+        if not re.fullmatch(r"[0-9]+", t): raise ValueError(s)
         v = int(t, 10)
     if neg:
         v = -v
@@ -292,33 +299,30 @@ def is_int_token(s: str) -> bool:
 
 def parse_duration(s: str, what: str = "duracion") -> int:
     """Parse a beat duration (or Nt ticks) into ticks. Supports 1, 0.5, 1.5, 1/3, 240t."""
-    t = s.strip()
-    if not t:
-        raise ValueError(f"{what} vacia")
-    if t[-1] in "tT" and t.lower() != "t":
-        try:
-            return parse_int(t[:-1])
-        except ValueError as e:
-            raise ValueError(f"{what} en ticks invalida: {s}") from e
-    try:
-        if "/" in t:
-            n, d = t.split("/", 1)
-            frac = Fraction(n.strip()) / Fraction(d.strip())
-        else:
-            frac = Fraction(t)
-    except (ValueError, ZeroDivisionError) as e:
-        raise ValueError(f"{what} invalida: {s}") from e
-    ticks = frac * TPB
-    if ticks.denominator != 1:
-        nearest = round(float(ticks))
-        if abs(ticks - nearest) < Fraction(1, 10000):
-            return int(nearest)
-        raise ValueError(
-            f"{what} {s} no cae en un tick entero ({float(ticks):.4f} ticks; 1 pulso = 480)"
-        )
-    v = int(ticks)
-    if v < 0:
-        raise ValueError(f"{what} no puede ser negativa: {s}")
+    t = s
+    if not t: raise ValueError(f"{what} vacia")
+    if t[-1:] in ("t","T"):
+        v = parse_int(t[:-1])
+    elif t.lower().startswith(("0x","+0x")): raise ValueError(f"{what} invalida")
+    elif "/" in t:
+        n,d = t.split("/",1)
+        n,d = parse_int(n),parse_int(d)
+        if n<0 or d<=0 or n*TPB % d: raise ValueError(f"{what} invalida")
+        v = n*TPB//d
+    elif "." in t:
+        if not re.fullmatch(r"\+?(?:[0-9]+)?\.[0-9]+",t): raise ValueError(f"{what} invalida")
+        whole,frac=t.split(".")
+        whole=parse_int(whole or "0")
+        frac=frac.rstrip("0")
+        if len(frac)>9: raise ValueError(f"{what} invalida")
+        scale=10**len(frac)
+        num=whole*TPB*scale+(int(frac) if frac else 0)*TPB
+        if num%scale: raise ValueError(f"{what} no cae en un tick entero")
+        v=num//scale
+    else:
+        if not re.fullmatch(r"[+-]?[0-9]+",t): raise ValueError(f"{what} invalida")
+        v=parse_int(t)*TPB
+    if not 0<=v<=MAX_TICK: raise ValueError(f"{what} fuera de rango")
     return v
 
 
@@ -342,7 +346,7 @@ def format_beats(ticks: int) -> str:
 def valid_name(s: str, max_len: int = 47) -> bool:
     if not s or len(s) > max_len:
         return False
-    return all(c.isalnum() or c == "_" for c in s)
+    return bool(re.fullmatch(r"[A-Za-z0-9_]+",s))
 
 
 def canonical_game(name: str) -> Optional[str]:
@@ -351,7 +355,7 @@ def canonical_game(name: str) -> Optional[str]:
     up = name.upper()
     if up in GAMES:
         return up
-    key = name.lower().replace(" ", "").replace(",", "").replace("'", "").replace("-", "")
+    key = name.lower()
     return GAME_ALIASES.get(key)
 
 
@@ -382,7 +386,7 @@ class Timeline:
     end: int = -1
     end_fade: int = 960
     finish: int = -1
-    results: int = 1
+    results: int = 0
     match: tuple = (-1, 9, 4)
     first: Optional[str] = None
     title: str = ""
@@ -454,6 +458,7 @@ def tokenize(line: str) -> list[str]:
             else:
                 raise ValueError("comillas sin cerrar")
             toks.append("".join(buf))
+            if j<n and line[j] not in " \t\r": raise ValueError("token tras comillas")
             i = j
         else:
             j = i
@@ -461,37 +466,69 @@ def tokenize(line: str) -> list[str]:
                 j += 1
             toks.append(line[i:j])
             i = j
+    if len(toks)>MAX_TOKENS: raise ValueError("demasiados tokens")
     return toks
 
 
 def unquote(tok: str) -> str:
     if len(tok) >= 2 and tok[0] == '"' and tok[-1] == '"':
-        return tok[1:-1].replace('\\"', '"').replace("\\\\", "\\")
+        return re.sub(r"\\(.)",r"\1",tok[1:-1])
     return tok
+
+
+def _source_lines(text: str, path: str):
+    data=text.encode("utf-8")
+    if not 1<=len(data)<=MAX_FILE_BYTES: raise GtfError("tamano fuera de rango",path=path)
+    lines=text.split("\n")
+    if text.endswith("\n"): lines.pop()
+    if len(lines)>MAX_LINES: raise GtfError("demasiadas lineas",path=path)
+    for no,line in enumerate(lines,1):
+        if len(line.encode("utf-8"))>MAX_LINE_BYTES or any(ord(c)<32 and c not in "\t\r" or ord(c)==127 for c in line):
+            raise GtfError("linea demasiado larga o byte no valido",no,path)
+    return lines
+
+
+def _arity(k: str, n: int, gtl=False):
+    sizes={x:(2,2) for x in ("prologue","jingle","start","translen","swing","ticks_per_beat","bgm","results","first","rest","at","loop","def","call")}
+    sizes.update(match=(4,4),fade=(3,3),switch=(2,4),anim=(2,4),end=(1,3),finish=(1,2))
+    if gtl: sizes.update(end=(2,3),finish=(2,2),X=(4,9),W=(3,5),F=(4,4),A=(5,5))
+    if k in sizes and not sizes[k][0]<=n<=sizes[k][1]: raise ValueError("numero de argumentos incorrecto")
+
+
+def _validate_call(ev):
+    key=f"{ev.game}:0x{ev.fn:X}"
+    a=tuple(ev.args)
+    if ev.game=="RING" and ev.fn==0x217960:
+        valid=-1<=a[0]<=15 and a[1] in (0,1) and a[2:]==(0,0)
+    else: valid=list(a) in CONTRACT["cue_args"].get(key,[])
+    if not valid: raise GtfError("argumentos fuera del dominio verificado")
 
 
 def parse_gtl(text: str, path: str = "") -> Timeline:
     tl = Timeline(start=2880, source=path)
-    lines = text.splitlines()
+    lines = _source_lines(text,path)
     header = False
     last = 0
     for line_no, raw in enumerate(lines, 1):
         cut = raw.split("#", 1)[0]
-        if header and cut.lstrip().lower().startswith("title") and (
+        if header and cut.lstrip().startswith("title") and (
             len(cut.lstrip()) == 5 or cut.lstrip()[5] in " \t"
         ):
-            tl.title = cut.lstrip()[5:].strip()[:TITLE_MAX]
+            tl.title = cut.lstrip()[5:].strip()
+            if len(tl.title.encode("utf-8"))>TITLE_MAX: raise GtfError("title demasiado largo",line_no,path)
             continue
         parts = cut.split()
+        if len(parts)>MAX_TOKENS: raise GtfError("demasiados tokens",line_no,path)
         if not parts:
             continue
         if not header:
-            if parts[0] != "GTLM" or len(parts) < 2 or parts[1] != "1":
+            if parts[0] != "GTLM" or len(parts) != 2 or parts[1] != "1":
                 raise GtfError("falta la cabecera 'GTLM 1'", line_no, path)
             header = True
             continue
         k = parts[0]
         try:
+            _arity(k,len(parts),gtl=True)
             if k == "ticks_per_beat":
                 v = parse_int(parts[1]) if len(parts) > 1 else -1
                 if v != TPB:
@@ -520,15 +557,12 @@ def parse_gtl(text: str, path: str = "") -> Timeline:
                 else:
                     raise GtfError("results native|exit", line_no, path)
             elif k == "prologue":
-                if len(parts) < 2 or len(parts[1]) > PROLOGUE_MAX:
+                if len(parts) < 2 or len(parts[1].encode("utf-8")) > PROLOGUE_MAX:
                     raise GtfError("prologue type_XX|ruta", line_no, path)
                 tl.prologue = parts[1]
             elif k == "jingle":
-                try:
-                    j = parse_int(parts[1]) if len(parts) > 1 else -1
-                except ValueError:
-                    j = -1
-                tl.jingle = j if JINGLE_MIN <= j <= JINGLE_MAX else -1
+                tl.jingle=parse_int(parts[1])
+                if not JINGLE_MIN<=tl.jingle<=JINGLE_MAX: raise ValueError("jingle fuera de rango")
             elif k == "match":
                 if len(parts) < 4:
                     raise GtfError("match WORLD COL ROW", line_no, path)
@@ -560,6 +594,7 @@ def parse_gtl(text: str, path: str = "") -> Timeline:
                         raise GtfError("F TICK TICKS ALPHA(0..1)", line_no, path)
                     ev.op = "fade"
                     ev.fade_len = parse_int(parts[2])
+                    if not re.fullmatch(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)",parts[3]) or sum(c.isdigit() for c in parts[3])>13: raise ValueError("alpha no decimal")
                     ev.alpha = float(parts[3])
                     if ev.fade_len < 0 or not (0.0 <= ev.alpha <= 1.0):
                         raise GtfError("F TICK TICKS ALPHA(0..1)", line_no, path)
@@ -600,9 +635,10 @@ def parse_gtl(text: str, path: str = "") -> Timeline:
                                 ti += 1
                             except ValueError:
                                 break
+                        if word and args: raise ValueError("word cue sin argumentos enteros")
                         ev.args = _pad4(args)
                         if ti < len(parts):
-                            if ti != len(parts) - 1 or not valid_name(parts[ti]):
+                            if re.fullmatch(r"[+-]?(?:0[xX][0-9A-Fa-f]+|[0-9]+)",parts[ti]) or ti != len(parts) - 1 or (not valid_name(parts[ti]) and parts[ti]!="-"):
                                 raise GtfError("argumento/etiqueta invalido", line_no, path)
                             if parts[ti] != "-":
                                 ev.tag = parts[ti]
@@ -640,6 +676,8 @@ def parse_gtl(text: str, path: str = "") -> Timeline:
             raise
         except (ValueError, IndexError) as e:
             raise GtfError(f"no se pudo leer la linea ({e})", line_no, path) from e
+    strings={e.tag for e in tl.events if e.tag} | {e.anim_name for e in tl.events if e.anim_name}
+    if sum(len(x.encode("utf-8"))+1 for x in strings)>8192: raise GtfError("pool de cadenas lleno",path=path)
     if not header:
         raise GtfError("archivo vacio (falta GTLM 1)", path=path)
     _finalize_timeline(tl, path, auto_end=False)
@@ -647,6 +685,12 @@ def parse_gtl(text: str, path: str = "") -> Timeline:
 
 
 def _finalize_timeline(tl: Timeline, path: str, auto_end: bool) -> None:
+    if not (-1<=tl.match[0]<=2 and 0<=tl.match[1]<12 and 0<=tl.match[2]<5): raise GtfError("match fuera de rango",path=path)
+    if tl.prologue and (not re.fullmatch(r"[A-Za-z0-9_/-]+",tl.prologue) or tl.prologue.startswith("/") or ".." in tl.prologue): raise GtfError("prologue invalido",path=path)
+    for e in tl.events:
+        if e.op=="call": _validate_call(e)
+        if e.op=="anim" and e.layout!=LAYOUT_OFF.get(e.game): raise GtfError("layout no verificado",path=path)
+        if e.op=="fade" and (e.fade_len<0 or not 0<=e.alpha<=1): raise GtfError("fade invalido",path=path)
     if not tl.events:
         raise GtfError("no hay eventos (hace falta al menos un cue)", path=path)
     if sum(1 for e in tl.events if e.op == "call") == 0:
@@ -664,6 +708,8 @@ def _finalize_timeline(tl: Timeline, path: str, auto_end: bool) -> None:
             tl.end = last + 4 * TPB
         if tl.finish < tl.end:
             tl.finish = tl.end + 4 * TPB
+    if any(not 0<=v<=MAX_TICK for v in (tl.start,tl.end,tl.finish,tl.end_fade)):
+        raise GtfError("tick fuera de rango",path=path)
     if tl.end <= 0:
         raise GtfError("falta end", path=path)
     if tl.finish < tl.end:
@@ -683,7 +729,7 @@ class SrcLine:
 
 def _read_gtf_lines(text: str, path: str) -> list[SrcLine]:
     out: list[SrcLine] = []
-    for no, raw in enumerate(text.splitlines(), 1):
+    for no, raw in enumerate(_source_lines(text,path), 1):
         try:
             body = strip_comment(raw)
         except ValueError as e:
@@ -708,18 +754,21 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
     end_set = False
     finish_set = False
     call_stack: list[str] = []
+    loop_depth=0
+    work=0
 
     def apply_header(toks: list[str], no: int) -> bool:
         nonlocal end_set, finish_set
         k = toks[0].lower()
         if k == "title":
-            tl.title = " ".join(unquote(t) for t in toks[1:])[:TITLE_MAX]
+            tl.title = " ".join(unquote(t) for t in toks[1:])
+            if len(tl.title.encode("utf-8"))>TITLE_MAX: raise GtfError("title demasiado largo",no,path)
             return True
         if k == "prologue":
             if len(toks) < 2:
                 raise GtfError("prologue type_XX|ruta", no, path)
             val = unquote(toks[1])
-            if len(val) > PROLOGUE_MAX:
+            if len(val.encode("utf-8")) > PROLOGUE_MAX:
                 raise GtfError("prologue demasiado largo", no, path)
             tl.prologue = val
             return True
@@ -845,13 +894,17 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
         tl.events.append(ev)
 
     def emit_block(block: list[SrcLine], local_game: Optional[str]) -> Optional[str]:
-        nonlocal clock, game
+        nonlocal clock, game, loop_depth, work
         game = local_game
         i = 0
         while i < len(block):
             sl = block[i]
             toks = sl.toks
             k = toks[0].lower()
+            work+=1
+            if work>MAX_WORK: raise GtfError("limite de expansion",sl.no,path)
+            try: _arity(k,len(toks))
+            except ValueError as e: raise GtfError(str(e),sl.no,path) from e
             if apply_header(toks, sl.no):
                 i += 1
                 continue
@@ -863,6 +916,7 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
                 except ValueError as e:
                     raise GtfError(str(e), sl.no, path) from e
                 clock += dt
+                if clock>MAX_TICK: raise GtfError("desbordamiento de reloj",sl.no,path)
                 i += 1
                 continue
             if k == "at":
@@ -916,17 +970,24 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
                     count = parse_int(toks[1])
                 except ValueError as e:
                     raise GtfError("loop necesita un entero (ej. loop 3)", sl.no, path) from e
-                if count < 1:
+                if count < 1 or count>MAX_WORK:
                     raise GtfError("loop necesita un entero >= 1", sl.no, path)
                 inner, end_i = _collect_block(block, i + 1, sl.no, path, "loop")
-                for _ in range(count):
-                    game = emit_block(inner, game)
+                if loop_depth>=8: raise GtfError("loop demasiado profundo",sl.no,path)
+                loop_depth+=1
+                try:
+                    for _ in range(count):
+                        work+=1
+                        if work>MAX_WORK: raise GtfError("limite de expansion",sl.no,path)
+                        game = emit_block(inner, game)
+                finally: loop_depth-=1
                 i = end_i + 1
                 continue
             if k == "call":
                 if len(toks) < 2:
                     raise GtfError("call <nombre>", sl.no, path)
-                name = toks[1]
+                name = toks[1].lower()
+                if len(call_stack)>=8: raise GtfError("call demasiado profundo",sl.no,path)
                 if name not in defs:
                     raise GtfError(f"no hay un def '{name}'", sl.no, path)
                 if name in call_stack:
@@ -959,10 +1020,11 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
                 except ValueError as e:
                     raise GtfError(str(e), sl.no, path) from e
                 try:
-                    alpha = float(Fraction(toks[2])) if "/" in toks[2] else float(toks[2])
+                    if not re.fullmatch(r"[+-]?(?:[0-9]+(?:\.[0-9]*)?|\.[0-9]+)",toks[2]) or sum(c.isdigit() for c in toks[2])>13: raise ValueError("alpha no decimal")
+                    alpha = float(toks[2])
                 except ValueError as e:
                     raise GtfError(f"alpha invalida: {toks[2]}", sl.no, path) from e
-                if alpha < 0.0 or alpha > 1.0:
+                if not 0.0 <= alpha <= 1.0:
                     raise GtfError("alpha debe estar entre 0 y 1", sl.no, path)
                 add_event(Event(tick=clock, op="fade", fade_len=dur, alpha=alpha), sl.no)
                 i += 1
@@ -1019,6 +1081,8 @@ def compile_gtf(text: str, path: str = "") -> Timeline:
             if e.op in ("switch", "call", "anim") and e.game:
                 tl.first = e.game
                 break
+    expected_end=tl.end if end_set else tl.events[-1].tick+4*TPB if tl.events else 0
+    if end_set and tl.end<=0 or finish_set and tl.finish<expected_end: raise GtfError("end/finish invalido",path=path)
     _finalize_timeline(tl, path, auto_end=True)
     return tl
 
@@ -1032,7 +1096,8 @@ def _extract_defs(lines: list[SrcLine], path: str) -> tuple[dict[str, list[SrcLi
         if sl.toks[0].lower() == "def":
             if len(sl.toks) < 2 or not valid_name(sl.toks[1]):
                 raise GtfError("def necesita un nombre (letras, numeros o _)", sl.no, path)
-            name = sl.toks[1]
+            name = sl.toks[1].lower()
+            if len(sl.toks)!=2 or len(defs)>=32: raise GtfError("limite/argumentos de def",sl.no,path)
             if name.lower() in RESERVED or canonical_game(name):
                 raise GtfError(f"'{name}' es una palabra reservada; elige otro nombre de def", sl.no, path)
             if name in defs:
@@ -1088,7 +1153,8 @@ def parse_cue_line(toks: list[str], current_game: Optional[str], no: int, path: 
 
     rest = toks[1:]
     tag = None
-    if rest and not is_int_token(rest[-1]) and valid_name(rest[-1]):
+    if rest and re.fullmatch(r"[+-]?(?:0[xX][0-9A-Fa-f]+|[0-9]+)",rest[-1]) and not is_int_token(rest[-1]): raise GtfError("entero fuera de rango",no,path)
+    if rest and not is_int_token(rest[-1]) and (valid_name(rest[-1]) or rest[-1]=="-"):
         tag = rest[-1]
         rest = rest[:-1]
     int_args: list[int] = []
@@ -1102,6 +1168,8 @@ def parse_cue_line(toks: list[str], current_game: Optional[str], no: int, path: 
         else:
             raise GtfError(f"argumento invalido: {t}", no, path)
 
+    if (game or current_game)=="THE_A" and int_args: raise GtfError("word cue sin argumentos enteros",no,path)
+    if len(int_args)>4: raise GtfError("demasiados argumentos",no,path)
     if fn_direct is not None:
         g = game or current_game
         if not g:
@@ -1112,7 +1180,7 @@ def parse_cue_line(toks: list[str], current_game: Optional[str], no: int, path: 
             )
         if (g, fn_direct) not in CUE_FNS:
             raise GtfError(f"la funcion 0x{fn_direct:X} no es un cue permitido de {g}", no, path)
-        ev = Event(tick=0, op="call", game=g, fn=fn_direct, args=_pad4(int_args), tag=tag)
+        ev = Event(tick=0, op="call", game=g, fn=fn_direct, args=_pad4(int_args), tag=None if tag=="-" else tag)
         if CUE_FNS[(g, fn_direct)] == 1:
             w = word_tok
             if w is None and ev.tag and ev.tag.upper() in THE_A_WORDS:
@@ -1126,7 +1194,8 @@ def parse_cue_line(toks: list[str], current_game: Optional[str], no: int, path: 
         return ev
 
     cue = resolve_cue(name, game or current_game, no, path)
-    ev = Event(tick=0, op="call", game=cue.game, fn=cue.fn, tag=tag, word=cue.word)
+    if cue.kind==1 and int_args: raise GtfError("word cue sin argumentos enteros",no,path)
+    ev = Event(tick=0, op="call", game=cue.game, fn=cue.fn, tag=None if tag=="-" else tag, word=cue.word)
     if cue.kind == 1:
         if word_tok:
             ev.word = word_tok

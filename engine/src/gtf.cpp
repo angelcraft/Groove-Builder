@@ -2,6 +2,8 @@
 #include "gtf.hpp"
 #include "gtf_cues.hpp"
 #include "numparse.hpp"
+#include "parser_support.hpp"
+#include "cue_validation.hpp"
 #include <cstdio>
 #include <cstring>
 #include <cstdint>
@@ -20,6 +22,8 @@ constexpr int kJingleMin = 0x158, kJingleMax = 0x16C;
 
 char sPool[kPoolSize];
 int sPoolUsed = 0;
+PersistentStrings<65536> sStrings;
+const char* internEvent(const char* s, int n) { return sStrings.intern(s, n); }
 
 struct Line { int no; char* s; };
 Line sLines[kMaxLines];
@@ -108,6 +112,7 @@ int tokenize(char* line, char* tok[kMaxTok]) {
                 else p++;
             }
             if (*p == '"') p++;
+            if (*p && !isSpace(*p)) return -1;
             if (*p) *p++ = 0;
         } else {
             tok[n++] = p;
@@ -115,7 +120,8 @@ int tokenize(char* line, char* tok[kMaxTok]) {
             if (*p) *p++ = 0;
         }
     }
-    return n;
+    while (isSpace(*p)) ++p;
+    return *p ? -1 : n;
 }
 
 void unquote(char* s) {
@@ -178,20 +184,22 @@ bool parseDuration(const char* s, int& ticks) {
         ticks = beats * kTPB;
         return true;
     }
-    char ip[32], fp[32];
-    int il = (int)(dot - s), fl = (int)strlen(dot + 1);
-    if (il >= 32 || fl <= 0 || fl >= 32) return false;
-    if (il == 0) { ip[0] = '0'; ip[1] = 0; }
-    else { memcpy(ip, s, il); ip[il] = 0; }
-    memcpy(fp, dot + 1, fl); fp[fl] = 0;
-    for (int i = 0; i < fl; i++) if (fp[i] < '0' || fp[i] > '9') return false;
-    int ipi = 0;
-    if (!parseIntStrict(ip, ipi) || ipi < 0) return false;
-    int frac = 0, scale = 1;
-    for (int i = 0; i < fl; i++) { frac = frac * 10 + (fp[i] - '0'); scale *= 10; }
-    int64_t num = (int64_t)ipi * kTPB * scale + (int64_t)frac * kTPB;
-    if (num % scale != 0 || num / scale < 0 || num / scale > 0x7FFFFFFF) return false;
-    ticks = (int)(num / scale);
+    if (*s == '-') return false;
+    char ip[32];
+    int il = (int)(dot-s), fl = (int)strlen(dot+1);
+    if (il >= 32 || fl <= 0) return false;
+    if (il == 0) { ip[0]='0'; ip[1]=0; }
+    else { memcpy(ip,s,il); ip[il]=0; }
+    for (int i=0;i<fl;++i) if (dot[1+i]<'0' || dot[1+i]>'9') return false;
+    while (fl>0 && dot[fl]=='0') --fl;
+    if (fl>9) return false;
+    int whole=0;
+    if (!parseIntStrict(ip,whole) || whole<0 || whole>kMaxTick/kTPB) return false;
+    int64_t frac=0,scale=1;
+    for (int i=0;i<fl;++i) { frac=frac*10+(dot[1+i]-'0'); scale*=10; }
+    int64_t num=(int64_t)whole*kTPB*scale+frac*kTPB;
+    if (num%scale || num/scale>kMaxTick) return false;
+    ticks=(int)(num/scale);
     return true;
 }
 
@@ -296,6 +304,7 @@ bool collectBlock(int start, int openNo, const char* kind, int& endIdx, MultiTim
         buf[sizeof(buf) - 1] = 0;
         char* tok[kMaxTok];
         int n = tokenize(buf, tok);
+        if (n < 0) FAIL("line %d: invalid/too many tokens", sLines[i].no);
         if (n > 0) {
             if (ieq(tok[0], "loop") || ieq(tok[0], "def")) depth++;
             else if (ieq(tok[0], "end") && n == 1) {
@@ -318,8 +327,9 @@ bool extractDefs(MultiTimeline& tl) {
         buf[sizeof(buf) - 1] = 0;
         char* tok[kMaxTok];
         int n = tokenize(buf, tok);
+        if (n < 0) FAIL("line %d: invalid/too many tokens", sLines[i].no);
         if (n > 0 && ieq(tok[0], "def")) {
-            if (n < 2 || !validName(tok[1])) FAIL("line %d: def needs a name", sLines[i].no);
+            if (n != 2 || !validName(tok[1])) FAIL("line %d: def needs a name", sLines[i].no);
             if (reserved(tok[1]) || gameIx(tok[1]) >= 0)
                 FAIL("line %d: '%s' is reserved", sLines[i].no, tok[1]);
             for (int d = 0; d < sDefN; d++)
@@ -351,6 +361,7 @@ bool extractDefs(MultiTimeline& tl) {
 }
 
 // execution state
+int sWork = 0;
 int sClock = 0;
 int sGame = -1;
 int sCallDepth = 0;
@@ -399,7 +410,8 @@ bool parseCue(MultiTimeline& tl, char* toks[], int nTok, int lineNo) {
     int last = nTok - 1;
     const char* tag = nullptr;
     int argEnd = nTok;
-    if (last >= 1 && !isIntTok(toks[last]) && validName(toks[last])) {
+    if (last>=1 && numericLiteral(toks[last]) && !isIntTok(toks[last])) FAIL("line %d: integer out of range",lineNo);
+    if (last >= 1 && !isIntTok(toks[last]) && (validName(toks[last]) || !strcmp(toks[last],"-"))) {
         tag = toks[last];
         argEnd = last;
     }
@@ -409,7 +421,7 @@ bool parseCue(MultiTimeline& tl, char* toks[], int nTok, int lineNo) {
     for (int i = 1; i < argEnd; i++) {
         bool isWord = false;
         for (int w = 0; w < kTheAWordCount; w++)
-            if (!strcmp(toks[i], kTheAWords[w])) isWord = true;
+            if (ieq(toks[i], kTheAWords[w])) isWord = true;
         if (isWord && !wordTok && !isIntTok(toks[i])) { wordTok = toks[i]; continue; }
         if (isIntTok(toks[i])) {
             if (nInt >= 4) FAIL("line %d: too many arguments", lineNo);
@@ -440,7 +452,7 @@ bool parseCue(MultiTimeline& tl, char* toks[], int nTok, int lineNo) {
         if (kind == 1) {
             if (!word && tag) {
                 for (int w = 0; w < kTheAWordCount; w++)
-                    if (!strcmp(tag, kTheAWords[w])) { word = tag; tag = nullptr; break; }
+                    if (ieq(tag, kTheAWords[w])) { word = tag; tag = nullptr; break; }
             }
             if (!word) FAIL("line %d: %s needs a word (TEA|SODA|COCOA|AAA)", lineNo, kGameName[gUse]);
         }
@@ -481,6 +493,9 @@ bool parseCue(MultiTimeline& tl, char* toks[], int nTok, int lineNo) {
     for (int i = 0; i < kCueFnCount; i++)
         if (kCueFns[i].off == fn && kCueFns[i].game == gUse) { e.fn = (int16_t)i; break; }
     if (e.fn < 0) FAIL("line %d: function 0x%X is not an allowed %s cue", lineNo, fn, kGameName[gUse]);
+    if (kind==1 && nInt) FAIL("line %d: word cue has no integer arguments",lineNo);
+    if (!validCueArgs(gUse, fn, args)) FAIL("line %d: cue arguments not in verified domain", lineNo);
+    if (kind==0 && wordTok) FAIL("line %d: unexpected word",lineNo);
     memcpy(e.a, args, sizeof(e.a));
     e.word = nullptr;
     if (word) {
@@ -489,7 +504,7 @@ bool parseCue(MultiTimeline& tl, char* toks[], int nTok, int lineNo) {
         if (!e.word) FAIL("line %d: word must be TEA|SODA|COCOA|AAA", lineNo);
     }
     if (tag && strcmp(tag, "-") != 0) {
-        e.str = intern(tag, (int)strlen(tag));
+        e.str = internEvent(tag, (int)strlen(tag));
         if (!e.str) FAIL("line %d: string pool full", lineNo);
     }
     tl.calls++;
@@ -507,13 +522,15 @@ bool applyHeader(MultiTimeline& tl, char* tok[], int n, int lineNo, bool& handle
             buf[0] = 0;
             for (int i = 1; i < n; i++) {
                 char t[96];
+                if (strlen(tok[i]) >= sizeof(t)+2) FAIL("line %d: title too long",lineNo);
+                unquote(tok[i]);
+                if (strlen(tok[i]) >= sizeof(t)) FAIL("line %d: title too long",lineNo);
                 strncpy(t, tok[i], sizeof(t) - 1);
                 t[sizeof(t) - 1] = 0;
-                unquote(t);
-                int tl = (int)strlen(t);
-                if (bp && bp + 1 < 95) buf[bp++] = ' ';
-                if (bp + tl > 95) tl = 95 - bp;
-                if (tl > 0) { memcpy(buf + bp, t, tl); bp += tl; }
+                int textLen = (int)strlen(t);
+                if (i>1) { if (bp>=95) FAIL("line %d: title too long",lineNo); buf[bp++]=' '; }
+                if (bp + textLen > 95) FAIL("line %d: title too long",lineNo);
+                if (textLen > 0) { memcpy(buf + bp, t, textLen); bp += textLen; }
                 buf[bp] = 0;
             }
             size_t L = strlen(buf);
@@ -525,11 +542,9 @@ bool applyHeader(MultiTimeline& tl, char* tok[], int n, int lineNo, bool& handle
     }
     if (ieq(k, "prologue")) {
         if (n < 2) FAIL("line %d: prologue type_XX|path", lineNo);
-        char t[96];
-        strncpy(t, tok[1], sizeof(t) - 1);
-        t[sizeof(t) - 1] = 0;
+        char* t=tok[1];
         unquote(t);
-        if (strlen(t) >= sizeof(tl.prologue)) FAIL("line %d: prologue too long", lineNo);
+        if (strlen(t) >= sizeof(tl.prologue) || !validPrologue(t)) FAIL("line %d: prologue too long", lineNo);
         memcpy(tl.prologue, t, strlen(t) + 1);
         return true;
     }
@@ -609,13 +624,26 @@ bool applyHeader(MultiTimeline& tl, char* tok[], int n, int lineNo, bool& handle
 bool emitRange(MultiTimeline& tl, int lo, int hi, bool topLevel) {
     int i = lo;
     while (i < hi) {
+        if (++sWork > kMaxExpansionWork) FAIL("expansion work limit exceeded");
         int lineNo = sLines[i].no;
         char buf[256];
         strncpy(buf, sLines[i].s, sizeof(buf) - 1);
         buf[sizeof(buf) - 1] = 0;
         char* tok[kMaxTok];
         int n = tokenize(buf, tok);
+        if (n < 0) FAIL("line %d: invalid/too many tokens", lineNo);
         if (n == 0) { i++; continue; }
+        const char* op=tok[0];
+        int min=0,max=0;
+        const char* two[]={"prologue","jingle","start","translen","swing","ticks_per_beat","bgm","results","first","rest","at","loop","def","call"};
+        for (auto key:two) if (ieq(op,key)) min=max=2;
+        if (ieq(op,"match")) min=max=4;
+        if (ieq(op,"fade")) min=max=3;
+        if (ieq(op,"switch")) { min=2;max=4; }
+        if (ieq(op,"anim")) { min=2;max=4; }
+        if (ieq(op,"end")) { min=1;max=3; }
+        if (ieq(op,"finish")) { min=1;max=2; }
+        if (max && (n<min || n>max)) FAIL("line %d: wrong argument count",lineNo);
         bool handled = false;
         if (!applyHeader(tl, tok, n, lineNo, handled)) return false;
         if (handled) { i++; continue; }
@@ -624,7 +652,7 @@ bool emitRange(MultiTimeline& tl, int lo, int hi, bool topLevel) {
             int dt = 0;
             if (n < 2 || !parseDuration(tok[1], dt))
                 FAIL("line %d: rest <beats> (e.g. 1, 0.5, 1/3, 240t)", lineNo);
-            sClock += dt;
+            if (!checkedTickAdd(sClock, dt, sClock)) FAIL("line %d: clock overflow", lineNo);
             i++;
             continue;
         }
@@ -668,14 +696,16 @@ bool emitRange(MultiTimeline& tl, int lo, int hi, bool topLevel) {
         }
         if (ieq(k, "loop")) {
             int count = 0;
-            if (n < 2 || !parseIntStrict(tok[1], count) || count < 1)
+            if (n < 2 || !parseIntStrict(tok[1], count) || count < 1 || count > kMaxExpansionWork)
                 FAIL("line %d: loop needs an integer >= 1", lineNo);
             if (sLoopDepth >= kMaxLoop) FAIL("line %d: loop nesting too deep", lineNo);
             int endIdx = -1;
             if (!collectBlock(i + 1, lineNo, "loop", endIdx, tl)) return false;
             sLoopDepth++;
-            for (int c = 0; c < count; c++)
+            for (int c = 0; c < count; c++) {
+                if (++sWork > kMaxExpansionWork) { sLoopDepth--; FAIL("expansion work limit exceeded"); }
                 if (!emitRange(tl, i + 1, endIdx, false)) { sLoopDepth--; return false; }
+            }
             sLoopDepth--;
             i = endIdx + 1;
             continue;
@@ -752,7 +782,7 @@ bool emitRange(MultiTimeline& tl, int lo, int hi, bool topLevel) {
                 layout = gtfcat::layoutOff(g);
             }
             if (g < 0) FAIL("line %d: anim needs a game (switch first or anim GAME NAME)", lineNo);
-            if (layout < 0x100 || layout > 0x10000 || (layout & 7))
+            if (!validLayout(g,layout))
                 FAIL("line %d: layout out of range or not 8-aligned", lineNo);
             if (useGame(tl, g) < 0) FAIL("line %d: more than %d games", lineNo, kMaxMGames);
             MEvent e;
@@ -762,7 +792,7 @@ bool emitRange(MultiTimeline& tl, int lo, int hi, bool topLevel) {
             e.game = (uint8_t)g;
             e.style = -1;
             e.len = layout;
-            e.str = intern(aname, (int)strlen(aname));
+            e.str = internEvent(aname, (int)strlen(aname));
             if (!e.str) FAIL("line %d: string pool full", lineNo);
             tl.anims++;
             if (!addEvent(tl, e, lineNo)) return false;
@@ -792,7 +822,7 @@ bool parseGtfImpl(MultiTimeline& tl, const char* text, long size) {
     tl.swing = 120;
     tl.endTick = tl.finishTick = -1;
     tl.endFade = 960;
-    tl.resultsMode = 1;
+    tl.resultsMode = 0;
     tl.matchWorld = -1;
     tl.matchCol = 9;
     tl.matchRow = 4;
@@ -803,8 +833,10 @@ bool parseGtfImpl(MultiTimeline& tl, const char* text, long size) {
     tl.title[0] = 0;
     tl.prologue[0] = 0;
     tl.jingle = -1;
+    if (!validSource(text, size, tl.error, sizeof(tl.error))) return false;
     if (!loadLines(text, size, tl)) return false;
     if (!extractDefs(tl)) return false;
+    sWork = 0;
     sClock = 0;
     sGame = -1;
     sCallDepth = 0;
@@ -826,8 +858,9 @@ bool parseGtfImpl(MultiTimeline& tl, const char* text, long size) {
         // first should already be in games[] from the event; useGame is a no-op then
     }
     int last = tl.count ? tl.ev[tl.count - 1].tick : 0;
-    if (!sEndSet || tl.endTick <= 0) tl.endTick = last + 4 * kTPB;
-    if (!sFinishSet || tl.finishTick < tl.endTick) tl.finishTick = tl.endTick + 4 * kTPB;
+    if (!sEndSet && !checkedTickAdd(last,4*kTPB,tl.endTick)) FAIL("automatic end overflow");
+    if (!sFinishSet && !checkedTickAdd(tl.endTick,4*kTPB,tl.finishTick)) FAIL("automatic finish overflow");
+    if (!validMatch(tl.matchWorld,tl.matchCol,tl.matchRow)) FAIL("invalid match");
     if (tl.endTick <= 0) FAIL("end missing");
     if (tl.finishTick < tl.endTick) FAIL("finish missing or before end");
     if (tl.startTick > tl.endTick) FAIL("start after end");
@@ -894,7 +927,12 @@ void fillTimelineView(const MultiTimeline& tl, TimelineView& v) {
 }
 
 bool parseGtf(MultiTimeline& tl, const char* text, long size) {
-    return gtfpriv::parseGtfImpl(tl, text, size);
+    ParseGuard guard;
+    if (!guard.held) return false;
+    StringTransaction<65536> strings(gtfpriv::sStrings);
+    bool ok = gtfpriv::parseGtfImpl(tl, text, size);
+    strings.commit = ok;
+    return ok;
 }
 
 static bool sniffGtlm(const char* text, long size) {
@@ -920,18 +958,13 @@ static bool sniffGtlm(const char* text, long size) {
         char* p = line;
         while (*p == ' ' || *p == '\t' || *p == '\r') p++;
         if (!*p) continue;
-        return p[0] == 'G' && p[1] == 'T' && p[2] == 'L' && p[3] == 'M';
+        return !strncmp(p,"GTLM",4);
     }
     return false;
 }
 
 bool parseTimeline(MultiTimeline& tl, const char* text, long size) {
-    // Keep parseGtf / fillTimelineView reachable under --gc-sections (Unicorn tests).
-    if (text == nullptr) {
-        TimelineView v;
-        fillTimelineView(tl, v);
-        return parseGtf(tl, "", 0);
-    }
+    if (!validSource(text,size,tl.error,sizeof(tl.error))) { tl.valid=false; return false; }
     if (sniffGtlm(text, size)) return parseMulti(tl, text, size);
     return parseGtf(tl, text, size);
 }

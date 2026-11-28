@@ -1,0 +1,36 @@
+{
+  "ge152_reference": "8e11d7babb9ff85939dda0553a8b5407af7237d9",
+  "validation": {
+    "host_tests_exit": 0,
+    "python_methods": 15,
+    "gtf_cases": 19,
+    "asan_ubsan_binaries": 3,
+    "arm64_build_exit": 0,
+    "artifact_audit_exit": 0,
+    "relative_relocations": 665,
+    "unresolved_imports": [],
+    "elf_nso_payloads_identical": true,
+    "nso_segment_hashes_checked": false
+  },
+  "artifacts": {
+    "GrooveHT3.nso": {
+      "sha256": "fcc1953b3f45ee93cdec99b827f76880746b116b96a15daf7c350225adea900b",
+      "bytes": 108852
+    },
+    "GrooveHT3.nss": {
+      "sha256": "8f4cf0143149f81e53534c4cfb11cae8f9e33a1a3818be34753fd21a0bacedde",
+      "bytes": 476168
+    }
+  },
+  "main_cpp_sha256": "446f9de7b0d6ec876a9744b3746389b71b1e31a633b7169a5e64bac5d4735c02",
+  "omitted": [
+    "optional multi_prueba.gtl fixture",
+    "private main/SDK Unicorn suite",
+    "Horizon services",
+    "Switch hardware"
+  ],
+  "native_lifetime_verified": false,
+  "original_save_isolation_verified": false,
+  "transitive_stack_bound_verified": false,
+  "installable": false
+}

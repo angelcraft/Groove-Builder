@@ -6,7 +6,7 @@
 
 namespace groove {
 
-// [-+]? (0x hex | decimal) ; whole string must be consumed ; |v| < 2^31
+// Signed int32 in decimal or hexadecimal; no wrapping bit-pattern conversions.
 inline bool parseIntStrict(const char* s, int& out) {
     if (!s || !*s) return false;
     bool neg = false;
@@ -22,19 +22,18 @@ inline bool parseIntStrict(const char* s, int& out) {
             else if (c >= 'A' && c <= 'F') d = c - 'A' + 10;
             else return false;
             v = v * 16 + d;
-            if (v > 0xFFFFFFFFll) return false;
+            if (v > (neg ? 0x80000000ll : 0x7fffffffll)) return false;
         }
     } else {
         for (; *s; s++, digits++) {
             if (*s < '0' || *s > '9') return false;
             v = v * 10 + (*s - '0');
-            if (v > 0x7FFFFFFFll + 1) return false;
+            if (v > (neg ? 0x80000000ll : 0x7fffffffll)) return false;
         }
     }
     if (digits == 0) return false;
     if (neg) v = -v;
-    if (v > 0xFFFFFFFFll || v < -0x80000000ll) return false;
-    out = (int)(int32_t)(uint32_t)(v & 0xFFFFFFFF);
+    out = static_cast<int>(v);
     return true;
 }
 

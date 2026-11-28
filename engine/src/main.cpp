@@ -23,8 +23,13 @@
 #include "gtf.hpp"
 #include "cuefns.hpp"
 #include "numparse.hpp"
+#include "save_replace.hpp"
+#include "metadata.hpp"
+#include "v0_loader.hpp"
+#include "v0_native.hpp"
+#include "v0_file_io.hpp"
 
-#define GROOVE_HT3_VERSION "0.5.0"
+#define GROOVE_HT3_VERSION "0.5.1"
 
 namespace {
 
@@ -126,16 +131,23 @@ char gSavePath[96], gSaveTmpPath[100];
 // written to the SD from normal contexts (boot, stage creation, stage dtor).
 char gLogBuf[16384];
 int gLogLen = 0;
-int gLogSeq = 0;
-char gLine[512];
+unsigned gLogSeq = 0;
+unsigned char gLogBusy=0;
+unsigned char gInputBusy=0;
 
 void logf(const char* fmt, ...) {
+    groove::TryLease lease(gLogBusy);
+    if (!lease.held) return;
+    char gLine[512];
     va_list ap;
     va_start(ap, fmt);
-    int n = snprintf(gLine, sizeof(gLine), "[%04d] ", gLogSeq++);
-    n += vsnprintf(gLine + n, sizeof(gLine) - n - 2, fmt, ap);
+    int n = snprintf(gLine, sizeof(gLine), "[%04u] ", (unsigned)gLogSeq++);
+    if (n < 0 || n >= (int)sizeof(gLine)-2) { va_end(ap); return; }
+    int written=vsnprintf(gLine+n,sizeof(gLine)-n-2,fmt,ap);
     va_end(ap);
-    if (n > (int)sizeof(gLine) - 2) n = sizeof(gLine) - 2;
+    if (written<0) return;
+    int available=sizeof(gLine)-n-2;
+    n += written < available ? written : available-1;
     gLine[n++] = '\n';
     if (gLogLen + n > (int)sizeof(gLogBuf)) gLogLen = 0;  // drop on overflow
     memcpy(gLogBuf + gLogLen, gLine, n);
@@ -248,7 +260,7 @@ bool writeAppend(const char* path, const char* data, long len) {
         }
     }
     long size = 0;
-    gFs.GetFileSize(&size, h);
+    if (gFs.GetFileSize(&size,h).IsFailure() || size<0 || len<0 || len>0x7fffffff-size) { gFs.CloseFile(h); return false; }
     bool ok = len == 0 || gFs.WriteFile(h, size, data, len,
                                         nn::fs::WriteOption::CreateOption(nn::fs::WriteOptionFlag_Flush)).IsSuccess();
     gFs.CloseFile(h);
@@ -256,6 +268,8 @@ bool writeAppend(const char* path, const char* data, long len) {
 }
 
 void flushLog() {
+    groove::TryLease lease(gLogBusy);
+    if (!lease.held) return;
     if (!gFsOk || !gLogWritable || gLogLen == 0) return;
     // keep the log bounded (rotate at 1 MiB)
     nn::fs::FileHandle h{};
@@ -302,6 +316,87 @@ char* readFile(const char* path, long* outSize, long maxSize) {
     gFs.CloseFile(h);
     *outSize = size;
     return gFileBuf;
+}
+
+// V0 SD reader: dormant, never invoked by hkMain or an installed hook.
+// Uses the already mounted game-context FsApi, with independent stat/error gates.
+using V0Stat = nn::Result (*)(nn::fs::DirectoryEntryType*, const char*);
+groove::v0::Loader gV0Packages;
+V0Stat gV0Stat=nullptr;
+// Horizon FS module 2, description 1 = PathNotFound (0x202). Every other
+// failure stays unknown/blocked; OpenFile failure is NEVER treated as absence.
+int v0Path(const char* relative,char (&path)[192],bool file) {
+    if(!gFsOk || !gV0Stat || !relative || !*relative || *relative=='/' || strstr(relative,"..") || strstr(relative,"//"))return -1;
+    for(const char* c=relative;*c;++c)if(!((*c>='a'&&*c<='z')||(*c>='0'&&*c<='9')||*c=='.'||*c=='-'||*c=='/'))return -1;
+    int n=snprintf(path,sizeof(path),"ht3sd:/groove/%s",relative);if(n<=0 || n>=int(sizeof(path)))return -1;
+    // Stat every traversed component, requiring directories before the leaf.
+    for(char* c=path+7;;++c)if(*c=='/' || !*c){
+        char saved=*c;*c=0;nn::fs::DirectoryEntryType type{};auto rc=gV0Stat(&type,path);*c=saved;
+        if(rc.IsFailure())return rc.GetInnerValueForDebug()==0x202 ? 0 : -1;
+        bool leaf=saved==0;
+        if(!leaf && type!=nn::fs::DirectoryEntryType_Directory)return -1;
+        if(leaf)return !file || type==nn::fs::DirectoryEntryType_File ? 1 : -1;
+    }
+}
+bool v0Read(void*,const char* relative,char* out,unsigned cap,unsigned* got){
+    char path[192];if(!out||!got||v0Path(relative,path,true)!=1)return false;
+    nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Read).IsFailure())return false;
+    long size=0,after=0;bool ok=!gFs.GetFileSize(&size,h).IsFailure()&&size>0&&size<=long(cap);
+    if(ok)ok=!gFs.ReadFile(h,0,out,size).IsFailure()&&!gFs.GetFileSize(&after,h).IsFailure()&&after==size;
+    gFs.CloseFile(h);if(ok)*got=unsigned(size);return ok;
+}
+int v0Probe(void*,const char* relative){char path[192];return v0Path(relative,path,false);}
+// Explicit integration entry, still disconnected from menu/constructor hooks.
+// It neither mounts SD, creates directories, writes an engine marker nor enables slots.
+bool v0MultiBusy();
+extern void* gHt3Stage;
+extern "C" __attribute__((used,retain,visibility("default"))) bool groove_v0_load_sd_levels(){
+    groove::TryLease lease(gInputBusy);if(!lease.held||!gFsOk||gHt3Stage||v0MultiBusy()||groove::v0::groove_v0_session_active())return false;
+    if(!gV0Stat)gV0Stat=reinterpret_cast<V0Stat>(hk::ro::lookupSymbol("_ZN2nn2fs12GetEntryTypeEPNS0_18DirectoryEntryTypeEPKc"));
+    if(!gV0Stat)return false;
+    return gV0Packages.load({nullptr,v0Read,v0Probe},false);
+}
+
+// nn::fs implementation for GSV IO. Disconnected from gameplay, no auto-write.
+struct V0NnFiles {
+    nn::Result (*flushFile)(nn::fs::FileHandle)=nullptr;
+    bool ready(){return gFsOk&&gV0Stat&&flushFile;}
+    int probe(const char* relative){return v0Probe(nullptr,relative);}
+    groove::v0::gsv::Read read(const char* relative,uint8_t* data,unsigned cap,unsigned& n){
+        using R=groove::v0::gsv::Read;char path[192];int type=v0Path(relative,path,true);
+        if(type==0)return R::Missing;if(type!=1)return R::Error;
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Read).IsFailure())return R::Error;
+        long size=0,after=0;R result=R::Error;
+        if(!gFs.GetFileSize(&size,h).IsFailure()&&size>=0){
+            if(size>long(cap))result=R::Oversized;
+            else if(!gFs.ReadFile(h,0,data,size).IsFailure()&&!gFs.GetFileSize(&after,h).IsFailure()&&after==size){n=unsigned(size);result=R::Present;}
+        }gFs.CloseFile(h);return result;
+    }
+    bool createNew(const char* relative,const uint8_t* data,unsigned size){
+        char directory[192];int dir=v0Path("custom-saves",directory,false);if(dir<0)return false;
+        if(dir==0&&gFs.CreateDirectory(directory).IsFailure())return false;
+        char path[192];if(v0Path(relative,path,true)!=0)return false;
+        if(gFs.CreateFile(path,size).IsFailure())return false; // native create-new, never truncate
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Write).IsFailure())return false;
+        auto option=nn::fs::WriteOption::CreateOption(0);
+        bool ok=!gFs.WriteFile(h,0,data,size,option).IsFailure();gFs.CloseFile(h);return ok;
+    }
+    bool flush(const char* relative){char path[192];if(v0Path(relative,path,true)!=1)return false;
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Write).IsFailure())return false;
+        bool ok=!flushFile(h).IsFailure();gFs.CloseFile(h);return ok;}
+    bool renameNoReplace(const char* from,const char* to){char a[192],b[192];
+        if(v0Path(from,a,true)!=1||v0Path(to,b,true)!=0)return false;
+        return !gFs.RenameFile(a,b).IsFailure(); // nn::fs destination-exists rejection still requires Horizon verification
+    }
+    bool remove(const char* relative){char path[192];return v0Path(relative,path,true)==1&&!gFs.DeleteFile(path).IsFailure();}
+    bool syncDirectory(){return false;} // SD directory sync guarantee is NOT provided by FlushFile/CommitSaveData.
+} gV0NnFiles;
+groove::v0::FileIO<V0NnFiles> gV0SaveIo(gV0NnFiles);
+extern "C" __attribute__((used,retain,visibility("default"))) groove::v0::gsv::IO* groove_v0_get_save_io(){
+    if(!gFsOk)return nullptr;
+    if(!gV0Stat)gV0Stat=reinterpret_cast<V0Stat>(hk::ro::lookupSymbol("_ZN2nn2fs12GetEntryTypeEPNS0_18DirectoryEntryTypeEPKc"));
+    if(!gV0NnFiles.flushFile)gV0NnFiles.flushFile=reinterpret_cast<decltype(gV0NnFiles.flushFile)>(hk::ro::lookupSymbol("_ZN2nn2fs9FlushFileENS0_10FileHandleE"));
+    return gV0NnFiles.ready()?&gV0SaveIo:nullptr;
 }
 
 // Multi timeline resolution (v0.5.0): .gtf first, then .gtl.
@@ -406,6 +501,7 @@ bool waitTicks(void* th, int ticks) {
 // HT2 code spawns its member threads (same allocator, ctor, vtable, trampoline).
 void spawn(void* stage, void* parent, void (*body)(void*, void*)) {
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
+    if (!th) { logf("spawn: native allocation failed"); return; }
     void* runner = at<void*>(stage, sRunner);
     int idx = at<int32_t>(stage, sThreadIdx);
     uintptr_t vt = gBase + oThreadVtbl;
@@ -535,7 +631,7 @@ void control(void* stage, void* th) {
     tPop(th);
 }
 
-void writeSave();
+bool writeSave();
 bool patchHt3Sky(void* stage, const char* when);
 
 // Equivalent of the native worker 0x428EF0, always on the non-practice path.
@@ -573,8 +669,7 @@ void ht3Worker(void* stage, void* th) {
          gRun.partsStarted, gTl.partCount, gRun.reachedEnd,
          gRun.finished, gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, at<int>(stage, 0x29E4),
          gRun.resultsMode ? "native toResults (as HT2)" : "return to previous scene");
-    writeSave();     // before the scene change, so a hang cannot lose it
-    gRun.saved = 1;
+    gRun.saved = writeSave() ? 1 : 0; // Retry from the stage dtor only if this attempt failed.
     flushLog();
     if (gRun.resultsMode) {
         // Exactly what the native HT2 worker does after its control thread
@@ -594,9 +689,34 @@ void ht3Worker(void* stage, void* th) {
     tPop(th);
 }
 
+struct CustomSaveFs {
+    bool exists(const char* p) { return fileExists(p); }
+    bool rename(const char* a,const char* b) { return gFs.RenameFile(a,b).IsSuccess(); }
+};
+bool persistCustomSave(const char* path,const char* data,int size,int capacity) {
+    if (size<0 || size>=capacity) { logf("save: formatted data exceeds buffer"); return false; }
+    char tmp[160],backup[160];
+    for (unsigned i=0;i<64;++i) {
+        int a=snprintf(tmp,sizeof(tmp),"%s.tmp.%u",path,i);
+        int b=snprintf(backup,sizeof(backup),"%s.bak.%u",path,i);
+        if (a<0 || b<0 || a>=(int)sizeof(tmp) || b>=(int)sizeof(backup)) return false;
+        if (fileExists(tmp) || fileExists(backup)) continue;
+        if (gFs.CreateFile(tmp,0).IsFailure() || !writeAppend(tmp,data,size)) {
+            logf("save: temporary write failed; previous save retained"); return false;
+        }
+        CustomSaveFs fs;
+        auto result=groove::replaceCustomSave(fs,path,tmp,backup);
+        logf("save: replacement status=%d backup=%s",(int)result,backup);
+        return result==groove::SaveReplace::Committed;
+    }
+    logf("save: backup slots full; no files removed"); return false;
+}
+
 // ---------------------------------------------------------------- save
-void writeSave() {
-    if (!gFsOk || !gLogWritable) return;
+bool writeSave() {
+    groove::TryLease lease(gInputBusy);
+    if (!lease.held) { logf("save: input busy; not saved, destructor may retry"); return false; }
+    if (!gFsOk || !gLogWritable) { logf("save: SD unavailable; not saved"); return false; }
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, gStage->name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
     const char* kSavePath = gSavePath;
@@ -622,14 +742,10 @@ void writeSave() {
                      gStage->name, plays, completions, aborted, gRun.gameplayStarted, gRun.partsStarted, gTl.partCount,
                      gRun.partHoops[0], gRun.partHoops[1], gRun.partHoops[2], gRun.partHoops[3], gRun.reachedEnd, gRun.finished,
                      gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, gRun.resultsMode ? "native" : "exit");
-    gFs.DeleteFile(kSaveTmpPath);
-    if (gFs.CreateFile(kSaveTmpPath, 0).IsFailure() || !writeAppend(kSaveTmpPath, buf, n)) {
-        logf("save: write tmp failed");
-        return;
-    }
-    gFs.DeleteFile(kSavePath);
-    if (gFs.RenameFile(kSaveTmpPath, kSavePath).IsFailure()) logf("save: rename failed");
-    else logf("save: plays=%d completions=%d aborted=%d", plays, completions, aborted);
+    bool committed=persistCustomSave(kSavePath,buf,n,sizeof(buf));
+    if (committed)
+        logf("save: plays=%d completions=%d aborted=%d",plays,completions,aborted);
+    return committed;
 }
 
 // ---------------------------------------------------------------- HT3 custom background (LayeredFS type_01)
@@ -895,6 +1011,10 @@ HkTrampoline ht2CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
         return r;
     }
     void* stage = self;
+    // Do not replace a timeline while its owner (and native children) is live.
+    if (gHt3Stage) return orig(self, seq, b, c, d, e, f);
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held) return orig(self, seq, b, c, d, e, f);
     gHt3Stage = nullptr;
     gForceRingType01Bg = false;
     gSkyPatched = false;
@@ -984,11 +1104,13 @@ HkTrampoline dtorHook = [](TrampolineStatic(), void* stage) -> void* {
         logf("%s stage destroyed: started=%d gameplay=%d end=%d finished=%d stopped=%d hoops=%d", gStage->name, gRun.started,
              gRun.gameplayStarted, gRun.reachedEnd, gRun.finished, gRun.stopped, gRun.hoopsSent);
         if (gRun.started && !gRun.saved) writeSave();
+        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
         gHt3Stage = nullptr;
         logf("ht3 sky: stage done: tinted keyframes=%d crimson lookups=%d", gSkyTinted, (int)gSkyMulHits);
         gSkyRemap = false;
         clearTitleMode();
         flushLog();
+        return result;
     }
     return orig(stage);
 };
@@ -1021,6 +1143,7 @@ bool gMultiNoNative = false;
 bool gCueFnOk[groove::kCueFnCount];
 groove::MultiTimeline gMt;
 void* gMultiStage = nullptr;
+bool v0MultiBusy(){return gMultiStage!=nullptr;}
 int gSlotOf[groove::kGameNames];  // kGameName index -> REMIX_21 slot (-1 = not hosted)
 constexpr int kCueThreads = 8;
 int gThreadOf[groove::kGameNames];  // kGameName index -> cue thread
@@ -1036,7 +1159,9 @@ inline void tRestore(void* th, int p) { fn<void (*)(void*, int)>(oRestore)(th, p
 // that wait internally.
 inline int thClock(void* th) { return at<int32_t>(th, 0x278); }
 bool waitUntil(void* th, int base, int tick) {
-    int d = tick - (thClock(th) - base);
+    int64_t distance=(int64_t)tick-((int64_t)thClock(th)-base);
+    if (distance>0x7fffffff || (int64_t)base+tick>0x7fffffff) { gMRun.stopped=1; return false; }
+    int d=distance<0 ? -1 : (int)distance;
     if (d < 0) { gMRun.late++; return !tStop(th); }
     return waitTicks(th, d);
 }
@@ -1044,6 +1169,7 @@ bool waitUntil(void* th, int base, int tick) {
 // Same spawn as the native REMIX_21 code (its thread vtable + PMF trampoline).
 void spawnR21(void* stage, void* parent, void (*body)(void*, void*)) {
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
+    if (!th) { logf("spawnR21: native allocation failed"); return; }
     void* runner = at<void*>(stage, rRunner);
     int idx = at<int32_t>(stage, rThreadIdx);
     uintptr_t vt = gBase + oR21ThreadVtbl;
@@ -1243,7 +1369,7 @@ void mControl(void* stage, void* th) {
     tPop(th);
 }
 
-void writeMultiSave();
+bool writeMultiSave();
 
 // Mirrors native REMIX_21 worker 0x420720.
 void multiWorker(void* stage, void* th) {
@@ -1262,12 +1388,12 @@ void multiWorker(void* stage, void* th) {
     mControl(stage, th);
     tRestore(th, p);
     if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }
-    gMRun.resultsMode = gMt.resultsMode && !gMultiNoNative;
+    gMRun.resultsMode = 0; // v0.5.1: REMIX_21 save isolation is not verified.
+    if (gMt.resultsMode) logf("multi: native results requested but blocked; using custom exit");
     logf("multi worker: end reached=%d finished=%d calls=%d skipped=%d switches=%d fades=%d anims=%d late=%d -> %s",
          gMRun.reachedEnd, gMRun.finished, gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims,
          gMRun.late, gMRun.resultsMode ? "native toResults (REMIX_21 record)" : "return to previous scene");
-    writeMultiSave();
-    gMRun.saved = 1;
+    gMRun.saved = writeMultiSave() ? 1 : 0;
     flushLog();
     if (gMRun.resultsMode) {
         fn<VoidStage>(oToResults)(stage);
@@ -1281,8 +1407,10 @@ void multiWorker(void* stage, void* th) {
     tPop(th);
 }
 
-void writeMultiSave() {
-    if (!gFsOk || !gLogWritable) return;
+bool writeMultiSave() {
+    groove::TryLease lease(gInputBusy);
+    if (!lease.held) { logf("save multi: input busy; not saved, destructor may retry"); return false; }
+    if (!gFsOk || !gLogWritable) { logf("save multi: SD unavailable; not saved"); return false; }
     snprintf(gSavePath, sizeof(gSavePath), kSaveFmt, kMultiStage.name);
     snprintf(gSaveTmpPath, sizeof(gSaveTmpPath), "%s.tmp", gSavePath);
     int plays = 0, completions = 0, aborted = 0;
@@ -1305,18 +1433,17 @@ void writeMultiSave() {
                      plays, completions, aborted, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMt.gameCount,
                      gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims, gMRun.late,
                      gMRun.resultsMode ? "native" : "exit");
-    gFs.DeleteFile(gSaveTmpPath);
-    if (gFs.CreateFile(gSaveTmpPath, 0).IsFailure() || !writeAppend(gSaveTmpPath, buf, n)) {
-        logf("save: write tmp failed");
-        return;
-    }
-    gFs.DeleteFile(gSavePath);
-    if (gFs.RenameFile(gSaveTmpPath, gSavePath).IsFailure()) logf("save: rename failed");
-    else logf("save multi: plays=%d completions=%d aborted=%d", plays, completions, aborted);
+    bool committed=persistCustomSave(gSavePath,buf,n,sizeof(buf));
+    if (committed)
+        logf("save multi: plays=%d completions=%d aborted=%d",plays,completions,aborted);
+    return committed;
 }
 
 HkTrampoline r21CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, int c, int d, int e, int f) -> void* {
     void* r = orig(self, seq, b, c, d, e, f);
+    if (gMultiStage) return r;
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held) return r;
     gMultiStage = nullptr;
     gTTLoaded = false;  // GRO-11
     if (!gMultiActive || !ensureFs()) return r;
@@ -1377,9 +1504,11 @@ HkTrampoline r21DtorHook = [](TrampolineStatic(), void* stage) -> void* {
              gMRun.started, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMRun.stopped, gMRun.calls,
              gMRun.switches);
         if (gMRun.started && !gMRun.saved) writeMultiSave();
+        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
         gMultiStage = nullptr;
         if (gTitleMode == 3) clearTitleMode();
         flushLog();
+        return result;
     }
     return orig(stage);
 };
@@ -1506,96 +1635,25 @@ char gMapTitleBuf[96];
 Selection gMapCur;  // last cell the map info panel showed
 int gMapLogW = -99, gMapLogC = -99, gMapLogR = -99;
 
-bool ttSpace(char c) { return c == ' ' || c == '\t' || c == '\r'; }
-bool ttInt(const char*& p, int& out) {
-    while (ttSpace(*p)) p++;
-    bool neg = false;
-    if (*p == '-') { neg = true; p++; }
-    if (*p < '0' || *p > '9') return false;
-    int v = 0;
-    for (; *p >= '0' && *p <= '9' && v < 100000; p++) v = v * 10 + (*p - '0');
-    out = neg ? -v : v;
-    return true;
-}
-
+// Separate scratch timeline: map refresh must never overwrite an active worker's data.
 void scanTileTitle(TileTitle& t, const char* gtl, const char* disable, int defCol, int defRow, bool fallback,
                    const char* defTitle = nullptr) {
-    t = TileTitle{};
-    t.defTitle = defTitle;
-    t.col = defCol;
-    t.row = defRow;
+    t = TileTitle{}; t.defTitle=defTitle; t.col=defCol; t.row=defRow;
     if (fileExists(disable)) return;
-    long size = 0;
-    char* text = readFile(gtl, &size, 60 * 1024);
+    long size=0; char* text=readFile(gtl,&size,60*1024);
     if (!text) return;
-    t.on = true;
-    t.fallback23 = fallback;
-    static char line[256];
-    long pos = 0;
-    int lines = 0;
-    while (pos < size && lines < 4096) {  // header keys may appear after comments
-        int len = 0;
-        while (pos < size && text[pos] != '\n') {
-            if (len < (int)sizeof(line) - 1) line[len++] = text[pos];
-            pos++;
-        }
-        pos++;
-        lines++;
-        line[len] = 0;
-        // strip # / // comments, respecting quotes (so GTF title "..." stays intact)
-        {
-            bool inStr = false;
-            for (int i = 0; i < len; i++) {
-                if (inStr) {
-                    if (line[i] == '\\' && i + 1 < len) { i++; continue; }
-                    if (line[i] == '"') inStr = false;
-                    continue;
-                }
-                if (line[i] == '"') { inStr = true; continue; }
-                if (line[i] == '#' || (line[i] == '/' && i + 1 < len && line[i + 1] == '/')) {
-                    line[i] = 0;
-                    break;
-                }
-            }
-        }
-        char* st = line;
-        while (ttSpace(*st)) st++;
-        if (!strncmp(st, "title", 5) && (st[5] == 0 || ttSpace(st[5]))) {
-            char* p = st + 5;
-            while (ttSpace(*p)) p++;
-            char* e = p + strlen(p);
-            while (e > p && ttSpace(e[-1])) --e;
-            *e = 0;
-            if (*p == '"' && e > p + 1 && e[-1] == '"') { p++; e[-1] = 0; }
-            size_t n = strlen(p);
-            if (n >= sizeof(t.title)) n = sizeof(t.title) - 1;
-            memcpy(t.title, p, n);
-            t.title[n] = 0;
-        } else if (!strncmp(st, "prologue", 8) && ttSpace(st[8])) {
-            char* p = st + 8;
-            while (ttSpace(*p)) p++;
-            size_t n = 0;
-            while (p[n] && !ttSpace(p[n]) && n + 1 < sizeof(t.prologue)) n++;
-            memcpy(t.prologue, p, n);
-            t.prologue[n] = 0;
-        } else if (!strncmp(st, "jingle", 6) && ttSpace(st[6])) {
-            char* p = st + 6;
-            while (ttSpace(*p)) p++;
-            char* e = p;
-            while (*e && !ttSpace(*e)) e++;
-            *e = 0;
-            int v = 0;
-            if (groove::parseIntStrict(p, v)) t.jingle = v;
-        } else if (!strncmp(st, "match", 5) && ttSpace(st[5])) {
-            const char* p = st + 5;
-            int w, c, r;
-            if (ttInt(p, w) && ttInt(p, c) && ttInt(p, r)) { t.world = w; t.col = c; t.row = r; }
-        }
-    }
+    bool multi=defTitle != nullptr;
+    groove::TimelineMetadata v;
+    if (!groove::parseMetadata(v,multi,text,size)) { logf("metadata: invalid timeline %s; overrides disabled",gtl); return; }
+    t.on=true; t.fallback23=fallback;
+    t.world=v.world; t.col=v.col; t.row=v.row;
+    memcpy(t.title,v.title,sizeof(t.title));memcpy(t.prologue,v.prologue,sizeof(t.prologue));t.jingle=v.jingle;
+
 }
 
 void loadTileTitles() {
-    if (gTTLoaded || !ensureFs()) return;
+    groove::TryLease sourceLease(gInputBusy);
+    if (!sourceLease.held || gTTLoaded || !ensureFs()) return;
     gTTLoaded = true;
     scanTileTitle(gTT[0], kStages[0].gtl, kStages[0].disable, 9, 0, true);
     scanTileTitle(gTT[1], kStages[1].gtl, kStages[1].disable, 9, 1, false);
