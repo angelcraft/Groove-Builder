@@ -28,3 +28,7 @@ __pycache__/
 subsdk4
 romfs/
 *.nss
+
+# GE-155 Windows build output (never commit executables)
+build-out/
+*.exe

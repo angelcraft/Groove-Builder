@@ -1,0 +1,22 @@
+GTLM 1
+# GE-155 synthetic fixture B (original timing data only). Registry assigns the slot: no match line.
+# Solo datos de tiempo. 480 ticks por pulso; tick 0 = pulso 0 del remix.
+# Juegos: PUMPUP HUNGRY
+ticks_per_beat 480
+bgm 139
+results exit
+title Synthetic Pulse B
+start 0
+translen 960
+first PUMPUP
+end 17280 960
+finish 19200
+# --- eventos
+W 1920 PUMPUP
+X 1920 PUMPUP 0x209B80 1 0 0 basic
+X 2880 PUMPUP 0x20A170 0 0 0 basic
+W 4800 HUNGRY
+X 4800 HUNGRY 0x1AF800 0 basic
+X 5760 HUNGRY 0x1AF800 1 basic
+W 7680 PUMPUP
+X 7680 PUMPUP 0x209B80 1 0 0 basic

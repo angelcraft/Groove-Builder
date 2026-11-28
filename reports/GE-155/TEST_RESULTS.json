@@ -1,0 +1,481 @@
+{
+  "task": "GE-155",
+  "host_only": true,
+  "windows_tested": "CI only (GitHub windows-latest): unit tests, lock/msvcrt multi-process race, simulated SD, frozen CLI. Not tested by the user on a real laptop.",
+  "android_tested": false,
+  "runs": [
+    {
+      "python": "3.13.5",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        "test_gui.View.test_smoke: tkinter not available in this Python"
+      ],
+      "subtests_passed": 1053,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_7239548049.AssignRevalidation.test_installed_copy_invalid": {
+          "passed": 9,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_malformed_or_duplicate_refused": {
+          "passed": 5,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_never_substitute_required": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_unknown_contract_or_build_still_refused": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_closed_during_every_mutation": {
+          "passed": 7,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_stays_closed_after_crash_until_recover": {
+          "passed": 14,
+          "failed": 0
+        },
+        "test_review_7239548049.LockAcquireFailure.test_failures": {
+          "passed": 12,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_never_unlinks_foreign_lock_file": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_own_lock_removed_and_keep_flag": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.RegistryCapable.test_contract_checked": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 556,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "setup": "system python, no tkinter"
+    },
+    {
+      "python": "3.13.18",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "subtests_passed": 1053,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_7239548049.AssignRevalidation.test_installed_copy_invalid": {
+          "passed": 9,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_malformed_or_duplicate_refused": {
+          "passed": 5,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_never_substitute_required": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_unknown_contract_or_build_still_refused": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_closed_during_every_mutation": {
+          "passed": 7,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_stays_closed_after_crash_until_recover": {
+          "passed": 14,
+          "failed": 0
+        },
+        "test_review_7239548049.LockAcquireFailure.test_failures": {
+          "passed": 12,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_never_unlinks_foreign_lock_file": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_own_lock_removed_and_keep_flag": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.RegistryCapable.test_contract_checked": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 556,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "setup": "uv python + Tk 9.0 under xvfb"
+    },
+    {
+      "python": "3.9.25",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 93,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "subtests_passed": 1053,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_7239548049.AssignRevalidation.test_installed_copy_invalid": {
+          "passed": 9,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_malformed_or_duplicate_refused": {
+          "passed": 5,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_never_substitute_required": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_7239548049.FutureCapabilities.test_unknown_contract_or_build_still_refused": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_closed_during_every_mutation": {
+          "passed": 7,
+          "failed": 0
+        },
+        "test_review_7239548049.GateCoherence.test_gate_stays_closed_after_crash_until_recover": {
+          "passed": 14,
+          "failed": 0
+        },
+        "test_review_7239548049.LockAcquireFailure.test_failures": {
+          "passed": 12,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_never_unlinks_foreign_lock_file": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.LockRelease.test_own_lock_removed_and_keep_flag": {
+          "passed": 2,
+          "failed": 0
+        },
+        "test_review_7239548049.RegistryCapable.test_contract_checked": {
+          "passed": 4,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 556,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "setup": "venv + Tk 8.6 + jsonschema under xvfb"
+    }
+  ],
+  "base_commit": "d3c971f",
+  "review": "PR #8 comment 7239548049",
+  "sd_simulation": [
+    {
+      "setup": "source, python 3.13.5",
+      "ok": true,
+      "python": "3.13.5",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "scenarios": [
+        {
+          "scenario": "lifecycle",
+          "ok": true,
+          "detail": "install A/B, upgrade, downgrade refused, assign/unassign, uninstall (saves kept)"
+        },
+        {
+          "scenario": "assign-revalidation",
+          "ok": true,
+          "detail": "edited level, missing timeline.gtl, contract 2 refused; future capability accepted"
+        },
+        {
+          "scenario": "crash-every-step+recover",
+          "ok": true,
+          "detail": "14 crash points: 12 rolled back, 2 rolled forward"
+        },
+        {
+          "scenario": "io-error-every-step",
+          "ok": true,
+          "detail": "14 I/O error points: reported errors left the SD unchanged"
+        },
+        {
+          "scenario": "lock-contention",
+          "ok": true,
+          "detail": "5 operations refused with LOCKED while another process held the lock; SD unchanged"
+        },
+        {
+          "scenario": "lock-release-reacquire-race",
+          "ok": true,
+          "detail": "3 processes x 100 acquire/release: mutual exclusion held, no foreign unlink"
+        },
+        {
+          "scenario": "marker-withdrawn+recovery-evidence",
+          "ok": true,
+          "detail": "recover/unassign/uninstall work without engine.json; install/assign refused; evidence kept"
+        }
+      ]
+    },
+    {
+      "setup": "source, python 3.13.18",
+      "ok": true,
+      "python": "3.13.18",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "scenarios": [
+        {
+          "scenario": "lifecycle",
+          "ok": true,
+          "detail": "install A/B, upgrade, downgrade refused, assign/unassign, uninstall (saves kept)"
+        },
+        {
+          "scenario": "assign-revalidation",
+          "ok": true,
+          "detail": "edited level, missing timeline.gtl, contract 2 refused; future capability accepted"
+        },
+        {
+          "scenario": "crash-every-step+recover",
+          "ok": true,
+          "detail": "14 crash points: 12 rolled back, 2 rolled forward"
+        },
+        {
+          "scenario": "io-error-every-step",
+          "ok": true,
+          "detail": "14 I/O error points: reported errors left the SD unchanged"
+        },
+        {
+          "scenario": "lock-contention",
+          "ok": true,
+          "detail": "5 operations refused with LOCKED while another process held the lock; SD unchanged"
+        },
+        {
+          "scenario": "lock-release-reacquire-race",
+          "ok": true,
+          "detail": "3 processes x 100 acquire/release: mutual exclusion held, no foreign unlink"
+        },
+        {
+          "scenario": "marker-withdrawn+recovery-evidence",
+          "ok": true,
+          "detail": "recover/unassign/uninstall work without engine.json; install/assign refused; evidence kept"
+        }
+      ]
+    },
+    {
+      "setup": "source + PyInstaller 6.22.3 frozen Linux CLI (sanity build, not shipped), python 3.9.25",
+      "ok": true,
+      "python": "3.9.25",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "scenarios": [
+        {
+          "scenario": "lifecycle",
+          "ok": true,
+          "detail": "install A/B, upgrade, downgrade refused, assign/unassign, uninstall (saves kept)"
+        },
+        {
+          "scenario": "assign-revalidation",
+          "ok": true,
+          "detail": "edited level, missing timeline.gtl, contract 2 refused; future capability accepted"
+        },
+        {
+          "scenario": "crash-every-step+recover",
+          "ok": true,
+          "detail": "14 crash points: 12 rolled back, 2 rolled forward"
+        },
+        {
+          "scenario": "io-error-every-step",
+          "ok": true,
+          "detail": "14 I/O error points: reported errors left the SD unchanged"
+        },
+        {
+          "scenario": "lock-contention",
+          "ok": true,
+          "detail": "5 operations refused with LOCKED while another process held the lock; SD unchanged"
+        },
+        {
+          "scenario": "lock-release-reacquire-race",
+          "ok": true,
+          "detail": "3 processes x 100 acquire/release: mutual exclusion held, no foreign unlink"
+        },
+        {
+          "scenario": "marker-withdrawn+recovery-evidence",
+          "ok": true,
+          "detail": "recover/unassign/uninstall work without engine.json; install/assign refused; evidence kept"
+        },
+        {
+          "scenario": "frozen-cli",
+          "ok": true,
+          "detail": "10 CLI calls with expected exit codes"
+        }
+      ]
+    }
+  ],
+  "windows_exe": "not built on Windows from this host; spec sanity-built with PyInstaller 6.22.3 on Linux (CLI + GUI); official build = windows-exe job (manual, needs owner authorization)",
+  "ci_run": {
+    "run": "https://github.com/angelcraft/Groove-Builder/actions/runs/46152652111",
+    "commit": "1ba1d13",
+    "authorized_by": "user t164u",
+    "result": "success (7 jobs)",
+    "matrix": {
+      "ubuntu-24.04 py3.9.25": "94 tests, 1043 subtests, 0 failures",
+      "ubuntu-24.04 py3.13.18": "94 tests, 1043 subtests, 0 failures",
+      "macos-latest py3.9.13": "94 tests, 1043 subtests, 0 failures",
+      "macos-latest py3.13.17": "94 tests, 1043 subtests, 0 failures",
+      "windows-latest py3.9.13 (Windows Server 2025)": "94 tests, 1040 subtests, 0 failures (6 skipped: POSIX symlinks, jsonschema, root-permissions)",
+      "windows-latest py3.13.17": "94 tests, 1040 subtests, 0 failures (same skips)"
+    },
+    "simulated_sd": "7/7 on all 6 matrix cells; 8/8 on Windows with the frozen GrooveInstall.exe",
+    "artifact": "GrooveInstaller-windows-DRAFT (id 15266249059, retention 7 days, expires 2026-12-05T14:10Z)",
+    "sha256": {
+      "GrooveInstaller.exe": "7a44018792c1062c9957f182f8a4c2081523ce66b7392ba2d41587a7e7cdc054",
+      "GrooveInstall.exe": "8ff2135eb4603d2ecdce5e327cf869616ea9eeddc3cb77f42b4c01b64fefecd2"
+    },
+    "not_covered_on_windows": [
+      "junction/reparse-point refusal (no junction test yet)",
+      "GUI exe interactive use",
+      "FAT32/exFAT removable media",
+      "real SD/Switch"
+    ]
+  }
+}

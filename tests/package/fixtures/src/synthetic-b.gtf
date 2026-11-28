@@ -1,0 +1,22 @@
+# GE-155 synthetic fixture B source (compiled to GTLM 1 by make_fixtures.py).
+title "Synthetic Pulse B"
+bgm 139
+start 0
+results exit
+first PUMPUP
+end 36
+finish 40
+
+rest 4
+switch PUMPUP
+apple basic
+rest 2
+lemon basic
+rest 4
+switch HUNGRY
+yellow basic
+rest 2
+purple basic
+rest 4
+switch PUMPUP
+apple basic
