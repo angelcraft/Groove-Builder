@@ -114,9 +114,18 @@ def verify(root):
     assert struct.unpack('<II',m.read(dest,8))==(2,7)
     bad=b'{"format":"groove-slots/1","format":"groove-slots/1"}'
     m.put(source,bad);assert m.call(registry_symbol,source,len(bad),dest)==0
-    return {'kind':'ge151-v0-final-elf-synthetic-execution','grid_cells':tested,'native_delegations':m.calls[3],
+    # Independent Python encoder validates the retained native GSV1 decoder.
+    import zlib
+    gsv=bytearray(160);gsv[:4]=b'GSV1';struct.pack_into('<HH',gsv,4,1,160)
+    sid=b'org.example.alpha';gsv[16:16+len(sid)]=sid;gsv[116]=2
+    struct.pack_into('<I',gsv,8,zlib.crc32(gsv[12:]))
+    gp=HEAP+0x60000;ip=gp+256;m.put(ip,sid+b'\0');m.put(gp,bytes(gsv))
+    assert m.call('groove_v0_gsv_validate',gp,160,ip)==1
+    gsv[140]=1;struct.pack_into('<I',gsv,8,zlib.crc32(gsv[12:]));m.put(gp,bytes(gsv))
+    assert m.call('groove_v0_gsv_validate',gp,160,ip)==0
+    return {'kind':'ge151-v0-final-elf-synthetic-execution' ,'grid_cells':tested,'native_delegations':m.calls[3],
       'original_once':True,'lr_sp_callee_saved_preserved':True,'launch_bits_restored':True,
-      'native_registry_reader_executed':True,'observed_test_stack_bytes':STACK+0xF0000-m.lowsp,'transitive_native_stack_bound':False,
+      'native_gsv1_decoder_executed':True,'native_registry_reader_executed':True,'observed_test_stack_bytes':STACK+0xF0000-m.lowsp,'transitive_native_stack_bound':False,
       'originals':'synthetic callbacks, not original game functions','horizon_services_executed':False,
       'switch_tested':False,'installable':False}
 if __name__=='__main__':

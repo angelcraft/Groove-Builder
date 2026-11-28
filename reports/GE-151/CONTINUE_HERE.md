@@ -92,3 +92,24 @@ confirm/reverse/bits bajo contención y proveedor all-or-none del cursor; no bin
 Siguiente: conectar snapshot/constructor solo tras frontera Stage/Runner retenida en
 éxito Y fallo; verificar no append tardío, tokens por generación y worker real. H9 durable
 pendiente, .gsv no congelado; no engine.json, hooks, instalador ni prueba física.
+
+
+## Incremento constructor de pruebas y GSV1/H9 — revisión 7240144273
+
+Leer GSV1_H9_PROPOSAL.md, V0_GSV_RESULTS.json y V0_GSV_STACK.json. Nuevos módulos:
+v0_execution.hpp (snapshot→constructor/adopción en harness, cinco ints originales,
+StageToken por sesión, gates finish/abort/retorno/quiescencia) y v0_gsv.hpp (160 B,
+CRC/LE/ID/cotas, journal GJ01, recibos por seq/token, retries y recuperación explícita).
+No rehacer el lector ni dispatcher. Tests usan Loader::load real, no valid=true ficticio.
+Seis binarios sanitizados, 18 pruebas Python y 19 GTF pasan; ARM64 y auditor pasan,
+decoder GSV1 ejecutado en ELF final con encoder Python independiente. IO sintética;
+no nn::fs durable, Stage real, GPU ni Horizon.
+
+Snapshots y callback tokens ya se prueban, pero Execution sigue separado del binding
+vivo SessionState/r21CtorHook. GSV1/GJ01/retención de recibos requieren revisión GE-154.
+IO pending no suprime siguiente sesión nativa. Corrupción se conserva; backup se
+restaura solo explícitamente. No inventar score/rank/perfect ni congelar .gsv160.
+Siguiente: proveedor IO/locks reales, finalizar post-lease y conectar Execution al
+binding cuando el propietario Stage/join esté probado. La consulta PR #5 no tenía
+respuesta nueva al revisarla en esta iteración; no se ha esperado para desarrollar H9.
+Sin engine.json, instalador, hooks nuevos, Actions ni instalación.
