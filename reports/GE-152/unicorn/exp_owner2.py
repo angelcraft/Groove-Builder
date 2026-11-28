@@ -171,47 +171,49 @@ def finish(h, S, st, b, kids):
     st["nested_entries"] = dict(h.entries); st["dtor_calls"] = dict(h.dtor_calls); st["order"] = h.order[:40]
     st["os_final"] = collections.Counter(v[0] for v in S.status().values())
     return st
-R, F = [], []
 def check(c, m): (None if c else F.append(m))
-for kind in ("HT2", "R21"):
-    for mode in ("native", "B2-success", "B2-fail-selfjoin", "B2-fail-fixedpoint", "B1-quarantine", "control-resume-after-stage-free"):
-        try: r = scenario(kind, mode)
-        except Exception as e: r = {"kind": kind, "mode": mode, "error": repr(e)[:200], "unmapped": None}
-        R.append(r); tag = kind + "/" + mode
+R, F = [], []
+def main():
+    for kind in ("HT2", "R21"):
+        for mode in ("native", "B2-success", "B2-fail-selfjoin", "B2-fail-fixedpoint", "B1-quarantine", "control-resume-after-stage-free"):
+            try: r = scenario(kind, mode)
+            except Exception as e: r = {"kind": kind, "mode": mode, "error": repr(e)[:200], "unmapped": None}
+            R.append(r); tag = kind + "/" + mode
+            if "error" in r: F.append(tag + ": " + r["error"]); continue
+            check(r["after_ctor"]["global_list_has_stage"] and r["after_ctor"]["parent_list_has_stage"] and r["after_ctor"]["group_registered"], tag + ": ctor registrations not observed")
+            check(not r["unmapped"] and r["null_page"] == 0, tag + ": unmapped/null-page access")
+            if mode == "B2-success":
+                check(r["after_barrier"]["group_registered"] and r["after_barrier"]["parent_list_has_stage"], tag + ": barrier must not tear down dependencies")
+                check(r["stage_freed"] and r["seq_freed"] and not r["deadlock"], tag + ": native teardown after barrier incomplete")
+                check(sum(r["late_access"].values()) == 0, tag + ": late access to freed memory")
+                check(not r["final"]["global_list_has_stage"], tag + ": global registration left")
+                check(r["threads_freed"] == r["after_ticks"]["threads_in_runner"], tag + ": threads not freed")
+                check(r["child_events_during_teardown"] == 0, tag + ": a child ran during owner teardown after the barrier")
+            if mode.startswith("B2-fail"):
+                check(not r["stage_freed"] and not r["seq_freed"] and not r["dtor_calls"], tag + ": safe-stop destroyed something")
+                check(r["final"]["global_list_has_stage"] and r["final"]["parent_list_has_stage"] and r["final"]["group_registered"], tag + ": graph not intact")
+            if mode == "control-resume-after-stage-free" and kind == "HT2":   # R21: informational (worker stop path)
+                check(r["stage_freed"] and sum(r["late_access"].values()) > 0, tag + ": poison detector did not fire (control)")
+            if mode in ("native", "B2-success"):
+                check(r["children"] >= 1 and r["threads_freed"] == r["after_ticks"]["threads_in_runner"], tag + ": threads")
+            if mode == "native":
+                check(r["stage_freed"] and r["seq_freed"], tag + ": native teardown incomplete")
+            if mode == "B1-quarantine":                    # the control must SHOW the hazard GE-154 described
+                check(not r["stage_freed"] and r["seq_freed"], tag + ": control did not quarantine")
+                check(r["final"]["global_list_has_stage"], tag + ": control did not expose dangling global registration")
+    # Seq classes 1-4 with the B2-success path (HT2 host)
+    for cls in (1, 2, 3, 4):
+        try: r = scenario("HT2", "B2-success", cls=cls)
+        except Exception as e: r = {"kind": "HT2", "mode": "B2-success", "seq_class": cls, "error": repr(e)[:200]}
+        R.append(r); tag = "HT2/B2-success/class%d" % cls
         if "error" in r: F.append(tag + ": " + r["error"]); continue
-        check(r["after_ctor"]["global_list_has_stage"] and r["after_ctor"]["parent_list_has_stage"] and r["after_ctor"]["group_registered"], tag + ": ctor registrations not observed")
-        check(not r["unmapped"] and r["null_page"] == 0, tag + ": unmapped/null-page access")
-        if mode == "B2-success":
-            check(r["after_barrier"]["group_registered"] and r["after_barrier"]["parent_list_has_stage"], tag + ": barrier must not tear down dependencies")
-            check(r["stage_freed"] and r["seq_freed"] and not r["deadlock"], tag + ": native teardown after barrier incomplete")
-            check(sum(r["late_access"].values()) == 0, tag + ": late access to freed memory")
-            check(not r["final"]["global_list_has_stage"], tag + ": global registration left")
-            check(r["threads_freed"] == r["after_ticks"]["threads_in_runner"], tag + ": threads not freed")
-            check(r["child_events_during_teardown"] == 0, tag + ": a child ran during owner teardown after the barrier")
-        if mode.startswith("B2-fail"):
-            check(not r["stage_freed"] and not r["seq_freed"] and not r["dtor_calls"], tag + ": safe-stop destroyed something")
-            check(r["final"]["global_list_has_stage"] and r["final"]["parent_list_has_stage"] and r["final"]["group_registered"], tag + ": graph not intact")
-        if mode == "control-resume-after-stage-free" and kind == "HT2":   # R21: informational (worker stop path)
-            check(r["stage_freed"] and sum(r["late_access"].values()) > 0, tag + ": poison detector did not fire (control)")
-        if mode in ("native", "B2-success"):
-            check(r["children"] >= 1 and r["threads_freed"] == r["after_ticks"]["threads_in_runner"], tag + ": threads")
-        if mode == "native":
-            check(r["stage_freed"] and r["seq_freed"], tag + ": native teardown incomplete")
-        if mode == "B1-quarantine":                    # the control must SHOW the hazard GE-154 described
-            check(not r["stage_freed"] and r["seq_freed"], tag + ": control did not quarantine")
-            check(r["final"]["global_list_has_stage"], tag + ": control did not expose dangling global registration")
-# Seq classes 1-4 with the B2-success path (HT2 host)
-for cls in (1, 2, 3, 4):
-    try: r = scenario("HT2", "B2-success", cls=cls)
-    except Exception as e: r = {"kind": "HT2", "mode": "B2-success", "seq_class": cls, "error": repr(e)[:200]}
-    R.append(r); tag = "HT2/B2-success/class%d" % cls
-    if "error" in r: F.append(tag + ": " + r["error"]); continue
-    check(r["stage_freed"] and r["seq_freed"] and sum(r["late_access"].values()) == 0 and not r["final"]["global_list_has_stage"], tag + ": failed")
-out = {"results": R, "FAILURES": F}
-for r in R:
-    print(r.get("kind"), r.get("mode"), "cls", r.get("seq_class"), "| children", r.get("children"), "barrier", (r.get("barrier") or {}).get("why", (r.get("barrier") or {}).get("quiescent")),
-          "| stage_freed", r.get("stage_freed"), "seq_freed", r.get("seq_freed"), "threads_freed", r.get("threads_freed"), "late", dict(r.get("late_access") or {}),
-          "| final", r.get("final"), "| err", r.get("error"), "unm", r.get("unmapped"), "null", r.get("null_page"))
-print("FAILURES:", len(F)); [print(" -", f) for f in F]
-if OUT: json.dump(out, open(OUT, "w"), indent=1, default=str)
-sys.exit(1 if F else 0)
+        check(r["stage_freed"] and r["seq_freed"] and sum(r["late_access"].values()) == 0 and not r["final"]["global_list_has_stage"], tag + ": failed")
+    out = {"results": R, "FAILURES": F}
+    for r in R:
+        print(r.get("kind"), r.get("mode"), "cls", r.get("seq_class"), "| children", r.get("children"), "barrier", (r.get("barrier") or {}).get("why", (r.get("barrier") or {}).get("quiescent")),
+              "| stage_freed", r.get("stage_freed"), "seq_freed", r.get("seq_freed"), "threads_freed", r.get("threads_freed"), "late", dict(r.get("late_access") or {}),
+              "| final", r.get("final"), "| err", r.get("error"), "unm", r.get("unmapped"), "null", r.get("null_page"))
+    print("FAILURES:", len(F)); [print(" -", f) for f in F]
+    if OUT: json.dump(out, open(OUT, "w"), indent=1, default=str)
+    sys.exit(1 if F else 0)
+if __name__ == "__main__": main()

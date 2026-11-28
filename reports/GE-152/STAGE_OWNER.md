@@ -1,5 +1,9 @@
 # GE-152 → GE-151: propietario nativo del Stage y frontera de retención
 
+> **Rev 3:** la especificación implementable de B2 está en [`CODEX_HANDOFF_rev3.md`](CODEX_HANDOFF_rev3.md) y sustituye a §10.
+> Scheduler corregido (solo `PC==RET` es retorno), barrera sobre todo el Runner, tabla de decisión sin contradicción,
+> rutas de salida clasificadas y nuevas pruebas en `unicorn/exp_owner3.py` (§13).
+
 Para: Codex (GE-151) y GE-154. De: Grok (GE-152). Base: `main` 03FF4A3B (imagen local, **no publicada**).
 Rama local `grok/stage-owner` sobre `grok/dynamic-stage-research` @ `ab0a53b` (sin push).
 Evidencia: análisis estático con capstone **[V]**, código real de `main` en Unicorn con stubs **[U-stub]**, hipótesis **[H]**.
@@ -272,3 +276,28 @@ Prueba futura en hardware (no autorizada todavía): la de §7 B, añadiendo pre/
 en modo solo registro (medir, no actuar) y comprobar que no hay eventos de hijos entre la barrera y `free(seq)`.
 
 Reproducir: `python exp_owner2.py $IMG results/owner2_results.json` (`exit 0`, `FAILURES: 0`).
+
+## 13. Rev 3 — resumen (detalle en `CODEX_HANDOFF_rev3.md`)
+
+1. **Scheduler** (`sched.py`, `harness.py`): agotar el presupuesto ya no cuenta como `exit`. El hilo pasa a
+   `preempt`, después a `RUNAWAY`, y el hilo principal recibe `BudgetExhausted`. `exp_b2`, `exp_v0`, `exp_owner`,
+   `exp_owner_static` y `exp_owner2` se repitieron: salida idéntica, 0 eventos de presupuesto.
+2. **Corrección de §10:**
+   - sin sesión o con escena ajena → `orig`;
+   - con nuestra `Seq` y el LR, el vptr o la identidad incoherentes → parada segura sin retorno;
+   - `mgr+0x18 < 0` → `orig`, porque `0x5096F0` no destruye nada.
+3. **Barrera rev3** sobre todo el Runner `seq+0x58`. El control con un hilo del grupo `seq+0xEB0` muestra que rev2
+   dejaba un acceso tardío y que rev3 da 0.
+4. **Rutas:**
+   - finalizar, reintentar (mismo id: A destruida y B creada en el mismo frame) y abandonar convergen en `0x5096F0`
+     (`0x50A05C`);
+   - HOME no destruye nada;
+   - el apagado no ejecuta dtors (bucle `0x50D060` sin salida);
+   - `~SceneMgr 0x509640` queda como tripwire.
+5. **`exp_owner3.py`:** 17 escenarios, `exit 0`, `FAILURES: 0`:
+   - éxito con ticks 1/3/6 (R21 con 10 hilos en estado 0);
+   - worker en bucle infinito (no quiescente, grafo intacto) y su control con el scheduler legacy (falso `done`);
+   - `main` truncado;
+   - agotamiento real del punto fijo (falla tras 8 rondas sin empezar la 9.ª);
+   - guarda de self-join;
+   - reintento A → B con generación de sesión.

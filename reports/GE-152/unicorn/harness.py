@@ -10,6 +10,9 @@ HEAP = 0x40000000; STK = 0x50000000; FAKE = 0x60000000; RET = 0x7ffffff0
 TEXT_END = 0xA67000; PLT_LO = 0xA65000
 MGR_OFF = 0x10A75F0
 
+class BudgetExhausted(RuntimeError):
+    """emu_start ran out of its instruction budget (or stopped) without reaching RET: the call did NOT return."""
+
 class H:
     def __init__(self, img_path, ips_cells=False):
         img = bytearray(open(img_path, "rb").read()[:GSIZE])
@@ -118,4 +121,7 @@ class H:
         for r, v in enumerate(args): self.mu.reg_write(UC_ARM64_REG_X0 + r, v & (2**64 - 1))
         self.mu.reg_write(UC_ARM64_REG_SP, STK + 0xF0000); self.mu.reg_write(UC_ARM64_REG_LR, RET)
         self.mu.emu_start(fn, RET, count=count)
+        pc = self.mu.reg_read(UC_ARM64_REG_PC)
+        if pc != RET:   # GE-152 rev3: only PC==RET is a normal return (Codex r4727444769)
+            raise BudgetExhausted("call 0x%x did not return: pc=0x%x after budget %d" % (fn - G if fn >= G else fn, pc, count))
         return self.mu.reg_read(UC_ARM64_REG_X0)

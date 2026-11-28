@@ -41,28 +41,38 @@ class Sched:
             if self.sig.get(w[1]): self.sig[w[1]] = False; return True
             return False
         return self.th[w[1]]["state"] == "done"
+    MAX_SLICES = 4   # a child that burns 4 full budgets without blocking or returning is "runaway"
     def _run(self, pc, ctx=None, regs=None, count=2_000_000):
+        """Returns None ONLY if PC reached RET (normal return); a (why, ctx) tuple if the thread blocked in a
+        modelled wait/join; ("budget", ctx) if the instruction budget ran out (GE-152 rev3 fix for Codex
+        r4727444769: exhaustion used to be indistinguishable from a return and marked the thread done)."""
         mu = self.h.mu; self.block = None
         if ctx is not None: mu.context_restore(ctx); pc = mu.reg_read(UC_ARM64_REG_PC)
         if regs:
             for r, v in regs.items(): mu.reg_write(r, v)
         mu.emu_start(pc, RET, count=count)
-        return self.block
+        if self.block is not None: return self.block
+        if mu.reg_read(UC_ARM64_REG_PC) == RET: return None
+        return ("budget", mu.context_save())
     def call(self, off, *args):
-        """Run `off` on the main thread to completion, scheduling children whenever main blocks."""
+        """Run `off` on the main thread to completion, scheduling children whenever main blocks.
+        Main budget exhaustion raises BudgetExhausted. A child that exhausts MAX_SLICES budgets becomes
+        "runaway": never done, never joinable; if main then has nothing to run the result is DEADLOCK (None)."""
         mu = self.h.mu
         regs = {UC_ARM64_REG_X0 + i: 0 for i in range(8)}
         for i, v in enumerate(args): regs[UC_ARM64_REG_X0 + i] = v & (2**64 - 1)
         regs[UC_ARM64_REG_SP] = STK + 0xF0000; regs[UC_ARM64_REG_LR] = RET
         main = {"name": "main", "wait": None}
-        self.cur = "main"; b = self._run(G + off, regs=regs)
+        self.cur = "main"; b = self._run(G + off if off < G else off, regs=regs)
         while b is not None:
+            if b[0] == "budget":
+                self.ev("MAIN_BUDGET", hex(mu.reg_read(UC_ARM64_REG_PC)))
+                raise BudgetExhausted("main call 0x%x did not return (pc=0x%x)" % (off, mu.reg_read(UC_ARM64_REG_PC)))
             main["wait"], main["ctx"] = b
-            progressed = True
             while not self.ready(main):
                 ran = False
                 for tobj, t in list(self.th.items()):
-                    if t["state"] == "runnable" or (t["state"] == "blocked" and self.ready(t)):
+                    if t["state"] in ("runnable", "preempted") or (t["state"] == "blocked" and self.ready(t)):
                         ran = True; self.cur = t["name"]; ph = self.h.phase; self.h.phase = ph + ":" + t["name"]
                         if t["ctx"] is None:
                             r = {UC_ARM64_REG_X0: t["arg"], UC_ARM64_REG_SP: t["sp"], UC_ARM64_REG_LR: RET}
@@ -71,6 +81,10 @@ class Sched:
                             t["wait"] = None; bb = self._run(0, ctx=t["ctx"])
                         self.h.phase = ph
                         if bb is None: t["state"] = "done"; self.ev("exit", t["name"])
+                        elif bb[0] == "budget":
+                            t["slices"] = t.get("slices", 0) + 1; t["ctx"] = bb[1]; t["wait"] = None
+                            if t["slices"] >= self.MAX_SLICES: t["state"] = "runaway"; self.ev("RUNAWAY", t["name"])
+                            else: t["state"] = "preempted"; self.ev("preempt", t["name"])
                         else: t["state"] = "blocked"; t["wait"], t["ctx"] = bb
                         break
                 if not ran:
