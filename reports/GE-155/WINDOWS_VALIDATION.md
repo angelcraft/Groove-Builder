@@ -13,6 +13,12 @@ archivo del juego.
 carpeta que no esté vacía, precisamente para no poder tocar una SD de verdad. La instalación en hardware
 sigue bloqueada hasta revisar los bloqueos pendientes (GE-151 aún no publica `engine.json` con cargador).
 
+## Estado: ya validado en CI de Windows
+Run https://github.com/angelcraft/Groove-Builder/actions/runs/46152652111 (commit `1ba1d13`): 94 pruebas OK en
+Windows Server 2025 con Python 3.9 y 3.13 (incluye el lock `msvcrt` con 4 procesos reales), SD simulada 7/7 y
+8/8 con `GrooveInstall.exe` congelado. Esta guía sirve para repetirlo en tu portátil. Sin cubrir aún en
+Windows: junctions, uso interactivo de la GUI, FAT32/exFAT y SD/Switch reales.
+
 ## 0. Requisitos
 - Windows 10/11, **Python 3.9 o superior de python.org** (marca «Add python.exe to PATH» y deja «tcl/tk»
   activado). Comprueba con `py -3 --version`.

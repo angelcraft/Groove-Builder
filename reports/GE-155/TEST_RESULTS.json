@@ -1,7 +1,7 @@
 {
   "task": "GE-155",
   "host_only": true,
-  "windows_tested": false,
+  "windows_tested": "CI only (GitHub windows-latest): unit tests, lock/msvcrt multi-process race, simulated SD, frozen CLI. Not tested by the user on a real laptop.",
   "android_tested": false,
   "runs": [
     {
@@ -451,5 +451,31 @@
       ]
     }
   ],
-  "windows_exe": "not built on Windows from this host; spec sanity-built with PyInstaller 6.22.3 on Linux (CLI + GUI); official build = windows-exe job (manual, needs owner authorization)"
+  "windows_exe": "not built on Windows from this host; spec sanity-built with PyInstaller 6.22.3 on Linux (CLI + GUI); official build = windows-exe job (manual, needs owner authorization)",
+  "ci_run": {
+    "run": "https://github.com/angelcraft/Groove-Builder/actions/runs/46152652111",
+    "commit": "1ba1d13",
+    "authorized_by": "user t164u",
+    "result": "success (7 jobs)",
+    "matrix": {
+      "ubuntu-24.04 py3.9.25": "94 tests, 1043 subtests, 0 failures",
+      "ubuntu-24.04 py3.13.18": "94 tests, 1043 subtests, 0 failures",
+      "macos-latest py3.9.13": "94 tests, 1043 subtests, 0 failures",
+      "macos-latest py3.13.17": "94 tests, 1043 subtests, 0 failures",
+      "windows-latest py3.9.13 (Windows Server 2025)": "94 tests, 1040 subtests, 0 failures (6 skipped: POSIX symlinks, jsonschema, root-permissions)",
+      "windows-latest py3.13.17": "94 tests, 1040 subtests, 0 failures (same skips)"
+    },
+    "simulated_sd": "7/7 on all 6 matrix cells; 8/8 on Windows with the frozen GrooveInstall.exe",
+    "artifact": "GrooveInstaller-windows-DRAFT (id 15266249059, retention 7 days, expires 2026-12-05T14:10Z)",
+    "sha256": {
+      "GrooveInstaller.exe": "7a44018792c1062c9957f182f8a4c2081523ce66b7392ba2d41587a7e7cdc054",
+      "GrooveInstall.exe": "8ff2135eb4603d2ecdce5e327cf869616ea9eeddc3cb77f42b4c01b64fefecd2"
+    },
+    "not_covered_on_windows": [
+      "junction/reparse-point refusal (no junction test yet)",
+      "GUI exe interactive use",
+      "FAT32/exFAT removable media",
+      "real SD/Switch"
+    ]
+  }
 }

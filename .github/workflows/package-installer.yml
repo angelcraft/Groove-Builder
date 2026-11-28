@@ -4,11 +4,10 @@ name: GE-155 package installer (manual)
 # workflow artifact for testing and are never committed to the repository.
 on:
   workflow_dispatch:
-  # workflow_dispatch only works for workflows on the default branch (and main must not be touched), so the
-  # owner-authorized validation run is started by pushing a commit that touches these paths on THIS branch.
-  push:
-    branches: [grok/groove-package-validator]
-    paths: [".github/workflows/package-installer.yml", "tools/**", "tests/package/**"]
+  # NOTE: workflow_dispatch only works once this file is on the default branch. The authorized validation run
+  # (run 46152652111) was started by a temporary branch push trigger, removed afterwards: re-add
+  #   push: {branches: [grok/groove-package-validator], paths: [".github/workflows/package-installer.yml"]}
+  # (and only with the owner's explicit authorization) or run it after the workflow reaches the default branch.
 permissions:
   contents: read
 jobs:
