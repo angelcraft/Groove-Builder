@@ -1,0 +1,17 @@
+HT2 native cls 0 | children 1 barrier None | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+HT2 B2-success cls 0 | children 1 barrier True | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+HT2 B2-fail-selfjoin cls 0 | children 1 barrier self-join | stage_freed False seq_freed False threads_freed 0 late {} | final {'global_list_has_stage': True, 'parent_list_has_stage': True, 'group_registered': True, 'threads_in_runner': 1} | err None unm [] null 0
+HT2 B2-fail-fixedpoint cls 0 | children 1 barrier forced: no fixed point | stage_freed False seq_freed False threads_freed 0 late {} | final {'global_list_has_stage': True, 'parent_list_has_stage': True, 'group_registered': True, 'threads_in_runner': 1} | err None unm [] null 0
+HT2 B1-quarantine cls 0 | children 1 barrier None | stage_freed False seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': True} | err None unm [] null 0
+HT2 control-resume-after-stage-free cls 0 | children 1 barrier None | stage_freed True seq_freed False threads_freed 0 late {'freed:stage': 14} | final {'global_list_has_stage': False, 'parent_list_has_stage': False, 'group_registered': False, 'threads_in_runner': 4} | err None unm [] null 0
+R21 native cls 0 | children 11 barrier None | stage_freed True seq_freed True threads_freed 11 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+R21 B2-success cls 0 | children 11 barrier True | stage_freed True seq_freed True threads_freed 11 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+R21 B2-fail-selfjoin cls 0 | children 11 barrier self-join | stage_freed False seq_freed False threads_freed 0 late {} | final {'global_list_has_stage': True, 'parent_list_has_stage': True, 'group_registered': True, 'threads_in_runner': 11} | err None unm [] null 0
+R21 B2-fail-fixedpoint cls 0 | children 11 barrier forced: no fixed point | stage_freed False seq_freed False threads_freed 0 late {} | final {'global_list_has_stage': True, 'parent_list_has_stage': True, 'group_registered': True, 'threads_in_runner': 11} | err None unm [] null 0
+R21 B1-quarantine cls 0 | children 11 barrier None | stage_freed False seq_freed True threads_freed 11 late {} | final {'global_list_has_stage': True} | err None unm [] null 0
+R21 control-resume-after-stage-free cls 0 | children 11 barrier None | stage_freed True seq_freed False threads_freed 0 late {} | final {'global_list_has_stage': False, 'parent_list_has_stage': False, 'group_registered': False, 'threads_in_runner': 11} | err None unm [] null 0
+HT2 B2-success cls 1 | children 1 barrier True | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+HT2 B2-success cls 2 | children 1 barrier True | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+HT2 B2-success cls 3 | children 1 barrier True | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+HT2 B2-success cls 4 | children 1 barrier True | stage_freed True seq_freed True threads_freed 1 late {} | final {'global_list_has_stage': False} | err None unm [] null 0
+FAILURES: 0

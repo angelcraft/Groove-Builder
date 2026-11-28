@@ -6,6 +6,12 @@ Evidencia: análisis estático con capstone **[V]**, código real de `main` en U
 No se publica código, datos ni desensamblado del juego: solo direcciones, offsets y flujo de control.
 **Nada de esto se ha ejecutado en Switch.**
 
+> **Rev 2 (respuesta a GE-154 7240603418).** B1 queda **descartada**: el nuevo experimento con el ctor y los dtors
+> reales del anfitrión demuestra que omitir el deleting dtor deja un registro en una lista global y un puntero al
+> padre ya liberado (§9). La frontera recomendada pasa a ser **B2**: barrera en el pre de `destroyPending 0x5096F0`,
+> antes de cualquier destrucción del propietario y con todas las dependencias vivas. Con éxito, el teardown nativo
+> corre sin cambios; con fallo, parada segura sin destruir nada. Detalle y resultados en §9–§11.
+
 ## 1. La pregunta (literal)
 
 PR #5, GE-151 @ `823aeba` — https://github.com/angelcraft/Groove-Builder/pull/5#issuecomment-7240048944
@@ -27,7 +33,8 @@ free/destrucción del propietario mediante una frontera de ciclo de vida comprob
 | Propietario del Stage | El objeto **secuencia de juego** (`Seq`, 0xA080 B, 5 clases hermanas). Guarda el Stage en **`seq+0xA078`**, lo crea en su ctor y lo destruye **solo** en su dtor | Alta [V + U-stub] |
 | Propietario de la `Seq` | El **gestor de escenas** (`mgr = app+0x10`; escena actual `mgr+0x10`, siguiente `mgr+0x18/+0x20`) en el bucle de frame `0x509F50` | Alta-media [V + U-stub] |
 | Por qué no basta el hook actual | `0x4207F0`/`0x4290F0` son el dtor **completo**. El propietario llama al **deleting dtor** (`vt+0x10`): `0x420C40` (R21) = `0x4207F0` + `free(0xE550)`; `0x4291A0` (HT2) = `0x4290F0` + `free(0x7AD0)`. Omitir `orig` en el dtor completo deja el `free` intacto (GE-154 tiene razón) | Alta [V] |
-| Frontera recomendada | **B1**: pre del deleting dtor del anfitrión (`0x420C40` / `0x4291A0`), llamado solo desde el dtor de la `Seq`, después de que la `Seq` ya haya puesto `seq+0xA078 = 0`. Con quiescencia → `orig`. Sin quiescencia → **retornar sin `orig`**: ni dtor ni `free` (Stage en cuarentena, fuga intencionada) | Alta en que impide dtor+free; **media** en que la cuarentena sea inocua (§5) |
+| Frontera recomendada (rev 2) | **B2**: pre de `destroyPending 0x5096F0` cuando `mgr+0x10` es la `Seq` de la sesión y hay transición pendiente. Barrera con `Seq`, Stage, Runner y registros vivos; éxito → `orig` sin cambios; fallo → parada segura sin entrar en `0x5096F0` (§10) | Media-alta [V + U-sched] |
+| B1 (rev 1) | Pre del deleting dtor con cuarentena del Stage. **Descartada en rev 2** (§9) | — |
 | Join de los hijos | No lo hace el Stage: lo hace la `Seq` **después**, en su cadena de dtors (Runner embebido en `seq+0x58` → `0x515040` → `0x515290`). Por eso el Stage se libera hoy **antes** del join | Alta [V + U-stub] |
 | Self-join | La cadena entera corre en el hilo del bucle de frame, no dentro de una corrutina hija | Media [V; hilo real H] |
 | Append tardío | `append 0x5153A0` no tiene lock, pero el Runner es un planificador de traspaso estricto (main ↔ un hijo); durante la barrera solo corre el hijo que la propia barrera reanuda | Media [V; semántica Horizon H] |
@@ -91,7 +98,7 @@ Conclusiones:
 
 `reports/GE-152/unicorn/exp_owner_static.py` (nuevo) comprueba y fija todas las referencias de §3 y §6 (`results/owner_static.json`, `exit 0`, 0 fallos; solo direcciones).
 
-## 5. Frontera propuesta para GE-151
+## 5. Frontera propuesta para GE-151 (rev 1, sustituida por §10)
 
 **B1 — retención en el deleting dtor (recomendada).** Hook en `0x420C40` (R21) y `0x4291A0` (HT2), no en el dtor completo:
 
@@ -157,3 +164,111 @@ python exp_owner_static.py $IMG results/owner_static.json   # exit 0, FAILURES [
 python exp_owner.py        $IMG results/owner_results.json  # exit 0, FAILURES []
 ```
 `$IMG` = ruta local al `main` 03FF4A3B descomprimido (no se publica). Python con `unicorn` 2.x y `capstone` 5.
+
+---
+
+## 9. Rev 2 — clasificación de dependencias del dtor del Stage
+
+Callees del dtor base `0x1363D0` y del dtor raíz `0x505AB0`, comparados con sus altas en el ctor base `0x136180` /
+raíz `0x5059C0` [V] y medidos en `exp_owner2.py` [U-sched]:
+
+| Llamada en el dtor | Alta en el ctor | Qué es | Alcance | Si se omite el dtor |
+|---|---|---|---|---|
+| `0x6A40` | — | predicado sobre `stage+0x29E4` (modo) | puro | nada |
+| `0x139020` → `0x1306F0` | `stage+0x29D8 = seq` (`0x136270`) | lee bits del gestor de guardado vía la `Seq` | lee al propietario | — (exige `Seq` viva al destruir el Stage) |
+| `0x85B0`, `0x86A0` | — | telemetría (flags globales `0x10AB0E0`/`0x10AB0EC`, familia `0x7950…`) | global, sin punteros al Stage | evento de telemetría perdido |
+| `0x7920`/`0x78E0` | — | lee/limpia los globales `0x10AB1D8`/`0x10AB1DC` | global | el flag queda puesto |
+| `0x4EE330(stage+0x2B20)` → `0x4EE490` | `0x4EE260(stage+0x2B20, null)` (`0x13634C`): con dueño nulo usa el **gestor por defecto global** `*0x10BD820` (fijado por `0x4EEEC0` desde `0x5085E0`, objeto del framework con vida de app) y enlaza un nodo en su lista `+8` | **registro en lista global** | **nodo colgando en una lista global** |
+| `0x4DF820` ×3 | `0x4DF800` ×3 | dtor vacío | interno | nada |
+| `stage+0x29F8 → vt+8` | — | objeto propio | interno | fuga |
+| `0x504440(stage+0x29B0)` | `0x5043E0` | buffer propio (`0x4E04A0`) | interno | fuga |
+| `0x5148F0(stage+0x2978)` | `0x514760(stage+0x2978, seq+0x58)` | grupo de hilos en el Runner de la `Seq` | propietario | el grupo sigue registrado hasta que el Runner muere |
+| `0x505AB0`: `0x4ECB50([parent+0x20], id)` por cada id | ids del gestor de recursos del padre | recursos del propietario | ids sin liberar |
+| `0x505AB0`: `0x505620(parent, stage)` si `stage+0x2968` | `0x5059C0` → `0x5055C0(seq+0x30, stage)`: `stage+8 = seq+0x30`, nodo en la lista de hijos `seq+0x38` | **hijo en la lista del nodo de escena de la `Seq`** | el Stage conserva `stage+8` apuntando a la `Seq` **liberada** |
+| HT2 `0x4D8D40` / R21 `0x4D9A10` y ~24 subobjetos R21 | sus ctors | subobjetos propios | interno / sin clasificar uno a uno | fuga |
+
+La `Seq` registra a su vez `seq+0x94E0` y `seq+0x9610` en la misma lista global (`0x12FEBC`/`0x12FED0`) y los da de
+baja en `0x130200`/`0x13020C`, **después** de destruir el Stage.
+
+Conclusión: el Stage tiene **un registro global** (`stage+0x2B20` en la lista del gestor por defecto) y **tres
+registros en su propietario** (hijo de `seq+0x30`, grupo en `seq+0x58`, ids en `[seq+0x30+0x20]`). Cualquier
+frontera que no ejecute el dtor nativo **con la `Seq` viva** deja punteros colgando. GE-154 tenía razón: B1 no es
+segura.
+
+## 10. Rev 2 — frontera B2 (recomendada)
+
+**Dónde:** pre de `destroyPending 0x5096F0(mgr)`, llamado solo desde el bucle de frame (`0x50A05C`, LR `0x50A060`).
+**Condición:** `mgr+0x10 == gSess.seq` (la `Seq` que contiene `gSess.stage` en `+0xA078`) y `mgr+0x18 ≥ 0`.
+Cualquier otra llamada → `orig` sin tocar nada.
+
+1. **Antes de cualquier destrucción**: `Seq`, Stage, Runner (`seq+0x58`), lista de hijos, lista global y gestor de
+   recursos siguen vivos. Los hijos están aparcados (traspaso estricto, §5).
+2. **Barrera rev2** sobre el grupo `*(stage+0x2988)` del Runner `seq+0x58`: publicar cancelación (0/1 → 2), señalar
+   a todos, join a cada uno, punto fijo (máx. 8 rondas). Cada hijo se reanuda con todas sus dependencias vivas.
+3. **Éxito** → `orig(mgr)`. El teardown nativo corre **sin cambios**, en su orden, y deshace todos los registros.
+   El `clear` del Runner encuentra los hilos ya en estado 3 y no reanuda a ninguno (0 eventos de hijos durante el
+   teardown).
+4. **Fallo** (precondición no cumplida, sin punto fijo, LR inesperado, sesión incoherente) → **parada segura**: no
+   llamar a `orig`, no tocar `mgr`, no liberar nada y abortar el proceso con un diagnóstico (p. ej. abort explícito
+   del módulo con log en SD), antes de cualquier escritura de guardado posterior. El grafo completo queda intacto
+   hasta que el proceso muere.
+5. **Join bloqueante** (un hijo que nunca termina) → cuelgue con el grafo intacto: no hay `free` ni dtor parcial.
+   Nunca timeout seguido de destrucción.
+6. **Tripwires**: deleting del Stage (`0x420C40`/`0x4291A0`) y los 8 thunks secundarios llamados fuera del dtor de
+   la `Seq` mientras haya sesión → log + parada segura. El hook actual de `0x4207F0`/`0x4290F0` no debe omitir `orig`.
+
+Por qué no hace falta B0 (cuarentena de la `Seq`): `0x509740` crearía la escena siguiente encima, y la `Seq` fugada
+mantendría vivos sus registros globales (`seq+0x94E0/+0x9610`).
+
+**Self-join y append tardío en B2:** la barrera corre en el hilo del frame, fuera de cualquier corrutina (LR
+`0x50A060`). Los appends solo pueden venir de un hijo reanudado por la propia barrera, y el punto fijo los recoge.
+El spawn nativo de R21 (`0x4207AC`) está detrás de `tStop`.
+
+## 11. Rev 2 — evidencia (`exp_owner2.py`, código real)
+
+Código real:
+- ctor del anfitrión (`0x428D70` → `0x4D8C10` → `0x136180` → `0x5059C0`; `0x4202C0` → `0x4D94F0`);
+- workers, corrutinas anidadas, Runner/Thread y nn::os modelado (`sched.py`, **no Horizon**);
+- `0x5096F0`, los 5 deleting/dtors de `Seq`, `0x130080`, `0x1283A0`;
+- dtors del Stage (`0x4291A0`/`0x420C40`, `0x4290F0`/`0x4207F0`, `0x1363D0`, `0x505AB0`, `0x4EE330`, `0x505620`, `0x5148F0`).
+
+Las asignaciones devuelven objetos con vtable de harness. Ningún acceso a memoria no mapeada ni a la página nula.
+Resultado: `results/owner2_results.json`, **`exit 0`, `FAILURES: 0`**.
+
+| Caso (HT2 / R21) | Hijos | Stage liberado | `Seq` liberada | Hilos liberados | Accesos tardíos | Eventos de hijos en teardown | Registro global al final |
+|---|---|---|---|---|---|---|---|
+| nativo | 1 / 11 | sí | sí | 1 / 11 | 0 | **1 / 1** (el hijo corre después del `free` del Stage) | no |
+| **B2 éxito** | 1 / 11 | sí | sí | 1 / 11 | **0** | **0** | **no** |
+| B2 fallo (self-join) | 1 / 11 | no | no | 0 | 0 | — | sí, grafo intacto (lista global, hijo del padre, grupo) |
+| B2 fallo (sin punto fijo) | 1 / 11 | no | no | 0 | 0 | — | sí, grafo intacto |
+| **control negativo B1** | 1 / 11 | no | **sí** | 1 / 11 | 0 | 1 / 1 | **sí: nodo del Stage en la lista global tras liberar la `Seq`** |
+| control positivo del detector (HT2) | 1 | sí | no | — | **14** | — | — |
+| B2 éxito, clases `Seq` 1–4 (HT2) | 1 | sí | sí | 1 | 0 | 0 | no |
+
+Orden medido en B2 (R21):
+1. `0x420C40` → `0x4207F0` → `0x1363D0`;
+2. `0x4EE330(stage+0x2B20)` → `0x5148F0(stage+0x2978)` → `0x505AB0` → `0x505620(seq+0x30)`;
+3. `free(stage, 0xE550)`;
+4. `0x4EE330(seq+0x9610)`, `0x4EE330(seq+0x94E0)`, `0x5148F0(seq+0xEB0)`;
+5. `0x515290` → `0x514BC0`×11 → `free(thread)`×11;
+6. `free(seq, 0xA080)`.
+
+Límites:
+- Cooperativo, no Horizon.
+- R21 llega a 11 hilos en 3 ticks (los subhilos usan thunks stub).
+- Los cuerpos del motor de GE-151 no están; hay que repetir con el módulo real.
+- El gestor global es un objeto de harness con la misma lista intrusiva. No se ha identificado quién recorre la lista ni con qué frecuencia [H].
+
+## 12. Rev 2 — qué queda abierto
+
+1. Semántica de Horizon (eventos, join, visibilidad entre núcleos); el traspaso estricto es estático.
+2. Cuerpos reales del motor (GE-151) en este harness: deben salir con trabajo acotado y sin spawn tras `tStop`.
+3. Qué recorre la lista global `*0x10BD820` y si el orden B2 cambia algo para ella (en B2 el orden nativo no cambia).
+4. Mecanismo concreto de parada segura en el módulo (abort con log) y que ningún guardado se dispare antes.
+5. Que pausa → Salir/Reintentar y HOME pasen siempre por `0x5096F0` (estático).
+6. Que `0x509F50` corra en el hilo principal.
+
+Prueba futura en hardware (no autorizada todavía): la de §7 B, añadiendo pre/post de `0x5096F0` con la barrera B2
+en modo solo registro (medir, no actuar) y comprobar que no hay eventos de hijos entre la barrera y `free(seq)`.
+
+Reproducir: `python exp_owner2.py $IMG results/owner2_results.json` (`exit 0`, `FAILURES: 0`).
