@@ -6,7 +6,7 @@ import {
   emitGtl,
   GtfError,
   parseGtl,
-  Timeline,
+  type Timeline,
 } from '../engine/gtfEngine.ts';
 
 interface CodeStudioProps {

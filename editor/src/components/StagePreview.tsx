@@ -1,57 +1,145 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Eye, Music2 } from 'lucide-react';
-import { GAME_META, GameId, TPB } from '../engine/cues.ts';
-import { CustomSpriteConfig } from '../engine/groovePackage.ts';
-import { activeGameAtTick, Timeline } from '../engine/gtfEngine.ts';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Eye, Gamepad2, Music2 } from 'lucide-react';
+import { GAME_META, type GameId, TPB } from '../engine/cues.ts';
+import { type CustomSpriteConfig } from '../engine/groovePackage.ts';
+import { activeGameAtTick, type Timeline } from '../engine/gtfEngine.ts';
+import {
+  collectStageBoundImages,
+  type GameAssetBinding,
+  type LocalAssetRecord,
+  MAX_CACHED_IMAGE_RGBA_BYTES,
+  MAX_CACHED_IMAGES,
+  StageImageCacheManager,
+} from '../engine/localAssetVault.ts';
+import { evaluatePlayalongHit, type PlayalongHitResult } from '../engine/patternStore.ts';
 import { renderStageFrame } from '../stage/stageRenderer.ts';
 
 interface StagePreviewProps {
   timeline: Timeline;
   currentTick: number;
+  bpm: number;
   sprites: Partial<Record<GameId, CustomSpriteConfig>>;
   prologueImageDataUrl?: string;
+  vaultBindings?: Partial<Record<GameId, GameAssetBinding>>;
+  vaultAssets?: LocalAssetRecord[];
   onPlayJingle: (code: number) => void;
+  onTriggerTapSound?: () => void;
   compact?: boolean;
+}
+
+function disposeDomImage(img: HTMLImageElement | null | undefined) {
+  if (!img) return;
+  img.onload = null;
+  img.onerror = null;
+  img.src = '';
 }
 
 export const StagePreview: React.FC<StagePreviewProps> = ({
   timeline,
   currentTick,
+  bpm,
   sprites,
   prologueImageDataUrl,
+  vaultBindings,
+  vaultAssets = [],
   onPlayJingle,
+  onTriggerTapSound,
   compact = false,
 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [previewPrologue, setPreviewPrologue] = useState(false);
+  const [playalongMode, setPlayalongMode] = useState(false);
+  const [lastHit, setLastHit] = useState<PlayalongHitResult | null>(null);
+  const [vaultImgVersion, setVaultImgVersion] = useState(0);
   const spriteCacheRef = useRef<Map<string, HTMLImageElement>>(new Map());
+  const vaultImageManagerRef = useRef<StageImageCacheManager<HTMLImageElement> | null>(null);
+  if (!vaultImageManagerRef.current) {
+    vaultImageManagerRef.current = new StageImageCacheManager<HTMLImageElement>({
+      maxImages: MAX_CACHED_IMAGES,
+      maxRgbaBytes: MAX_CACHED_IMAGE_RGBA_BYTES,
+      createImage: (src, handlers) => {
+        const img = new Image();
+        img.onload = handlers.onLoad;
+        img.onerror = handlers.onError;
+        img.src = src;
+        return img;
+      },
+      disposeImage: disposeDomImage,
+      onUpdate: () => setVaultImgVersion((v) => v + 1),
+    });
+  }
   const prologueImgRef = useRef<HTMLImageElement | null>(null);
 
-  // Sync custom sprite images into cache
+  const vaultAssetsById = useMemo(() => {
+    const map = new Map<string, LocalAssetRecord>();
+    for (const a of vaultAssets) map.set(a.id, a);
+    return map;
+  }, [vaultAssets]);
+
+  const stageState = activeGameAtTick(timeline, currentTick);
+
   useEffect(() => {
+    const activeKeys = new Set<string>();
     for (const [gameKey, cfg] of Object.entries(sprites) as Array<[GameId, CustomSpriteConfig]>) {
       if (cfg?.imageDataUrl) {
+        activeKeys.add(gameKey);
         const existing = spriteCacheRef.current.get(gameKey);
         if (!existing || existing.src !== cfg.imageDataUrl) {
+          disposeDomImage(existing);
           const img = new Image();
+          img.onload = () => setVaultImgVersion((v) => v + 1);
           img.src = cfg.imageDataUrl;
           spriteCacheRef.current.set(gameKey, img);
         }
-      } else {
-        spriteCacheRef.current.delete(gameKey);
+      }
+    }
+    for (const [key, img] of [...spriteCacheRef.current.entries()]) {
+      if (!activeKeys.has(key)) {
+        disposeDomImage(img);
+        spriteCacheRef.current.delete(key);
       }
     }
   }, [sprites]);
 
+  // Scene-scoped image caching: loads ONLY assets bound to active/bound scenes (never unbound inventory)
+  useEffect(() => {
+    const wanted = collectStageBoundImages({
+      currentGame: stageState.game,
+      prevGame: stageState.prevGame,
+      vaultBindings,
+      vaultAssetsById,
+    });
+    vaultImageManagerRef.current?.syncActiveScenes(wanted);
+  }, [stageState.game, stageState.prevGame, vaultBindings, vaultAssetsById]);
+
   useEffect(() => {
     if (prologueImageDataUrl) {
-      const img = new Image();
-      img.src = prologueImageDataUrl;
-      prologueImgRef.current = img;
+      if (prologueImgRef.current?.src !== prologueImageDataUrl) {
+        disposeDomImage(prologueImgRef.current);
+        const img = new Image();
+        img.onload = () => setVaultImgVersion((v) => v + 1);
+        img.src = prologueImageDataUrl;
+        prologueImgRef.current = img;
+      }
     } else {
+      disposeDomImage(prologueImgRef.current);
       prologueImgRef.current = null;
     }
   }, [prologueImageDataUrl]);
+
+  useEffect(() => {
+    const spriteCache = spriteCacheRef.current;
+    const vaultMgr = vaultImageManagerRef.current;
+    return () => {
+      vaultMgr?.disposeAll();
+      for (const img of spriteCache.values()) {
+        disposeDomImage(img);
+      }
+      spriteCache.clear();
+      disposeDomImage(prologueImgRef.current);
+      prologueImgRef.current = null;
+    };
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -61,12 +149,58 @@ export const StagePreview: React.FC<StagePreviewProps> = ({
     renderStageFrame(ctx, canvas.width, canvas.height, {
       timeline,
       currentTick,
+      bpm,
       previewPrologue,
       sprites,
       spriteImageCache: spriteCacheRef.current,
       prologueImage: prologueImgRef.current,
+      lastPlayalongHit: lastHit,
+      playalongMode,
+      vaultBindings,
+      vaultAssetsById,
+      vaultImageCache: vaultImageManagerRef.current?.getReadonlyImageMap(),
     });
-  }, [timeline, currentTick, previewPrologue, sprites, prologueImageDataUrl]);
+  }, [
+    timeline,
+    currentTick,
+    bpm,
+    previewPrologue,
+    sprites,
+    prologueImageDataUrl,
+    lastHit,
+    playalongMode,
+    vaultBindings,
+    vaultAssetsById,
+    vaultImgVersion,
+  ]);
+
+  const handlePlayalongInput = () => {
+    onTriggerTapSound?.();
+    const res = evaluatePlayalongHit(timeline, currentTick, bpm);
+    setLastHit(
+      res ?? {
+        judgement: 'MISS',
+        deltaMs: 0,
+        targetTick: currentTick,
+        game: activeGameAtTick(timeline, currentTick).game,
+        cueName: 'No cue',
+      }
+    );
+  };
+
+  useEffect(() => {
+    if (!playalongMode) return;
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (e.code === 'KeyJ' || e.code === 'KeyK') {
+        e.preventDefault();
+        handlePlayalongInput();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  });
 
   const state = activeGameAtTick(timeline, currentTick);
   const activeMeta = GAME_META[state.game];
@@ -87,6 +221,19 @@ export const StagePreview: React.FC<StagePreviewProps> = ({
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
+          <button
+            type="button"
+            onClick={() => setPlayalongMode((v) => !v)}
+            className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors whitespace-nowrap ${
+              playalongMode
+                ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                : 'bg-[#1D2433] text-slate-300 hover:bg-[#273044]'
+            }`}
+            title="Heaven Studio-style Playalong timing tester (Press J/K or Tap Pad)"
+          >
+            <Gamepad2 className="w-3 h-3" />
+            Playalong
+          </button>
           <button
             type="button"
             onClick={() => setPreviewPrologue((v) => !v)}
@@ -113,7 +260,7 @@ export const StagePreview: React.FC<StagePreviewProps> = ({
         </div>
       </div>
 
-      <div className={`relative w-full bg-[#090C11] flex items-center justify-center ${compact ? 'aspect-video' : 'aspect-video max-h-[520px]'}`}>
+      <div className={`relative w-full bg-[#090C11] flex items-center justify-center ${compact ? 'aspect-video' : 'aspect-video max-h-[480px]'}`}>
         <canvas
           ref={canvasRef}
           width={640}
@@ -129,6 +276,22 @@ export const StagePreview: React.FC<StagePreviewProps> = ({
           </div>
         )}
       </div>
+
+      {playalongMode && (
+        <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0E131B] border-t border-white/10">
+          <div className="text-[11px] text-slate-400 truncate">
+            Test cue timing with <span className="font-mono text-slate-200">J</span> /{' '}
+            <span className="font-mono text-slate-200">K</span> or tap pad
+          </div>
+          <button
+            type="button"
+            onPointerDown={handlePlayalongInput}
+            className="px-4 min-h-[36px] rounded-lg bg-[#FF5A36] hover:bg-[#FF6E4E] active:scale-95 text-xs font-bold text-white transition-transform whitespace-nowrap shrink-0"
+          >
+            A / Tap Hit
+          </button>
+        </div>
+      )}
     </div>
   );
 };

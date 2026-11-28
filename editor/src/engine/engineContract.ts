@@ -1,4 +1,4 @@
-import { GameId } from './cues.ts';
+import { type GameId } from './cues.ts';
 import pinnedContract from './engine_contract.pinned.json' with { type: 'json' };
 
 /**

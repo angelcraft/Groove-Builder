@@ -4,7 +4,7 @@ import {
   CUE_FNS,
   CUE_SHORT,
   findCueDef,
-  GameId,
+  type GameId,
   JINGLE_MAX,
   JINGLE_MIN,
   LAYOUT_OFF,
@@ -12,7 +12,7 @@ import {
   MAX_GAMES,
   PROLOGUE_MAX,
   THE_A_WORDS,
-  TheAWord,
+  type TheAWord,
   TITLE_MAX,
   TPB,
 } from './cues.ts';
@@ -281,10 +281,14 @@ function utf8ByteLength(s: string): number {
   return textEncoder.encode(s).length;
 }
 
-function validateSourceBounds(source: string, path?: string): string[] {
+function validateSourceBounds(source: string, path?: string, runtimeMode = false): string[] {
+  if (runtimeMode && source.startsWith('\uFEFF')) {
+    throw new GtfError('UTF-8 BOM no permitido en timeline runtime', 1, path);
+  }
+  const maxBytes = runtimeMode ? 60 * 1024 : MAX_FILE_BYTES;
   const bytes = utf8ByteLength(source);
-  if (bytes === 0 || bytes > MAX_FILE_BYTES) {
-    throw new GtfError(`tamano de fuente invalido (1..${MAX_FILE_BYTES} bytes)`, undefined, path);
+  if (bytes === 0 || bytes > maxBytes) {
+    throw new GtfError(`tamano de fuente invalido (1..${maxBytes} bytes)`, undefined, path);
   }
   const lines = source.split(/\r?\n/);
   if (source.endsWith('\n') && lines.length > 0 && lines[lines.length - 1] === '') {
@@ -645,8 +649,10 @@ export function compileGtf(
   options?: ParseAndEmitOptions
 ): Timeline {
   const runtimeMode = Boolean(options?.runtimeMode);
-  const rawLines = validateSourceBounds(source, path);
+  const rawLines = validateSourceBounds(source, path, runtimeMode);
   const lines: SrcLine[] = [];
+  let runtimeStartCount = 0;
+  let runtimeResultsCount = 0;
   for (let i = 0; i < rawLines.length; i++) {
     let cleaned: string;
     try {
@@ -658,10 +664,32 @@ export function compileGtf(
     if (!cleaned) continue;
     const toks = tokenizeGtf(cleaned, i + 1, path);
     if (toks.length) {
-      if (toks[0].toLowerCase() !== 'title' && toks.length > MAX_TOKENS) {
+      const kw = toks[0].toLowerCase();
+      if (kw !== 'title' && toks.length > MAX_TOKENS) {
         throw new GtfError(`demasiados tokens en linea (max ${MAX_TOKENS})`, i + 1, path);
       }
+      if (runtimeMode) {
+        if (kw === 'force' || kw === 'disable') {
+          throw new GtfError(`directiva '${toks[0]}' prohibida en paquete runtime`, i + 1, path);
+        }
+        if (kw === 'start') runtimeStartCount++;
+        if (kw === 'results') runtimeResultsCount++;
+      }
       lines.push({ no: i + 1, toks });
+    }
+  }
+  if (runtimeMode) {
+    if (runtimeStartCount === 0) {
+      throw new GtfError('start explicito obligatorio en timeline runtime', undefined, path);
+    }
+    if (runtimeStartCount > 1) {
+      throw new GtfError('start duplicado no permitido en timeline runtime', undefined, path);
+    }
+    if (runtimeResultsCount === 0) {
+      throw new GtfError('results exit explicito obligatorio en timeline runtime', undefined, path);
+    }
+    if (runtimeResultsCount > 1) {
+      throw new GtfError('results duplicado no permitido en timeline runtime', undefined, path);
     }
   }
 
@@ -827,8 +855,14 @@ export function compileGtf(
             throw new GtfError('results native no permitido en paquete runtime', sl.no, path);
           }
           tl.results = 1;
-        } else if (r === 'exit' || r === 'custom') tl.results = 0;
-        else throw new GtfError('results debe ser native, exit o custom', sl.no, path);
+        } else if (r === 'exit' || r === 'custom') {
+          if (runtimeMode && (toks.length !== 2 || toks[1] !== 'exit')) {
+            throw new GtfError(`results debe ser exactamente 'results exit' en paquete runtime`, sl.no, path);
+          }
+          tl.results = 0;
+        } else {
+          throw new GtfError('results debe ser native, exit o custom', sl.no, path);
+        }
         i++;
         continue;
       }
@@ -1108,7 +1142,9 @@ export function parseGtl(
 
   let header = false;
   let last = 0;
-  const rawLines = validateSourceBounds(source, path);
+  let runtimeStartCount = 0;
+  let runtimeResultsCount = 0;
+  const rawLines = validateSourceBounds(source, path, runtimeMode);
 
   for (let i = 0; i < rawLines.length; i++) {
     const lineNo = i + 1;
@@ -1116,6 +1152,9 @@ export function parseGtl(
     if (!raw) continue;
     const parts = raw.split(/\s+/);
     if (!header) {
+      if (runtimeMode && parts[0] === 'GTL1') {
+        throw new GtfError('GTL1 (Hoop) es legacy y no esta permitido en paquete runtime', lineNo, path);
+      }
       if (parts.length < 2 || parts[0] !== 'GTLM' || parts[1] !== '1') {
         throw new GtfError('falta la cabecera GTLM 1', lineNo, path);
       }
@@ -1126,6 +1165,9 @@ export function parseGtl(
     const k = parts[0];
     if (k !== 'title' && parts.length > MAX_TOKENS) {
       throw new GtfError(`demasiados tokens en linea (max ${MAX_TOKENS})`, lineNo, path);
+    }
+    if (runtimeMode && (k.toLowerCase() === 'force' || k.toLowerCase() === 'disable')) {
+      throw new GtfError(`directiva '${k}' prohibida en paquete runtime`, lineNo, path);
     }
     if (k === 'title') {
       const m = raw.match(/^title\s+(.+)$/);
@@ -1142,19 +1184,31 @@ export function parseGtl(
         if (bgm < 0 || bgm > 0xffff) throw new GtfError('bgm fuera de rango', lineNo, path);
         tl.bgm = bgm;
       } else if (k === 'start') {
+        runtimeStartCount++;
+        if (runtimeMode && runtimeStartCount > 1) {
+          throw new GtfError('start duplicado no permitido en timeline runtime', lineNo, path);
+        }
         tl.start = parseIntStrict(parts[1]);
       } else if (k === 'translen') {
         tl.translen = parseIntStrict(parts[1]);
       } else if (k === 'swing') {
         tl.swing = parseIntStrict(parts[1]);
       } else if (k === 'results') {
+        runtimeResultsCount++;
+        if (runtimeMode && runtimeResultsCount > 1) {
+          throw new GtfError('results duplicado no permitido en timeline runtime', lineNo, path);
+        }
         if (parts[1] === 'native') {
           if (runtimeMode) {
             throw new GtfError('results native no permitido en paquete runtime', lineNo, path);
           }
           tl.results = 1;
-        } else if (parts[1] === 'exit' || parts[1] === 'custom') tl.results = 0;
-        else throw new GtfError('results native|exit', lineNo, path);
+        } else if (parts[1] === 'exit' || parts[1] === 'custom') {
+          if (runtimeMode && (parts.length !== 2 || parts[1] !== 'exit')) {
+            throw new GtfError(`results debe ser exactamente 'results exit' en paquete runtime`, lineNo, path);
+          }
+          tl.results = 0;
+        } else throw new GtfError('results native|exit', lineNo, path);
       } else if (k === 'prologue') {
         if (!parts[1] || utf8ByteLength(parts[1]) > PROLOGUE_MAX || !isValidPrologueContract(parts[1])) {
           throw new GtfError('prologue invalido', lineNo, path);
@@ -1287,6 +1341,14 @@ export function parseGtl(
   }
 
   if (!header) throw new GtfError('archivo vacio (falta GTLM 1)', undefined, path);
+  if (runtimeMode) {
+    if (runtimeStartCount === 0) {
+      throw new GtfError('start explicito obligatorio en timeline runtime', undefined, path);
+    }
+    if (runtimeResultsCount === 0) {
+      throw new GtfError('results exit explicito obligatorio en timeline runtime', undefined, path);
+    }
+  }
   finalizeTimeline(tl, path, false, runtimeMode);
   return tl;
 }
@@ -1417,7 +1479,7 @@ export function decompileToGtf(
   }
   lines.push(`start ${formatBeats(tl.start)}`);
   lines.push(`translen ${formatBeats(tl.translen)}`);
-  if (tl.swing !== 120) lines.push(`swing ${formatBeats(tl.swing)}`);
+  if (tl.swing !== 120) lines.push(`swing ${tl.swing}`);
   if (tl.first) lines.push(`first ${tl.first}`);
   if (tl.endFade !== 960) {
     lines.push(`end ${formatBeats(tl.end)} ${formatBeats(tl.endFade)}`);

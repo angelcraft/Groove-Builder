@@ -1,28 +1,28 @@
-import { GameId, GAMES } from './cues.ts';
+import { type GameId, GAMES } from './cues.ts';
 import { CONTRACT_VERSION } from './engineContract.ts';
 import {
   compileGtf,
   decompileToGtf,
   emitGtl,
   parseGtl,
-  Timeline,
+  type Timeline,
 } from './gtfEngine.ts';
 import {
   assertSafeArchivePath,
   buildCanonicalZip,
-  CanonicalZipInputEntry,
+  type CanonicalZipInputEntry,
   decodeUtf8Strict,
   inspectAndOpenZip,
   parseStrictJson,
 } from './zipSecurity.ts';
 
-// Limits aligned with docs/GROOVE_SPEC.md (draft 0.1) & docs/GROOVE_PROFILE_DRAFT_02.md (draft 0.2)
+// Limits aligned with Draft 0.3 (GROOVE_SPEC + GROOVE_PROFILE_DRAFT_02 + GROOVE_INTEGRATION_V0_DECISIONS)
 export const MAX_PACKAGE_COMPRESSED_BYTES = 32 * 1024 * 1024; // 32 MiB
 export const MAX_PACKAGE_DECOMPRESSED_BYTES = 64 * 1024 * 1024; // 64 MiB
 export const MAX_PACKAGE_FILES = 256;
 export const MAX_RUNTIME_FILES = 2;
 export const MAX_MANIFEST_BYTES = 16 * 1024; // 16 KiB
-export const MAX_TIMELINE_BYTES = 60 * 1024; // 60 KiB
+export const MAX_TIMELINE_BYTES = 60 * 1024; // 60 KiB (61440 bytes)
 export const MAX_ASSET_BYTES = 32 * 1024 * 1024; // 32 MiB per editor asset
 
 export const SUPPORTED_ENGINE_VERSION = '0.6.0';
@@ -111,11 +111,17 @@ export interface RuntimeConversionImpact {
 const PACKAGE_ID_REGEX =
   /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?(?:\.[a-z0-9](?:[a-z0-9-]*[a-z0-9])?)+$/;
 const SEMVER_REGEX = /^(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})\.(0|[1-9][0-9]{0,8})$/;
+const UUID_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/;
+const UUID_V4_REGEX = /[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}/;
 const DOS_RESERVED = new Set([
   'con',
   'prn',
   'aux',
   'nul',
+  'conin$',
+  'conout$',
+  'clock$',
+  'com0',
   'com1',
   'com2',
   'com3',
@@ -125,6 +131,7 @@ const DOS_RESERVED = new Set([
   'com7',
   'com8',
   'com9',
+  'lpt0',
   'lpt1',
   'lpt2',
   'lpt3',
@@ -136,7 +143,44 @@ const DOS_RESERVED = new Set([
   'lpt9',
 ]);
 
+const FORBIDDEN_GAME_OR_EXEC_EXTS = new Set([
+  '.cwv', '.bwav', '.bfwav', '.bfstm', '.bars',
+  '.spr', '.tex', '.bntx', '.bflim', '.msbt',
+  '.sarc', '.szs', '.zs', '.rhref',
+  '.nso', '.nro', '.elf', '.ips', '.ips32', '.pchtxt', '.so', '.dll', '.exe',
+  '.zip', '.groove', '.7z', '.rar', '.nsp', '.xci',
+]);
+const FORBIDDEN_RUNTIME_MEDIA_EXTS = new Set(['.wav', '.ogg', '.mp3', '.flac']);
+const FORBIDDEN_FILENAMES = new Set(['main', 'main.npdm', 'subsdk4', 'subsdk9', 'rtld', 'sdk']);
+const FORBIDDEN_ALWAYS_DIRS = new Set(['romfs', 'exefs', 'animations', 'atmosphere', 'contents']);
+const FORBIDDEN_RUNTIME_DIRS = new Set(['sprites', 'audio', 'intro']);
+
 const utf8Enc = new TextEncoder();
+
+export function assertPackageContentPolicy(path: string, profile: GrooveProfile = 'runtime'): void {
+  const low = path.toLowerCase();
+  const parts = low.split('/');
+  const base = parts[parts.length - 1] ?? '';
+  const dotIdx = base.lastIndexOf('.');
+  const ext = dotIdx >= 0 ? base.slice(dotIdx) : '';
+
+  if (FORBIDDEN_GAME_OR_EXEC_EXTS.has(ext)) {
+    throw new Error(`[FORBIDDEN_CONTENT] Extension prohibida en paquete .groove (${ext}): ${path}`);
+  }
+  if (profile === 'runtime' && FORBIDDEN_RUNTIME_MEDIA_EXTS.has(ext)) {
+    throw new Error(`[FORBIDDEN_CONTENT] Audio no permitido en paquete runtime (${ext}): ${path}`);
+  }
+  if (FORBIDDEN_FILENAMES.has(base)) {
+    throw new Error(`[FORBIDDEN_CONTENT] Nombre reservado/ejecutable prohibido: ${path}`);
+  }
+  const dirs = parts.slice(0, -1);
+  if (dirs.some((d) => FORBIDDEN_ALWAYS_DIRS.has(d))) {
+    throw new Error(`[FORBIDDEN_CONTENT] Ruta reservada del sistema/juego prohibida: ${path}`);
+  }
+  if (profile === 'runtime' && dirs.some((d) => FORBIDDEN_RUNTIME_DIRS.has(d))) {
+    throw new Error(`[FORBIDDEN_CONTENT] Directorio de assets prohibido en perfil runtime: ${path}`);
+  }
+}
 
 /**
  * Generates a cryptographic persistent reverse-DNS project ID once per new project/fork.
@@ -156,6 +200,8 @@ export function generateProjectId(): string {
 export function isValidPackageId(id: string): boolean {
   if (typeof id !== 'string' || id.length < 3 || id.length > 96) return false;
   if (!PACKAGE_ID_REGEX.test(id)) return false;
+  const baseFirst = id.split('.', 1)[0].toLowerCase();
+  if (DOS_RESERVED.has(baseFirst)) return false;
   for (const seg of id.split('.')) {
     if (DOS_RESERVED.has(seg.toLowerCase())) return false;
   }
@@ -182,7 +228,7 @@ export function isValidPackageTitle(title: string): boolean {
   if (bytes.length < 1 || bytes.length > 95) return false;
   for (let i = 0; i < title.length; i++) {
     const code = title.charCodeAt(i);
-    if (code <= 0x1f || code === 0x7f) return false;
+    if (code <= 0x1f || code === 0x7f || (code >= 0x80 && code <= 0x9f)) return false;
   }
   return true;
 }
@@ -302,10 +348,11 @@ export async function exportGroovePackage(
   if (profile === 'runtime') {
     const rtFormat: RuntimeTimelineFormat = pkg.runtimeFormat ?? 'gtf';
     const timelinePath = rtFormat === 'gtl' ? 'timeline.gtl' : 'timeline.gtf';
+    const alignedTimeline = { ...pkg.timeline, title };
     const timelineText =
       rtFormat === 'gtl'
-        ? emitGtl(pkg.timeline, title, { runtimeMode: true })
-        : decompileToGtf(pkg.timeline, title, { runtimeMode: true });
+        ? emitGtl(alignedTimeline, title, { runtimeMode: true })
+        : decompileToGtf(alignedTimeline, title, { runtimeMode: true });
 
     const timelineBytes = utf8Enc.encode(timelineText);
     if (timelineBytes.length < 1 || timelineBytes.length > MAX_TIMELINE_BYTES) {
@@ -472,7 +519,11 @@ function assertExactKeys(obj: Record<string, unknown>, allowed: readonly string[
   }
 }
 
-export function validateStrictManifest(raw: unknown): GroovePackageManifest {
+export function validateStrictManifestWithWarnings(
+  raw: unknown,
+  opts: { requireRuntime?: boolean } = {}
+): { manifest: GroovePackageManifest; warnings: string[] } {
+  const warnings: string[] = [];
   if (!raw || typeof raw !== 'object' || Array.isArray(raw)) {
     throw new Error('manifest.json debe ser un objeto JSON');
   }
@@ -481,11 +532,21 @@ export function validateStrictManifest(raw: unknown): GroovePackageManifest {
   if (m.format !== 'groove-package/1') {
     throw new Error(`Formato de paquete no soportado: ${String(m.format ?? '(ausente)')}`);
   }
+  if (opts.requireRuntime && m.profile === 'editor') {
+    throw new Error(
+      '[NOT_RUNTIME_PROFILE] Paquete de autor (editor): exporta el perfil runtime desde Groove Builder para instalarlo'
+    );
+  }
   if (m.profile !== 'runtime' && m.profile !== 'editor') {
     throw new Error(`Perfil de paquete no soportado o ausente: ${String(m.profile ?? '(ausente)')} (esperado runtime|editor)`);
   }
   if (typeof m.id !== 'string' || !isValidPackageId(m.id)) {
     throw new Error(`ID de paquete invalido: ${String(m.id ?? '(ausente)')}`);
+  }
+  if (!UUID_REGEX.test(m.id)) {
+    warnings.push('ID sin UUIDv4 (id reverse-DNS legado aceptado; usa UUIDv4 para proyectos nuevos)');
+  } else if (!UUID_V4_REGEX.test(m.id)) {
+    warnings.push('El UUID dentro de manifest.id no es version 4');
   }
   if (typeof m.version !== 'string' || !isValidSemver(m.version)) {
     throw new Error(`Version semver invalida: ${String(m.version ?? '(ausente)')}`);
@@ -501,9 +562,12 @@ export function validateStrictManifest(raw: unknown): GroovePackageManifest {
       `El paquete requiere Groove Engine >= ${m.engine_min} (soportado hasta ${SUPPORTED_ENGINE_VERSION})`
     );
   }
+  if (typeof m.engine_contract !== 'number' || !Number.isInteger(m.engine_contract)) {
+    throw new Error(`engine_contract debe ser un entero: ${String(m.engine_contract ?? '(ausente)')}`);
+  }
   if (m.engine_contract !== SUPPORTED_ENGINE_CONTRACT) {
     throw new Error(
-      `engine_contract no soportado: ${String(m.engine_contract ?? '(ausente)')} (esperado ${SUPPORTED_ENGINE_CONTRACT})`
+      `engine_contract no soportado: ${String(m.engine_contract)} (esperado ${SUPPORTED_ENGINE_CONTRACT})`
     );
   }
   if (m.adapter !== 'multi') {
@@ -526,12 +590,17 @@ export function validateStrictManifest(raw: unknown): GroovePackageManifest {
     throw new Error(`timeline.path debe ser '${expectedPath}' para format '${tlObj.format}'`);
   }
 
-  if (!Array.isArray(m.required_capabilities) || m.required_capabilities.length !== 1) {
+  if (
+    !Array.isArray(m.required_capabilities) ||
+    m.required_capabilities.some((c) => typeof c !== 'string') ||
+    m.required_capabilities.length !== 1
+  ) {
     throw new Error('required_capabilities debe contener exactamente una capacidad primaria');
   }
-  if (m.required_capabilities[0] !== expectedPath) {
+  const expectedCap = `timeline.${tlObj.format}`;
+  if (m.required_capabilities[0] !== expectedCap) {
     throw new Error(
-      `required_capabilities incompatible con timeline (${String(m.required_capabilities[0])} != ${expectedPath})`
+      `required_capabilities incompatible con timeline (${String(m.required_capabilities[0])} != ${expectedCap})`
     );
   }
 
@@ -553,7 +622,7 @@ export function validateStrictManifest(raw: unknown): GroovePackageManifest {
       ],
       'manifest.json (runtime)'
     );
-    return m as unknown as GrooveRuntimeManifest;
+    return { manifest: m as unknown as GrooveRuntimeManifest, warnings };
   }
 
   // Authoring ('editor') profile validation
@@ -578,14 +647,17 @@ export function validateStrictManifest(raw: unknown): GroovePackageManifest {
   if (!m.editor || typeof m.editor !== 'object' || Array.isArray(m.editor)) {
     throw new Error('Campo editor invalido en manifest.json (profile=editor)');
   }
-  return m as unknown as GrooveEditorManifest;
+  return { manifest: m as unknown as GrooveEditorManifest, warnings };
 }
 
-/**
- * Strictly inspects raw ZIP headers before path normalization, validates manifest.json
- * without fallback, enforces bounded streaming decompression, and validates the timeline.
- */
-export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array): Promise<GrooveProjectPackage> {
+export function validateStrictManifest(raw: unknown): GroovePackageManifest {
+  return validateStrictManifestWithWarnings(raw).manifest;
+}
+
+async function openAndValidateGroovePackage(
+  input: File | ArrayBuffer | Uint8Array,
+  requireRuntime: boolean
+): Promise<GrooveProjectPackage & { warnings: string[] }> {
   const rawBytes =
     input instanceof Uint8Array
       ? input
@@ -597,13 +669,15 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
     throw new Error('Paquete .groove demasiado grande (max 32 MiB)');
   }
 
-  // First pass raw ZIP inspection (before normalization or decompression)
+  // First pass raw Draft 0.3 ZIP inspection (before normalization or decompression)
   const zip = await inspectAndOpenZip(rawBytes, {
     maxCompressedBytes: MAX_PACKAGE_COMPRESSED_BYTES,
     maxTotalUncompressedBytes: MAX_PACKAGE_DECOMPRESSED_BYTES,
     maxEntries: MAX_PACKAGE_FILES,
     allowDirectories: false,
-    allowDataDescriptor: false,
+    allowDataDescriptor: true,
+    strictDraft03: true,
+    maxNameBytes: 255,
     maxEntryBytesByPath: (p) => {
       if (p === 'manifest.json') return MAX_MANIFEST_BYTES;
       if (p === 'timeline.gtf' || p === 'timeline.gtl') return MAX_TIMELINE_BYTES;
@@ -611,16 +685,27 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
     },
   });
 
+  const allPaths = zip.listPaths();
+  if (requireRuntime) {
+    for (const p of allPaths) {
+      assertPackageContentPolicy(p, 'runtime');
+    }
+  }
+
   if (!zip.getEntry('manifest.json')) {
     throw new Error('Falta manifest.json obligatorio en paquete .groove (sin fallback implícito)');
   }
 
   const manifestBytes = await zip.readBytes('manifest.json', MAX_MANIFEST_BYTES);
   const parsedManifestRaw = parseStrictJson(manifestBytes, 16);
-  const manifest = validateStrictManifest(parsedManifestRaw);
+  const { manifest, warnings } = validateStrictManifestWithWarnings(parsedManifestRaw, {
+    requireRuntime,
+  });
 
-  const allPaths = zip.listPaths();
   if (manifest.profile === 'runtime') {
+    for (const p of allPaths) {
+      assertPackageContentPolicy(p, 'runtime');
+    }
     if (allPaths.length !== MAX_RUNTIME_FILES) {
       throw new Error(
         `Paquete runtime .groove debe contener exactamente ${MAX_RUNTIME_FILES} archivos (manifest.json y ${manifest.timeline.path}); encontrados ${allPaths.length}`
@@ -635,6 +720,7 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
   } else {
     // Editor profile only permits manifest.json, timeline.gtf, timeline.gtl, audio/*, sprites/*, intro/*
     for (const p of allPaths) {
+      assertPackageContentPolicy(p, 'editor');
       const ok =
         p === 'manifest.json' ||
         p === 'timeline.gtf' ||
@@ -653,8 +739,11 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
     throw new Error(`Falta el timeline primario declarado en manifest: ${primaryPath}`);
   }
   const tlBytes = await zip.readBytes(primaryPath, MAX_TIMELINE_BYTES);
-  if (tlBytes.byteLength < 1) {
-    throw new Error(`${primaryPath} esta vacio`);
+  if (tlBytes.byteLength < 1 || tlBytes.byteLength > MAX_TIMELINE_BYTES) {
+    throw new Error(`${primaryPath} fuera de limites (1..${MAX_TIMELINE_BYTES} bytes)`);
+  }
+  if (tlBytes.length >= 3 && tlBytes[0] === 0xef && tlBytes[1] === 0xbb && tlBytes[2] === 0xbf) {
+    throw new Error(`UTF-8 BOM prohibido en ${primaryPath}`);
   }
   const tlText = decodeUtf8Strict(tlBytes, primaryPath);
   const runtimeMode = manifest.profile === 'runtime';
@@ -662,6 +751,10 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
     manifest.timeline.format === 'gtl'
       ? parseGtl(tlText, primaryPath, { runtimeMode })
       : compileGtf(tlText, primaryPath, { runtimeMode });
+
+  if (runtimeMode && timeline.title && timeline.title !== manifest.title) {
+    warnings.push('El titulo del timeline difiere del manifest.json (prevalece manifest.title)');
+  }
 
   const sha256 = await sha256Hex(rawBytes);
 
@@ -678,6 +771,7 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
       prologueImage: null,
       sprites: {},
       sha256,
+      warnings,
     };
   }
 
@@ -742,7 +836,27 @@ export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array
     prologueImage,
     sprites,
     sha256,
+    warnings,
   };
+}
+
+/**
+ * Strictly inspects raw ZIP headers before path normalization, validates manifest.json
+ * without fallback, enforces bounded streaming decompression, and validates the timeline.
+ * Accepts both 'editor' and Draft 0.3 'runtime' packages.
+ */
+export async function importGroovePackage(input: File | ArrayBuffer | Uint8Array): Promise<GrooveProjectPackage> {
+  const pkg = await openAndValidateGroovePackage(input, false);
+  return pkg;
+}
+
+/**
+ * Strict Draft 0.3 / GE-155 runtime-only package validator (rejects 'editor' profile with NOT_RUNTIME_PROFILE).
+ */
+export async function validateRuntimeGroovePackage(
+  input: File | ArrayBuffer | Uint8Array
+): Promise<GrooveProjectPackage & { warnings: string[] }> {
+  return openAndValidateGroovePackage(input, true);
 }
 
 export interface PackageRegistryEntry {

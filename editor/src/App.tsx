@@ -1,15 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Sliders, Layers, MonitorPlay, Package, FileCode2, FolderOpen, X, AlertTriangle } from 'lucide-react';
+import { Sliders, Layers, MonitorPlay, Package, FileCode2, FolderOpen, X, AlertTriangle, BookmarkPlus, HardDrive } from 'lucide-react';
 import { RhythmAudioEngine } from './audio/rhythmAudio.ts';
+import { BottomPickerDock } from './components/BottomPickerDock.tsx';
 import { CodeStudio } from './components/CodeStudio.tsx';
-import { CueLibrary } from './components/CueLibrary.tsx';
 import { CustomizationStudio } from './components/CustomizationStudio.tsx';
 import { InspectorPanel } from './components/InspectorPanel.tsx';
+import { LocalAssetVault } from './components/LocalAssetVault.tsx';
 import { StagePreview } from './components/StagePreview.tsx';
 import { TimelineEditor } from './components/TimelineEditor.tsx';
-import { TopBar, WorkspaceTab } from './components/TopBar.tsx';
+import { TopBar, type WorkspaceTab } from './components/TopBar.tsx';
 import { TransportBar } from './components/TransportBar.tsx';
-import { CueDef, EXAMPLE_GTF, GameId, LAYOUT_OFF, SHOWCASE_24_GTF, TPB } from './engine/cues.ts';
+import { type CueDef, EXAMPLE_GTF, GAME_META, type GameId, getCuesForGame, LAYOUT_OFF, SHOWCASE_24_GTF, TPB } from './engine/cues.ts';
 import {
   isValidAnimNameContract,
   isValidLayoutContract,
@@ -18,13 +19,13 @@ import {
 import {
   analyzeRuntimeExportImpact,
   checkPackageRegistryConflict,
-  CustomSpriteConfig,
+  type CustomSpriteConfig,
   exportGroovePackage,
   generateProjectId,
   importGroovePackage,
-  PackageRegistryEntry,
-  RuntimeConversionImpact,
-  RuntimeTimelineFormat,
+  type PackageRegistryEntry,
+  type RuntimeConversionImpact,
+  type RuntimeTimelineFormat,
 } from './engine/groovePackage.ts';
 import {
   cloneTimeline,
@@ -33,11 +34,36 @@ import {
   emitGtl,
   nextEventId,
   parseGtl,
-  Timeline,
-  TimelineEvent,
+  type Timeline,
+  type TimelineEvent,
   validateTimeline,
 } from './engine/gtfEngine.ts';
 import { importRhreFile } from './engine/rhreImporter.ts';
+import {
+  buildPatternFromSelection,
+  BUILTIN_PATTERNS,
+  type EditorTool,
+  instantiatePattern,
+  loadFavoriteGames,
+  loadRecentGames,
+  loadUserPatterns,
+  saveFavoriteGames,
+  saveRecentGames,
+  saveUserPatterns,
+  type StoredPattern,
+} from './engine/patternStore.ts';
+import {
+  deleteVaultAsset,
+  type GameAssetBinding,
+  getReferencedAudioAssetIds,
+  type GlobalAudioBindings,
+  loadLocalVault,
+  type LocalAssetRecord,
+  purgeLocalVault,
+  saveVaultAssetsBatch,
+  saveVaultBindings,
+  upsertAssetsById,
+} from './engine/localAssetVault.ts';
 import { decodeUtf8Strict } from './engine/zipSecurity.ts';
 import { useOnlineStatus } from './hooks/usePWAInstall.ts';
 
@@ -65,10 +91,17 @@ export function App() {
   const [past, setPast] = useState<Timeline[]>([]);
   const [future, setFuture] = useState<Timeline[]>([]);
 
-  // Selection & Library state
+  // Selection, RHREfresh Tools & Pattern Library state
   const [selectedGame, setSelectedGame] = useState<GameId>('KAERU');
-  const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
+  const [selectedEventIds, setSelectedEventIds] = useState<string[]>([]);
+  const [activeTool, setActiveTool] = useState<EditorTool>('select');
   const [draggedCue, setDraggedCue] = useState<CueDef | null>(null);
+  const [favoriteGames, setFavoriteGames] = useState<GameId[]>(() => loadFavoriteGames());
+  const [recentGames, setRecentGames] = useState<GameId[]>(() => loadRecentGames());
+  const [userPatterns, setUserPatterns] = useState<StoredPattern[]>(() => loadUserPatterns());
+  const [activePatternId, setActivePatternId] = useState<string | null>(null);
+  const [savePatternModalOpen, setSavePatternModalOpen] = useState(false);
+  const [patternDraftName, setPatternDraftName] = useState('');
 
   // Playback & Audio state
   const audioRef = useRef<RhythmAudioEngine | null>(null);
@@ -106,6 +139,12 @@ export function App() {
   const [sprites, setSprites] = useState<Partial<Record<GameId, CustomSpriteConfig>>>({});
   const [prologueImage, setPrologueImage] = useState<{ name: string; dataUrl: string } | null>(null);
 
+  // Local Asset Vault (strictly device-local IndexedDB; never bundled or uploaded)
+  const [vaultAssets, setVaultAssets] = useState<LocalAssetRecord[]>([]);
+  const [vaultBindings, setVaultBindings] = useState<Partial<Record<GameId, GameAssetBinding>>>({});
+  const [vaultGlobalAudio, setVaultGlobalAudio] = useState<GlobalAudioBindings>({ jingleAssetMap: {} });
+  const decodedVaultAudioIdsRef = useRef<Set<string>>(new Set());
+
   // Notifications
   const [toast, setToast] = useState<{ kind: 'info' | 'error'; text: string } | null>(null);
   const importInputRef = useRef<HTMLInputElement>(null);
@@ -136,6 +175,57 @@ export function App() {
     const t = setTimeout(() => setToast(null), 5000);
     return () => clearTimeout(t);
   }, [toast]);
+
+  // Load device-local asset vault from IndexedDB on mount (strictly no eager audio decode)
+  useEffect(() => {
+    let cancelled = false;
+    loadLocalVault()
+      .then((vault) => {
+        if (cancelled) return;
+        setVaultAssets(vault.assets);
+        setVaultBindings(vault.bindings);
+        setVaultGlobalAudio(vault.globalAudio);
+        audioRef.current?.setLocalBindings(vault.bindings, vault.globalAudio);
+      })
+      .catch((err) => {
+        if (cancelled) return;
+        showToast(
+          `Local Vault unavailable or failed to load: ${err instanceof Error ? err.message : String(err)}`,
+          'error'
+        );
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [showToast]);
+
+  useEffect(() => {
+    audioRef.current?.setLocalBindings(vaultBindings, vaultGlobalAudio);
+  }, [vaultBindings, vaultGlobalAudio]);
+
+  // Decode lazily on playback ONLY audio assets actively referenced in cue/global SFX bindings
+  const ensureVaultAudioDecoded = useCallback(async () => {
+    const audio = audioRef.current;
+    if (!audio) return;
+    const referencedIds = getReferencedAudioAssetIds(vaultBindings, vaultGlobalAudio);
+    if (referencedIds.size === 0) return;
+
+    for (const a of vaultAssets) {
+      if (!referencedIds.has(a.id)) continue;
+      if (
+        a.audioBufferData &&
+        (a.kind === 'music' || a.kind === 'sfx') &&
+        !audio.hasLocalAudioBuffer(a.id)
+      ) {
+        try {
+          await audio.decodeAndRegisterLocalAudio(a.id, a.audioBufferData);
+          decodedVaultAudioIdsRef.current.add(a.id);
+        } catch {
+          // Skip unplayable or over-budget file safely
+        }
+      }
+    }
+  }, [vaultAssets, vaultBindings, vaultGlobalAudio]);
 
   const commitTimeline = useCallback(
     (updater: (prev: Timeline) => Timeline, recordHistory = true) => {
@@ -203,6 +293,7 @@ export function App() {
   }, []);
 
   const startPlayback = useCallback(() => {
+    void ensureVaultAudioDecoded();
     const audio = audioRef.current!;
     audio.startPlayback(currentTick, {
       getEvents: () => eventsRef.current,
@@ -217,7 +308,7 @@ export function App() {
       },
     });
     setIsPlaying(true);
-  }, [currentTick]);
+  }, [currentTick, ensureVaultAudioDecoded]);
 
   const togglePlay = useCallback(() => {
     if (isPlaying) stopPlayback();
@@ -256,6 +347,38 @@ export function App() {
     [isPlaying]
   );
 
+  const storedPatterns = useMemo(
+    () => [...BUILTIN_PATTERNS, ...userPatterns],
+    [userPatterns]
+  );
+
+  const activePattern = useMemo(
+    () => storedPatterns.find((p) => p.id === activePatternId) ?? null,
+    [storedPatterns, activePatternId]
+  );
+
+  const activeCue = useMemo(() => {
+    const list = getCuesForGame(selectedGame);
+    return list[0] ?? null;
+  }, [selectedGame]);
+
+  const handleSelectGame = useCallback((g: GameId) => {
+    setSelectedGame(g);
+    setRecentGames((prev) => {
+      const next = [g, ...prev.filter((x) => x !== g)].slice(0, 8);
+      saveRecentGames(next);
+      return next;
+    });
+  }, []);
+
+  const handleToggleFavorite = useCallback((g: GameId) => {
+    setFavoriteGames((prev) => {
+      const next = prev.includes(g) ? prev.filter((x) => x !== g) : [...prev, g];
+      saveFavoriteGames(next);
+      return next;
+    });
+  }, []);
+
   // Cue / Event Mutations
   const insertCueAtTick = useCallback(
     (cue: CueDef, tick: number, withSwitch: boolean) => {
@@ -292,7 +415,8 @@ export function App() {
         }
         return tl;
       });
-      if (newIds.length) setSelectedEventId(newIds[newIds.length - 1]);
+      handleSelectGame(cue.game);
+      if (newIds.length) setSelectedEventIds([newIds[newIds.length - 1]]);
       if (cueSfxOn) {
         audioRef.current?.playCueSfx({
           id: 'preview',
@@ -305,16 +429,17 @@ export function App() {
         });
       }
     },
-    [commitTimeline, cueSfxOn]
+    [commitTimeline, cueSfxOn, handleSelectGame]
   );
 
-  const handleInsertSwitch = useCallback(
-    (game: GameId, cut: boolean) => {
+  const handleInsertSwitchAtTick = useCallback(
+    (game: GameId, tick: number, cut: boolean) => {
+      const snapped = Math.max(0, Math.round(tick));
       const id = nextEventId('sw');
       commitTimeline((tl) => {
         tl.events.push({
           id,
-          tick: currentTick,
+          tick: snapped,
           op: 'switch',
           game,
           style: cut ? -1 : 0,
@@ -322,9 +447,16 @@ export function App() {
         });
         return tl;
       });
-      setSelectedEventId(id);
+      setSelectedEventIds([id]);
     },
-    [commitTimeline, currentTick]
+    [commitTimeline]
+  );
+
+  const handleInsertSwitch = useCallback(
+    (game: GameId, cut: boolean) => {
+      handleInsertSwitchAtTick(game, currentTick, cut);
+    },
+    [handleInsertSwitchAtTick, currentTick]
   );
 
   const handleInsertFade = useCallback(() => {
@@ -339,7 +471,7 @@ export function App() {
       });
       return tl;
     });
-    setSelectedEventId(id);
+    setSelectedEventIds([id]);
   }, [commitTimeline, currentTick]);
 
   const handleInsertAnim = useCallback(
@@ -366,22 +498,88 @@ export function App() {
         });
         return tl;
       });
-      setSelectedEventId(id);
+      setSelectedEventIds([id]);
     },
     [commitTimeline, currentTick, showToast]
   );
 
-  const handleMoveEvent = useCallback(
-    (id: string, newTick: number) => {
+  const handleStampPatternAtTick = useCallback(
+    (pattern: StoredPattern, tick: number, withSwitch: boolean) => {
+      try {
+        const created = instantiatePattern(pattern, tick, withSwitch);
+        commitTimeline((tl) => {
+          tl.events.push(...created);
+          const maxCreated = created.reduce((m, e) => Math.max(m, e.tick), tick);
+          if (maxCreated >= tl.end) {
+            tl.end = maxCreated + 4 * TPB;
+            tl.finish = tl.end + 4 * TPB;
+          }
+          return tl;
+        });
+        setSelectedEventIds(created.map((e) => e.id));
+        if (cueSfxOn) {
+          audioRef.current?.auditionPattern(pattern.events, bpm);
+        }
+        showToast(`Stamped pattern: ${pattern.name}`);
+      } catch (e) {
+        showToast(e instanceof Error ? e.message : String(e), 'error');
+      }
+    },
+    [bpm, commitTimeline, cueSfxOn, showToast]
+  );
+
+  const handleStampToolClick = useCallback(
+    (tick: number, withSwitch: boolean) => {
+      if (activePattern) {
+        handleStampPatternAtTick(activePattern, tick, withSwitch);
+      } else if (activeCue) {
+        insertCueAtTick(activeCue, tick, withSwitch);
+      }
+    },
+    [activeCue, activePattern, handleStampPatternAtTick, insertCueAtTick]
+  );
+
+  const handleMoveEvents = useCallback(
+    (moves: Array<{ id: string; tick: number }>) => {
+      const map = new Map(moves.map((m) => [m.id, m.tick]));
       setTimeline((prev) => {
         const next = cloneTimeline(prev);
-        const ev = next.events.find((e) => e.id === id);
-        if (ev) ev.tick = Math.max(0, Math.round(newTick));
+        for (const ev of next.events) {
+          const t = map.get(ev.id);
+          if (t !== undefined) ev.tick = Math.max(0, Math.round(t));
+        }
         next.events.sort((a, b) => a.tick - b.tick);
         return next;
       });
     },
     []
+  );
+
+  const handleDuplicateMoveEvents = useCallback(
+    (moves: Array<{ id: string; tick: number }>) => {
+      const map = new Map(moves.map((m) => [m.id, m.tick]));
+      const newIds: string[] = [];
+      commitTimeline((tl) => {
+        const clones: TimelineEvent[] = [];
+        for (const ev of tl.events) {
+          const t = map.get(ev.id);
+          if (t !== undefined) {
+            const copyId = nextEventId('dup');
+            newIds.push(copyId);
+            clones.push({
+              ...ev,
+              id: copyId,
+              tick: Math.max(0, Math.round(t)),
+              args: ev.args ? ([...ev.args] as [number, number, number, number]) : undefined,
+            });
+          }
+        }
+        tl.events.push(...clones);
+        return tl;
+      });
+      if (newIds.length) setSelectedEventIds(newIds);
+    },
+    [commitTimeline]
   );
 
   const handleResizeEvent = useCallback((id: string, newSpanTicks: number) => {
@@ -408,35 +606,97 @@ export function App() {
     });
   }, []);
 
-  const handleDeleteEvent = useCallback(
-    (id: string) => {
+  const handleDeleteEvents = useCallback(
+    (ids: string[]) => {
+      const delSet = new Set(ids);
       commitTimeline((tl) => {
-        tl.events = tl.events.filter((e) => e.id !== id);
+        tl.events = tl.events.filter((e) => !delSet.has(e.id));
         return tl;
       });
-      if (selectedEventId === id) setSelectedEventId(null);
+      setSelectedEventIds((prev) => prev.filter((id) => !delSet.has(id)));
     },
-    [commitTimeline, selectedEventId]
+    [commitTimeline]
   );
 
-  const handleDuplicateEvent = useCallback(
-    (id: string) => {
-      const orig = timeline.events.find((e) => e.id === id);
-      if (!orig) return;
-      const copyId = nextEventId('dup');
+  const handleDuplicateEvents = useCallback(
+    (ids: string[]) => {
+      const sel = timeline.events.filter((e) => ids.includes(e.id));
+      if (!sel.length) return;
+      const newIds: string[] = [];
       commitTimeline((tl) => {
-        tl.events.push({
-          ...orig,
-          id: copyId,
-          tick: orig.tick + TPB,
-          args: orig.args ? ([...orig.args] as [number, number, number, number]) : undefined,
-        });
+        for (const orig of sel) {
+          const copyId = nextEventId('dup');
+          newIds.push(copyId);
+          tl.events.push({
+            ...orig,
+            id: copyId,
+            tick: orig.tick + TPB,
+            args: orig.args ? ([...orig.args] as [number, number, number, number]) : undefined,
+          });
+        }
         return tl;
       });
-      setSelectedEventId(copyId);
+      setSelectedEventIds(newIds);
     },
     [commitTimeline, timeline.events]
   );
+
+  const handleBatchNudge = useCallback(
+    (ids: string[], deltaTicks: number) => {
+      const set = new Set(ids);
+      commitTimeline((tl) => {
+        for (const ev of tl.events) {
+          if (set.has(ev.id)) {
+            ev.tick = Math.max(0, Math.round(ev.tick + deltaTicks));
+          }
+        }
+        return tl;
+      });
+    },
+    [commitTimeline]
+  );
+
+  const handleBatchTag = useCallback(
+    (ids: string[], tag: string | null) => {
+      const set = new Set(ids);
+      commitTimeline((tl) => {
+        for (const ev of tl.events) {
+          if (set.has(ev.id) && ev.op === 'call') {
+            ev.tag = tag;
+          }
+        }
+        return tl;
+      });
+    },
+    [commitTimeline]
+  );
+
+  const selectedEvents = useMemo(
+    () => timeline.events.filter((e) => selectedEventIds.includes(e.id)),
+    [timeline.events, selectedEventIds]
+  );
+
+  const handleOpenSavePattern = useCallback(() => {
+    if (selectedEvents.length === 0) return;
+    setPatternDraftName(`${GAME_META[selectedGame].title} Pattern`);
+    setSavePatternModalOpen(true);
+  }, [selectedEvents.length, selectedGame]);
+
+  const handleConfirmSavePattern = useCallback(() => {
+    try {
+      const pat = buildPatternFromSelection(selectedEvents, patternDraftName, selectedGame);
+      setUserPatterns((prev) => {
+        const next = [pat, ...prev];
+        saveUserPatterns(next);
+        return next;
+      });
+      setActivePatternId(pat.id);
+      setSavePatternModalOpen(false);
+      showToast(`Saved reusable pattern: ${pat.name}`);
+    } catch (e) {
+      showToast(e instanceof Error ? e.message : String(e), 'error');
+    }
+  }, [patternDraftName, selectedEvents, selectedGame, showToast]);
 
   // Audio Loading
   const handleUploadMusic = useCallback(
@@ -461,6 +721,168 @@ export function App() {
     setMusicDurationSec(0);
     setWaveformPeaks(new Float32Array(0));
   }, []);
+
+  // Local Asset Vault Handlers (100% browser-local IndexedDB)
+  const handleAddVaultAssets = useCallback(
+    async (newAssets: LocalAssetRecord[]) => {
+      const deduped = upsertAssetsById([], newAssets);
+      try {
+        const authoritative = await saveVaultAssetsBatch(deduped);
+        setVaultAssets(authoritative);
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : String(err);
+        showToast(`Failed saving local assets to IndexedDB: ${msg}`, 'error');
+        throw err;
+      }
+    },
+    [showToast]
+  );
+
+  const handleUpdateVaultGameBinding = useCallback(
+    (game: GameId, binding: GameAssetBinding) => {
+      setVaultBindings((prev) => {
+        const next = { ...prev, [game]: binding };
+        void saveVaultBindings(next, vaultGlobalAudio).catch((err) => {
+          showToast(
+            `Failed saving vault binding: ${err instanceof Error ? err.message : String(err)}`,
+            'error'
+          );
+        });
+        return next;
+      });
+    },
+    [vaultGlobalAudio, showToast]
+  );
+
+  const handleUpdateVaultGlobalAudio = useCallback(
+    (nextGlobal: GlobalAudioBindings) => {
+      setVaultGlobalAudio(nextGlobal);
+      void saveVaultBindings(vaultBindings, nextGlobal).catch((err) => {
+        showToast(
+          `Failed saving global audio binding: ${err instanceof Error ? err.message : String(err)}`,
+          'error'
+        );
+      });
+    },
+    [vaultBindings, showToast]
+  );
+
+  const handleDeleteVaultAsset = useCallback(
+    async (assetId: string) => {
+      try {
+        await deleteVaultAsset(assetId);
+        audioRef.current?.unregisterLocalAudio(assetId);
+        decodedVaultAudioIdsRef.current.delete(assetId);
+        setVaultAssets((prev) => prev.filter((a) => a.id !== assetId));
+
+        const nextBindings: Partial<Record<GameId, GameAssetBinding>> = {};
+        for (const [gameKey, b] of Object.entries(vaultBindings)) {
+          if (!b) continue;
+          const cueSfxMap: Record<string, string> = {};
+          for (const [ck, aid] of Object.entries(b.cueSfxMap)) {
+            if (aid !== assetId) cueSfxMap[ck] = aid;
+          }
+          nextBindings[gameKey as GameId] = {
+            ...b,
+            backdropAssetId: b.backdropAssetId === assetId ? undefined : b.backdropAssetId,
+            actorAssetId: b.actorAssetId === assetId ? undefined : b.actorAssetId,
+            foregroundAssetId: b.foregroundAssetId === assetId ? undefined : b.foregroundAssetId,
+            prologueAssetId: b.prologueAssetId === assetId ? undefined : b.prologueAssetId,
+            layoutAssetId: b.layoutAssetId === assetId ? undefined : b.layoutAssetId,
+            modelAssetId: b.modelAssetId === assetId ? undefined : b.modelAssetId,
+            bflanAssetIds: (b.bflanAssetIds ?? []).filter((id) => id !== assetId),
+            bgmAssetId: b.bgmAssetId === assetId ? undefined : b.bgmAssetId,
+            cueSfxMap,
+            animations: b.animations.filter((clip) => clip.assetId !== assetId),
+          };
+        }
+        const nextJingles: Record<number, string> = {};
+        for (const [jc, aid] of Object.entries(vaultGlobalAudio.jingleAssetMap)) {
+          if (aid !== assetId) nextJingles[Number(jc)] = aid;
+        }
+        const nextGlobal: GlobalAudioBindings = {
+          ...vaultGlobalAudio,
+          switchSoftAssetId:
+            vaultGlobalAudio.switchSoftAssetId === assetId ? undefined : vaultGlobalAudio.switchSoftAssetId,
+          switchCutAssetId:
+            vaultGlobalAudio.switchCutAssetId === assetId ? undefined : vaultGlobalAudio.switchCutAssetId,
+          metronomeDownbeatAssetId:
+            vaultGlobalAudio.metronomeDownbeatAssetId === assetId
+              ? undefined
+              : vaultGlobalAudio.metronomeDownbeatAssetId,
+          metronomeBeatAssetId:
+            vaultGlobalAudio.metronomeBeatAssetId === assetId
+              ? undefined
+              : vaultGlobalAudio.metronomeBeatAssetId,
+          playalongHitAssetId:
+            vaultGlobalAudio.playalongHitAssetId === assetId ? undefined : vaultGlobalAudio.playalongHitAssetId,
+          jingleAssetMap: nextJingles,
+        };
+        setVaultBindings(nextBindings);
+        setVaultGlobalAudio(nextGlobal);
+        await saveVaultBindings(nextBindings, nextGlobal);
+      } catch (err) {
+        showToast(
+          `Failed deleting local vault asset: ${err instanceof Error ? err.message : String(err)}`,
+          'error'
+        );
+      }
+    },
+    [vaultBindings, vaultGlobalAudio, showToast]
+  );
+
+  const handlePurgeVault = useCallback(async () => {
+    try {
+      await purgeLocalVault();
+      audioRef.current?.clearAllLocalAudio();
+      decodedVaultAudioIdsRef.current.clear();
+      setVaultAssets([]);
+      setVaultBindings({});
+      setVaultGlobalAudio({ jingleAssetMap: {} });
+      showToast('Cleared all device-local IndexedDB vault assets and bindings.');
+    } catch (err) {
+      showToast(
+        `Failed clearing local vault: ${err instanceof Error ? err.message : String(err)}`,
+        'error'
+      );
+    }
+  }, [showToast]);
+
+  const handleAuditionVaultAudio = useCallback(
+    (asset: LocalAssetRecord) => {
+      if (!asset.audioBufferData) {
+        showToast('Audio buffer unavailable for this asset', 'error');
+        return;
+      }
+      void audioRef.current?.auditionBufferOnce(asset.audioBufferData, asset.id).catch((e) => {
+        showToast(`Could not decode audio: ${e instanceof Error ? e.message : String(e)}`, 'error');
+      });
+    },
+    [showToast]
+  );
+
+  const handleApplyVaultMusicToProject = useCallback(
+    async (asset: LocalAssetRecord) => {
+      if (!asset.audioBufferData) {
+        showToast('Audio buffer unavailable for this asset', 'error');
+        return;
+      }
+      try {
+        const { duration, peaks } = await audioRef.current!.loadAudioBuffer(asset.audioBufferData);
+        setMusicFile({
+          name: asset.name,
+          buffer: asset.audioBufferData.slice(0),
+          mime: asset.mimeType || 'audio/*',
+        });
+        setMusicDurationSec(duration);
+        setWaveformPeaks(peaks);
+        showToast(`Loaded local BGM "${asset.name}" into timeline preview (${duration.toFixed(1)}s)`);
+      } catch (e) {
+        showToast(`Could not load BGM: ${e instanceof Error ? e.message : String(e)}`, 'error');
+      }
+    },
+    [showToast]
+  );
 
   // Universal File Import (.gtf, .gtl, .rhref, .rhre3, .groove, audio)
   const handleImportFile = useCallback(
@@ -581,7 +1003,7 @@ export function App() {
         const suffix = profile === 'runtime' ? `runtime_${rtFmt}` : 'editor';
         triggerDownload(`${slug}.${suffix}.groove`, result.blob, 'application/zip');
         showToast(
-          `Exported ${slug}.${suffix}.groove (Draft 0.2 preview · SHA-256 ${result.sha256.slice(0, 12)}…)`
+          `Exported ${slug}.${suffix}.groove (Draft 0.3 preview · SHA-256 ${result.sha256.slice(0, 12)}…)`
         );
       } catch (e) {
         showToast(e instanceof Error ? e.message : String(e), 'error');
@@ -646,7 +1068,7 @@ export function App() {
     }
   }, [showToast]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (RHREfresh 1-5/R tools, Space, Ctrl+Z/Y/D, Del)
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
@@ -662,20 +1084,34 @@ export function App() {
       } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') {
         e.preventDefault();
         handleRedo();
-      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedEventId) {
+      } else if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'd' && selectedEventIds.length) {
         e.preventDefault();
-        handleDeleteEvent(selectedEventId);
+        handleDuplicateEvents(selectedEventIds);
+      } else if ((e.key === 'Delete' || e.key === 'Backspace') && selectedEventIds.length) {
+        e.preventDefault();
+        handleDeleteEvents(selectedEventIds);
+      } else if (e.key === 'Escape') {
+        setSelectedEventIds([]);
+      } else if (!e.ctrlKey && !e.metaKey && !e.altKey) {
+        if (e.key === '1') setActiveTool('select');
+        else if (e.key === '2') setActiveTool('switch');
+        else if (e.key === '3') setActiveTool('pickaxe');
+        else if (e.key === '4' || e.key.toLowerCase() === 'r') setActiveTool('ruler');
+        else if (e.key === '5') setActiveTool('stamp');
       }
     };
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
-  }, [togglePlay, handleUndo, handleRedo, selectedEventId, handleDeleteEvent]);
+  }, [
+    togglePlay,
+    handleUndo,
+    handleRedo,
+    selectedEventIds,
+    handleDeleteEvents,
+    handleDuplicateEvents,
+  ]);
 
   const validation = useMemo(() => validateTimeline(timeline), [timeline]);
-  const selectedEvent = useMemo(
-    () => timeline.events.find((e) => e.id === selectedEventId) ?? null,
-    [timeline.events, selectedEventId]
-  );
 
   return (
     <div
@@ -746,24 +1182,186 @@ export function App() {
         canRedo={future.length > 0}
         onUndo={handleUndo}
         onRedo={handleRedo}
+        activeTool={activeTool}
+        onToolChange={setActiveTool}
+        hasActivePattern={Boolean(activePattern)}
       />
 
       {/* Main Workspace */}
-      <main className="flex-1 flex min-h-0 overflow-hidden">
+      <main className="flex-1 flex flex-col min-h-0 overflow-hidden">
         {activeTab === 'timeline' && (
-          <>
-            {/* Desktop Left Sidebar: 24-Game Cue Library */}
-            <div className={`${mobilePane === 'cues' ? 'flex w-full lg:w-72' : 'hidden lg:flex lg:w-72'} shrink-0 h-full`}>
-              <CueLibrary
+          <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
+            {/* Upper Split: RHREfresh Timeline Canvas + Right Stage & Mechanics Inspector */}
+            <div className="flex-1 flex min-h-0 overflow-hidden">
+              {/* Mobile Picker Sub-Pane */}
+              {mobilePane === 'cues' && (
+                <div className="flex lg:hidden w-full h-full">
+                  <BottomPickerDock
+                    selectedGame={selectedGame}
+                    onSelectGame={handleSelectGame}
+                    favoriteGames={favoriteGames}
+                    recentGames={recentGames}
+                    onToggleFavorite={handleToggleFavorite}
+                    storedPatterns={storedPatterns}
+                    activePatternId={activePatternId}
+                    onSelectPattern={setActivePatternId}
+                    onSaveSelectionAsPattern={handleOpenSavePattern}
+                    onDeletePattern={(id) => {
+                      setUserPatterns((prev) => {
+                        const next = prev.filter((p) => p.id !== id);
+                        saveUserPatterns(next);
+                        return next;
+                      });
+                      if (activePatternId === id) setActivePatternId(null);
+                    }}
+                    canSavePattern={selectedEvents.length > 0}
+                    onInsertCue={(cue, withSwitch) => {
+                      insertCueAtTick(cue, currentTick, withSwitch);
+                      setMobilePane('timeline');
+                    }}
+                    onStampPattern={(pat, withSwitch) => {
+                      handleStampPatternAtTick(pat, currentTick, withSwitch);
+                      setMobilePane('timeline');
+                    }}
+                    onAuditionCue={(cue) =>
+                      audioRef.current?.playCueSfx({
+                        id: 'aud',
+                        tick: 0,
+                        op: 'call',
+                        game: cue.game,
+                        fn: cue.fn,
+                        args: cue.args,
+                        word: cue.word,
+                      })
+                    }
+                    onAuditionPattern={(pat) => audioRef.current?.auditionPattern(pat.events, bpm)}
+                    onInsertSwitch={handleInsertSwitch}
+                    onInsertFade={handleInsertFade}
+                    onInsertAnim={(g) => handleInsertAnim(g, sprites[g]?.defaultAnim || 'Remix8')}
+                    onDragStartCue={setDraggedCue}
+                    onActivateStampTool={() => setActiveTool('stamp')}
+                    mobileFullHeight
+                  />
+                </div>
+              )}
+
+              {/* Center Timeline Canvas */}
+              <div className={`${mobilePane === 'timeline' ? 'flex' : 'hidden lg:flex'} flex-1 flex-col min-w-0 h-full`}>
+                <div className="lg:hidden">
+                  <StagePreview
+                    timeline={timeline}
+                    currentTick={currentTick}
+                    bpm={bpm}
+                    sprites={sprites}
+                    prologueImageDataUrl={prologueImage?.dataUrl}
+                    vaultBindings={vaultBindings}
+                    vaultAssets={vaultAssets}
+                    onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
+                    onTriggerTapSound={() => audioRef.current?.playPlayalongTapSound()}
+                    compact
+                  />
+                </div>
+
+                <TimelineEditor
+                  timeline={timeline}
+                  currentTick={currentTick}
+                  isPlaying={isPlaying}
+                  bpm={bpm}
+                  musicOffsetSec={musicOffsetSec}
+                  musicDurationSec={musicDurationSec}
+                  waveformPeaks={waveformPeaks}
+                  zoomPxPerBeat={zoomPxPerBeat}
+                  snapDenominator={snapDenominator}
+                  activeTool={activeTool}
+                  selectedGame={selectedGame}
+                  activeCue={activeCue}
+                  activePattern={activePattern}
+                  selectedEventIds={selectedEventIds}
+                  onSelectEvents={setSelectedEventIds}
+                  onSeekTick={handleSeekTick}
+                  onMoveEvents={handleMoveEvents}
+                  onDuplicateMoveEvents={handleDuplicateMoveEvents}
+                  onResizeEvent={handleResizeEvent}
+                  onDeleteEvent={(id) => handleDeleteEvents([id])}
+                  onDropNewCue={(cue, tick) => insertCueAtTick(cue, tick, false)}
+                  onInsertSwitchAtTick={handleInsertSwitchAtTick}
+                  onStampAtTick={handleStampToolClick}
+                  onUpdateMarker={(marker, tick) => commitTimeline((tl) => ({ ...tl, [marker]: Math.max(0, tick) }))}
+                  draggedCue={draggedCue}
+                />
+              </div>
+
+              {/* Right Sidebar: Heaven Studio Stage Preview + Mechanics Inspector */}
+              <div
+                className={`${
+                  mobilePane === 'inspector' ? 'flex w-full lg:w-[340px]' : 'hidden lg:flex lg:w-[340px]'
+                } flex-col border-l border-white/10 shrink-0 h-full overflow-hidden`}
+              >
+                <div className="hidden lg:block shrink-0">
+                  <StagePreview
+                    timeline={timeline}
+                    currentTick={currentTick}
+                    bpm={bpm}
+                    sprites={sprites}
+                    prologueImageDataUrl={prologueImage?.dataUrl}
+                    vaultBindings={vaultBindings}
+                    vaultAssets={vaultAssets}
+                    onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
+                    onTriggerTapSound={() => audioRef.current?.playPlayalongTapSound()}
+                    compact
+                  />
+                </div>
+                <div className="flex-1 min-h-0 overflow-hidden">
+                  <InspectorPanel
+                    timeline={timeline}
+                    selectedEvents={selectedEvents}
+                    validation={validation}
+                    onUpdateTimeline={(patch) => commitTimeline((tl) => ({ ...tl, ...patch }))}
+                    onUpdateEvent={(id, patch) =>
+                      commitTimeline((tl) => {
+                        const ev = tl.events.find((e) => e.id === id);
+                        if (ev) Object.assign(ev, patch);
+                        return tl;
+                      })
+                    }
+                    onBatchNudge={handleBatchNudge}
+                    onBatchTag={handleBatchTag}
+                    onDeleteEvents={handleDeleteEvents}
+                    onDuplicateEvents={handleDuplicateEvents}
+                    onSaveSelectionAsPattern={handleOpenSavePattern}
+                    onInsertSwitchBeforeCue={(ev) => {
+                      if (!ev.game) return;
+                      handleInsertSwitchAtTick(ev.game, Math.max(0, ev.tick - TPB), false);
+                    }}
+                    onSeekTick={handleSeekTick}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Desktop Bottom 3-Tier RHREfresh Picker Dock */}
+            <div className="hidden lg:block shrink-0">
+              <BottomPickerDock
                 selectedGame={selectedGame}
-                onSelectGame={setSelectedGame}
-                onInsertCue={(cue, withSwitch) => {
-                  insertCueAtTick(cue, currentTick, withSwitch);
-                  setMobilePane('timeline');
+                onSelectGame={handleSelectGame}
+                favoriteGames={favoriteGames}
+                recentGames={recentGames}
+                onToggleFavorite={handleToggleFavorite}
+                storedPatterns={storedPatterns}
+                activePatternId={activePatternId}
+                onSelectPattern={setActivePatternId}
+                onSaveSelectionAsPattern={handleOpenSavePattern}
+                onDeletePattern={(id) => {
+                  setUserPatterns((prev) => {
+                    const next = prev.filter((p) => p.id !== id);
+                    saveUserPatterns(next);
+                    return next;
+                  });
+                  if (activePatternId === id) setActivePatternId(null);
                 }}
-                onInsertSwitch={handleInsertSwitch}
-                onInsertFade={handleInsertFade}
-                onInsertAnim={(g) => handleInsertAnim(g, sprites[g]?.defaultAnim || 'Remix8')}
+                canSavePattern={selectedEvents.length > 0}
+                onInsertCue={(cue, withSwitch) => insertCueAtTick(cue, currentTick, withSwitch)}
+                onStampPattern={(pat, withSwitch) => handleStampPatternAtTick(pat, currentTick, withSwitch)}
                 onAuditionCue={(cue) =>
                   audioRef.current?.playCueSfx({
                     id: 'aud',
@@ -775,79 +1373,15 @@ export function App() {
                     word: cue.word,
                   })
                 }
+                onAuditionPattern={(pat) => audioRef.current?.auditionPattern(pat.events, bpm)}
+                onInsertSwitch={handleInsertSwitch}
+                onInsertFade={handleInsertFade}
+                onInsertAnim={(g) => handleInsertAnim(g, sprites[g]?.defaultAnim || 'Remix8')}
                 onDragStartCue={setDraggedCue}
+                onActivateStampTool={() => setActiveTool('stamp')}
               />
             </div>
-
-            {/* Center Timeline Canvas */}
-            <div className={`${mobilePane === 'timeline' ? 'flex' : 'hidden lg:flex'} flex-1 flex-col min-w-0 h-full`}>
-              {/* Compact stage strip on mobile timeline */}
-              <div className="lg:hidden">
-                <StagePreview
-                  timeline={timeline}
-                  currentTick={currentTick}
-                  sprites={sprites}
-                  prologueImageDataUrl={prologueImage?.dataUrl}
-                  onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
-                  compact
-                />
-              </div>
-
-              <TimelineEditor
-                timeline={timeline}
-                currentTick={currentTick}
-                bpm={bpm}
-                musicOffsetSec={musicOffsetSec}
-                musicDurationSec={musicDurationSec}
-                waveformPeaks={waveformPeaks}
-                zoomPxPerBeat={zoomPxPerBeat}
-                snapDenominator={snapDenominator}
-                selectedEventId={selectedEventId}
-                onSelectEvent={setSelectedEventId}
-                onSeekTick={handleSeekTick}
-                onMoveEvent={handleMoveEvent}
-                onResizeEvent={handleResizeEvent}
-                onDropNewCue={(cue, tick) => insertCueAtTick(cue, tick, false)}
-                draggedCue={draggedCue}
-              />
-            </div>
-
-            {/* Right Sidebar: Live Stage + Inspector */}
-            <div
-              className={`${
-                mobilePane === 'inspector' ? 'flex w-full lg:w-[340px]' : 'hidden lg:flex lg:w-[340px]'
-              } flex-col border-l border-white/10 shrink-0 h-full overflow-hidden`}
-            >
-              <div className="hidden lg:block shrink-0">
-                <StagePreview
-                  timeline={timeline}
-                  currentTick={currentTick}
-                  sprites={sprites}
-                  prologueImageDataUrl={prologueImage?.dataUrl}
-                  onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
-                  compact
-                />
-              </div>
-              <div className="flex-1 min-h-0 overflow-hidden">
-                <InspectorPanel
-                  timeline={timeline}
-                  selectedEvent={selectedEvent}
-                  validation={validation}
-                  onUpdateTimeline={(patch) => commitTimeline((tl) => ({ ...tl, ...patch }))}
-                  onUpdateEvent={(id, patch) =>
-                    commitTimeline((tl) => {
-                      const ev = tl.events.find((e) => e.id === id);
-                      if (ev) Object.assign(ev, patch);
-                      return tl;
-                    })
-                  }
-                  onDeleteEvent={handleDeleteEvent}
-                  onDuplicateEvent={handleDuplicateEvent}
-                  onSeekTick={handleSeekTick}
-                />
-              </div>
-            </div>
-          </>
+          </div>
         )}
 
         {activeTab === 'stage' && (
@@ -857,15 +1391,19 @@ export function App() {
                 <StagePreview
                   timeline={timeline}
                   currentTick={currentTick}
+                  bpm={bpm}
                   sprites={sprites}
                   prologueImageDataUrl={prologueImage?.dataUrl}
+                  vaultBindings={vaultBindings}
+                  vaultAssets={vaultAssets}
                   onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
+                  onTriggerTapSound={() => audioRef.current?.playPlayalongTapSound()}
                 />
               </div>
               <div className="rounded-xl border border-white/10 bg-[#141922] p-4">
                 <InspectorPanel
                   timeline={timeline}
-                  selectedEvent={selectedEvent}
+                  selectedEvents={selectedEvents}
                   validation={validation}
                   onUpdateTimeline={(patch) => commitTimeline((tl) => ({ ...tl, ...patch }))}
                   onUpdateEvent={(id, patch) =>
@@ -875,13 +1413,42 @@ export function App() {
                       return tl;
                     })
                   }
-                  onDeleteEvent={handleDeleteEvent}
-                  onDuplicateEvent={handleDuplicateEvent}
+                  onBatchNudge={handleBatchNudge}
+                  onBatchTag={handleBatchTag}
+                  onDeleteEvents={handleDeleteEvents}
+                  onDuplicateEvents={handleDuplicateEvents}
+                  onSaveSelectionAsPattern={handleOpenSavePattern}
+                  onInsertSwitchBeforeCue={(ev) => {
+                    if (!ev.game) return;
+                    handleInsertSwitchAtTick(ev.game, Math.max(0, ev.tick - TPB), false);
+                  }}
                   onSeekTick={handleSeekTick}
                 />
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === 'vault' && (
+          <LocalAssetVault
+            timeline={timeline}
+            currentTick={currentTick}
+            bpm={bpm}
+            sprites={sprites}
+            prologueImageDataUrl={prologueImage?.dataUrl}
+            assets={vaultAssets}
+            bindings={vaultBindings}
+            globalAudio={vaultGlobalAudio}
+            onAddAssets={handleAddVaultAssets}
+            onDeleteAsset={handleDeleteVaultAsset}
+            onPurgeVault={handlePurgeVault}
+            onUpdateGameBinding={handleUpdateVaultGameBinding}
+            onUpdateGlobalAudio={handleUpdateVaultGlobalAudio}
+            onAuditionAudioAsset={handleAuditionVaultAudio}
+            onApplyMusicAssetToProject={handleApplyVaultMusicToProject}
+            onPlayJingle={(code) => audioRef.current?.playJinglePreview(code)}
+            onNotify={showToast}
+          />
         )}
 
         {activeTab === 'customize' && (
@@ -899,6 +1466,8 @@ export function App() {
             sfxVolume={sfxVolume}
             sprites={sprites}
             prologueImage={prologueImage}
+            vaultAssets={vaultAssets}
+            vaultBindings={vaultBindings}
             onForkProjectId={() => {
               const forked = generateProjectId();
               setPackageId(forked);
@@ -994,8 +1563,18 @@ export function App() {
         </button>
         <button
           type="button"
+          onClick={() => setActiveTab('vault')}
+          className={`flex flex-col items-center justify-center min-h-[44px] px-1.5 text-[11px] font-medium ${
+            activeTab === 'vault' ? 'text-[#FF5A36]' : 'text-slate-400'
+          }`}
+        >
+          <HardDrive className="w-4 h-4 mb-0.5" />
+          Vault
+        </button>
+        <button
+          type="button"
           onClick={() => setActiveTab('customize')}
-          className={`flex flex-col items-center justify-center min-h-[44px] px-2 text-[11px] font-medium ${
+          className={`flex flex-col items-center justify-center min-h-[44px] px-1.5 text-[11px] font-medium ${
             activeTab === 'customize' ? 'text-[#FF5A36]' : 'text-slate-400'
           }`}
         >
@@ -1037,7 +1616,7 @@ export function App() {
               <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
               <div>
                 <h3 className="font-display text-base font-bold text-white">
-                  Runtime .groove Conversion (Draft 0.2 — Not Installable)
+                  Runtime .groove Conversion (Draft 0.3)
                 </h3>
                 <p className="text-xs text-slate-300 mt-1">
                   The runtime profile (<code className="font-mono text-sky-300">adapter: multi</code>) only
@@ -1110,6 +1689,47 @@ export function App() {
                 className="h-9 px-3.5 rounded-lg bg-sky-600 hover:bg-sky-500 text-xs font-semibold text-white"
               >
                 Export Runtime .groove
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Save Selection as Reusable Pattern Modal */}
+      {savePatternModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-white/15 bg-[#141922] p-5 shadow-2xl space-y-4">
+            <div className="flex items-center gap-2.5">
+              <BookmarkPlus className="w-5 h-5 text-emerald-400" />
+              <h3 className="font-display text-base font-bold text-white">
+                Save Reusable Pattern ({selectedEvents.length} events)
+              </h3>
+            </div>
+            <div>
+              <label className="block text-[11px] text-slate-400 mb-1">Pattern Name</label>
+              <input
+                type="text"
+                maxLength={64}
+                value={patternDraftName}
+                onChange={(e) => setPatternDraftName(e.target.value)}
+                className="w-full h-9 px-3 rounded-lg border border-white/10 bg-[#0E1117] text-xs text-white focus:outline-none focus:border-[#FF5A36]"
+                autoFocus
+              />
+            </div>
+            <div className="flex justify-end gap-2 pt-2 border-t border-white/10">
+              <button
+                type="button"
+                onClick={() => setSavePatternModalOpen(false)}
+                className="h-9 px-3.5 rounded-lg border border-white/10 bg-[#1B2230] text-xs font-medium text-slate-300 hover:text-white"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmSavePattern}
+                className="h-9 px-4 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-xs font-semibold text-white"
+              >
+                Save Pattern
               </button>
             </div>
           </div>

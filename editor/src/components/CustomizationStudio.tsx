@@ -2,7 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Upload, Trash2, Package, Music, Image as ImageIcon, Play, Sparkles } from 'lucide-react';
 import {
   GAME_META,
-  GameId,
+  type GameId,
   GAMES,
   JINGLE_PRESETS,
   LAYOUT_OFF,
@@ -10,11 +10,12 @@ import {
   TPB,
 } from '../engine/cues.ts';
 import {
-  CustomSpriteConfig,
+  type CustomSpriteConfig,
   isValidSemver,
-  RuntimeTimelineFormat,
+  type RuntimeTimelineFormat,
 } from '../engine/groovePackage.ts';
-import { Timeline } from '../engine/gtfEngine.ts';
+import { type Timeline } from '../engine/gtfEngine.ts';
+import { type GameAssetBinding, type LocalAssetRecord } from '../engine/localAssetVault.ts';
 import { StagePreview } from './StagePreview.tsx';
 
 interface CustomizationStudioProps {
@@ -31,6 +32,8 @@ interface CustomizationStudioProps {
   sfxVolume: number;
   sprites: Partial<Record<GameId, CustomSpriteConfig>>;
   prologueImage?: { name: string; dataUrl: string } | null;
+  vaultAssets?: LocalAssetRecord[];
+  vaultBindings?: Partial<Record<GameId, GameAssetBinding>>;
   onForkProjectId: () => void;
   onUpdatePackageVersion: (version: string) => void;
   onUpdateRuntimeFormat: (fmt: RuntimeTimelineFormat) => void;
@@ -73,6 +76,8 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
   sfxVolume,
   sprites,
   prologueImage,
+  vaultAssets,
+  vaultBindings,
   onForkProjectId,
   onUpdatePackageVersion,
   onUpdateRuntimeFormat,
@@ -555,8 +560,11 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
             <StagePreview
               timeline={timeline}
               currentTick={currentTick}
+              bpm={bpm}
               sprites={sprites}
               prologueImageDataUrl={prologueImage?.dataUrl}
+              vaultBindings={vaultBindings}
+              vaultAssets={vaultAssets}
               onPlayJingle={onPlayJingle}
             />
           </div>
@@ -566,10 +574,10 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
               <Package className="w-5 h-5 text-amber-400 shrink-0" />
               <div>
                 <h2 className="font-display text-base font-bold text-white">
-                  .groove Package Profiles (Draft 0.2 — Preview Only)
+                  .groove Package Profiles (Draft 0.3)
                 </h2>
                 <p className="text-xs text-slate-400">
-                  Draft format pending GE-154/GE-155 freeze; packages are NOT installable on Switch yet.
+                  Runtime packages conform strictly to Draft 0.3 / GE-155 validator; authoring bundles keep audio &amp; sprites.
                 </p>
               </div>
             </div>
@@ -621,7 +629,7 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
             <div className="rounded-lg border border-white/10 bg-[#0E1117] p-3 font-mono text-[11px] text-slate-300 space-y-1">
               <div>format: groove-package/1 · adapter: multi · engine_min: 0.6.0</div>
               <div>authoring (editor): timeline + audio ({musicName ?? 'none'}) + {customizedCount} sprites + intro</div>
-              <div>runtime (draft 0.2): exact 2 files (manifest.json + timeline.{runtimeFormat}), results: custom</div>
+              <div>runtime (draft 0.3): exact 2 files (manifest.json + timeline.{runtimeFormat}), results: custom</div>
               {lastExportSha256 && (
                 <div className="text-emerald-300 break-all pt-1 border-t border-white/10">
                   sha256: {lastExportSha256} (integrity check only, not author auth)
@@ -650,8 +658,22 @@ export const CustomizationStudio: React.FC<CustomizationStudioProps> = ({
               onClick={onImportGrooveClick}
               className="w-full inline-flex items-center justify-center gap-2 h-10 px-4 rounded-lg border border-white/10 bg-[#1B2230] hover:bg-[#252E40] text-xs font-medium text-slate-200 transition-colors"
             >
-              Import .groove (Strict Draft 0.2 Validation)
+              Import .groove (Strict Draft 0.3 Validation)
             </button>
+          </section>
+
+          <section className="rounded-xl border border-white/10 bg-[#141922] p-4 space-y-2 text-[11px] text-slate-400 leading-relaxed">
+            <div className="font-display text-xs font-bold text-slate-200">
+              Architecture &amp; Open-Source Reference Boundaries
+            </div>
+            <div>
+              <span className="text-slate-200 font-medium">RHREfresh (GPL-3.0):</span> Clean-room TypeScript
+              UX inspiration for 5-tool strip, 3-tier bottom cue/pattern dock, game boundaries, trackers, and minimap. Zero GPL source or copyrighted assets reused.
+            </div>
+            <div>
+              <span className="text-slate-200 font-medium">Heaven Studio (MIT):</span> Clean-room adaptation of
+              per-minigame Canvas stage preview, Playalong hit timing windows, and typed parameter editors bound to <code className="text-slate-300">engine_contract.pinned.json</code>.
+            </div>
           </section>
         </div>
       </div>

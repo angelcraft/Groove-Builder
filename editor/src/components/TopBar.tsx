@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { ChevronDown, Download, FolderOpen, FileCode2, Layers, Package } from 'lucide-react';
 import { PWAInstallButton } from './PWAInstallButton.tsx';
 
-export type WorkspaceTab = 'timeline' | 'stage' | 'customize' | 'code';
+export type WorkspaceTab = 'timeline' | 'stage' | 'vault' | 'customize' | 'code';
 
 interface TopBarProps {
   activeTab: WorkspaceTab;
@@ -45,6 +45,7 @@ export const TopBar: React.FC<TopBarProps> = ({
   const navItems: Array<{ id: WorkspaceTab; label: string }> = [
     { id: 'timeline', label: 'Timeline' },
     { id: 'stage', label: 'Stage & Intro' },
+    { id: 'vault', label: 'Local Vault' },
     { id: 'customize', label: 'Sprites & .groove' },
     { id: 'code', label: 'GTF / GTL' },
   ];
@@ -160,8 +161,8 @@ export const TopBar: React.FC<TopBarProps> = ({
               >
                 <Package className="w-4 h-4 text-sky-400" />
                 <div>
-                  <div className="font-semibold">Export Runtime .groove (Draft 0.2)</div>
-                  <div className="text-[11px] text-slate-400">Multi · 2-file preview (not installable)</div>
+                  <div className="font-semibold">Export Runtime .groove (Draft 0.3)</div>
+                  <div className="text-[11px] text-slate-400">Multi · 2-file GE-155 compatible package</div>
                 </div>
               </button>
               <div className="my-1 border-t border-white/10" />

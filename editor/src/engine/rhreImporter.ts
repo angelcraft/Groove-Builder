@@ -1,10 +1,10 @@
 import {
   canonicalGame,
   CUE_FNS,
-  GameId,
+  type GameId,
   LAYOUT_OFF,
   THE_A_WORDS,
-  TheAWord,
+  type TheAWord,
   TPB,
 } from './cues.ts';
 import {
@@ -16,8 +16,8 @@ import {
 import {
   createDefaultTimeline,
   nextEventId,
-  Timeline,
-  TimelineEvent,
+  type Timeline,
+  type TimelineEvent,
 } from './gtfEngine.ts';
 import {
   decodeUtf8Strict,

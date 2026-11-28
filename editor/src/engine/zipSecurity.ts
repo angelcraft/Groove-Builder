@@ -2,7 +2,8 @@
  * Raw ZIP binary header inspection, bounded streaming decompression,
  * strict duplicate-key UTF-8 JSON parser, and deterministic canonical ZIP writer.
  *
- * Aligned with docs/GROOVE_PROFILE_DRAFT_02.md & COORDINATION_REVIEW.md.
+ * Aligned with Draft 0.3 (GROOVE_PROFILE_DRAFT_02 + GROOVE_INTEGRATION_V0_DECISIONS)
+ * and GE-155 validator/zipreader.py, jsonstrict.py, safepath.py.
  */
 
 const utf8Fatal = new TextDecoder('utf-8', { fatal: true });
@@ -13,6 +14,10 @@ const DOS_RESERVED_BASENAMES = new Set([
   'prn',
   'aux',
   'nul',
+  'conin$',
+  'conout$',
+  'clock$',
+  'com0',
   'com1',
   'com2',
   'com3',
@@ -22,6 +27,7 @@ const DOS_RESERVED_BASENAMES = new Set([
   'com7',
   'com8',
   'com9',
+  'lpt0',
   'lpt1',
   'lpt2',
   'lpt3',
@@ -31,6 +37,12 @@ const DOS_RESERVED_BASENAMES = new Set([
   'lpt7',
   'lpt8',
   'lpt9',
+  'com¹',
+  'com²',
+  'com³',
+  'lpt¹',
+  'lpt²',
+  'lpt³',
 ]);
 
 const NESTED_ARCHIVE_EXTS = [
@@ -47,6 +59,10 @@ const NESTED_ARCHIVE_EXTS = [
   '.bz2',
   '.xz',
 ];
+
+// Only timestamp/ownership extra fields permitted by Draft 0.3 zipreader.py (reject 0x0001 ZIP64 & unknown extras)
+const ALLOWED_EXTRA_IDS = new Set([0x5455, 0x7875, 0x000a, 0x5855]);
+const WINDOWS_BAD_PATH_CHARS = /[<>:"|?*\\]/;
 
 // Standard IEEE 802.3 CRC-32 table
 const CRC_TABLE = (() => {
@@ -77,6 +93,21 @@ export function decodeUtf8Strict(bytes: Uint8Array, label = 'texto'): string {
   }
 }
 
+export function hasUnpairedSurrogate(text: string): boolean {
+  for (let i = 0; i < text.length; i++) {
+    const code = text.charCodeAt(i);
+    if (code >= 0xd800 && code <= 0xdbff) {
+      if (i + 1 >= text.length) return true;
+      const next = text.charCodeAt(i + 1);
+      if (next < 0xdc00 || next > 0xdfff) return true;
+      i++;
+    } else if (code >= 0xdc00 && code <= 0xdfff) {
+      return true;
+    }
+  }
+  return false;
+}
+
 export function assertSafeArchivePath(
   rawPath: string,
   opts: { allowTrailingSlash?: boolean; rejectNestedArchives?: boolean } = {}
@@ -86,14 +117,14 @@ export function assertSafeArchivePath(
   }
   for (let i = 0; i < rawPath.length; i++) {
     const code = rawPath.charCodeAt(i);
-    if (code < 32 || code === 127) {
+    if (code < 32 || code === 127 || (code >= 0x80 && code <= 0x9f)) {
       throw new Error(`Caracter de control prohibido en ruta ZIP: ${rawPath}`);
     }
   }
   if (rawPath.includes('\\')) {
     throw new Error(`Barra invertida prohibida en ruta ZIP: ${rawPath}`);
   }
-  if (rawPath.startsWith('/') || /^[A-Za-z]:/.test(rawPath)) {
+  if (rawPath.startsWith('/') || rawPath.startsWith('//') || /^[A-Za-z]:/.test(rawPath)) {
     throw new Error(`Ruta absoluta prohibida en paquete: ${rawPath}`);
   }
 
@@ -114,7 +145,10 @@ export function assertSafeArchivePath(
     if (seg.endsWith('.') || seg.endsWith(' ')) {
       throw new Error(`Segmento con punto o espacio final prohibido: ${rawPath}`);
     }
-    const baseNoExt = seg.split('.', 1)[0].toLowerCase();
+    if (WINDOWS_BAD_PATH_CHARS.test(seg)) {
+      throw new Error(`Caracter reservado prohibido en ruta ZIP: ${rawPath}`);
+    }
+    const baseNoExt = seg.split('.', 1)[0].replace(/ +$/, '').toLowerCase();
     if (DOS_RESERVED_BASENAMES.has(baseNoExt)) {
       throw new Error(`Nombre de dispositivo DOS reservado prohibido: ${rawPath}`);
     }
@@ -149,6 +183,8 @@ export interface InspectZipOptions {
   maxEntries: number;
   allowDirectories: boolean;
   allowDataDescriptor?: boolean;
+  strictDraft03?: boolean;
+  maxNameBytes?: number;
   maxEntryBytesByPath?: (path: string) => number | undefined;
 }
 
@@ -172,20 +208,225 @@ function writeU32LE(b: Uint8Array, off: number, val: number): void {
   b[off + 3] = (val >>> 24) & 0xff;
 }
 
+function validateZipExtraFields(buf: Uint8Array, name: string): void {
+  let i = 0;
+  while (i < buf.length) {
+    if (i + 4 > buf.length) {
+      throw new Error(`Campo extra ZIP truncado en ${name}`);
+    }
+    const hid = readU16LE(buf, i);
+    const len = readU16LE(buf, i + 2);
+    if (hid === 0x0001) {
+      throw new Error(`Campo extra ZIP64 (0x0001) no permitido en ${name}`);
+    }
+    if (!ALLOWED_EXTRA_IDS.has(hid)) {
+      throw new Error(`Campo extra ZIP no soportado (0x${hid.toString(16).toUpperCase().padStart(4, '0')}) en ${name}`);
+    }
+    i += 4 + len;
+    if (i > buf.length) {
+      throw new Error(`Campo extra ZIP truncado en ${name}`);
+    }
+  }
+}
+
+// ---------- Pure-JS RFC 1951 exact end-of-stream scanner ----------
+// Detects truncated blocks or trailing unused bytes ignored by Web DecompressionStream('deflate-raw').
+
+const CL_ORDER = [16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15];
+const LEN_EXTRA = [
+  0, 0, 0, 0, 0, 0, 0, 0,
+  1, 1, 1, 1, 2, 2, 2, 2,
+  3, 3, 3, 3, 4, 4, 4, 4,
+  5, 5, 5, 5, 0,
+];
+const DIST_EXTRA = [
+  0, 0, 0, 0, 1, 1, 2, 2,
+  3, 3, 4, 4, 5, 5, 6, 6,
+  7, 7, 8, 8, 9, 9, 10, 10,
+  11, 11, 12, 12, 13, 13,
+];
+
+interface HuffNode {
+  maxBits: number;
+  minBits: number;
+  codes: Map<number, number>; // key = (len << 16) | code
+}
+
+function buildHuffmanTable(lengths: number[]): HuffNode {
+  let maxBits = 0;
+  let minBits = 16;
+  const blCount = new Int32Array(17);
+  for (const len of lengths) {
+    if (len > 0) {
+      if (len > maxBits) maxBits = len;
+      if (len < minBits) minBits = len;
+      blCount[len]++;
+    }
+  }
+  const nextCode = new Int32Array(17);
+  let code = 0;
+  for (let bits = 1; bits <= maxBits; bits++) {
+    code = (code + blCount[bits - 1]) << 1;
+    nextCode[bits] = code;
+  }
+  const codes = new Map<number, number>();
+  for (let n = 0; n < lengths.length; n++) {
+    const len = lengths[n];
+    if (len !== 0) {
+      codes.set((len << 16) | nextCode[len], n);
+      nextCode[len]++;
+    }
+  }
+  return { maxBits, minBits: maxBits === 0 ? 1 : minBits, codes };
+}
+
+const FIXED_LIT_TABLE = (() => {
+  const lens = new Array<number>(288);
+  for (let i = 0; i <= 143; i++) lens[i] = 8;
+  for (let i = 144; i <= 255; i++) lens[i] = 9;
+  for (let i = 256; i <= 279; i++) lens[i] = 7;
+  for (let i = 280; i <= 287; i++) lens[i] = 8;
+  return buildHuffmanTable(lens);
+})();
+
+function verifyRawDeflateExactEnd(bytes: Uint8Array, label: string): void {
+  let bitPos = 0;
+  const totalBits = bytes.length * 8;
+
+  const readBits = (n: number): number => {
+    if (bitPos + n > totalBits) {
+      throw new Error(`Flujo DEFLATE incompleto en '${label}'`);
+    }
+    let val = 0;
+    for (let i = 0; i < n; i++) {
+      const bit = (bytes[bitPos >>> 3] >>> (bitPos & 7)) & 1;
+      val |= bit << i;
+      bitPos++;
+    }
+    return val;
+  };
+
+  const readSym = (table: HuffNode): number => {
+    let code = 0;
+    for (let len = 1; len <= table.maxBits; len++) {
+      if (bitPos >= totalBits) {
+        throw new Error(`Flujo DEFLATE incompleto en '${label}'`);
+      }
+      const bit = (bytes[bitPos >>> 3] >>> (bitPos & 7)) & 1;
+      bitPos++;
+      code = (code << 1) | bit;
+      if (len >= table.minBits) {
+        const sym = table.codes.get((len << 16) | code);
+        if (sym !== undefined) return sym;
+      }
+    }
+    throw new Error(`Codigo Huffman DEFLATE invalido en '${label}'`);
+  };
+
+  let bfinal = 0;
+  do {
+    bfinal = readBits(1);
+    const btype = readBits(2);
+    if (btype === 3) {
+      throw new Error(`Tipo de bloque DEFLATE reservado en '${label}'`);
+    }
+    if (btype === 0) {
+      bitPos = (bitPos + 7) & ~7;
+      const byteOff = bitPos >>> 3;
+      if (byteOff + 4 > bytes.length) {
+        throw new Error(`Bloque DEFLATE no comprimido truncado en '${label}'`);
+      }
+      const len = readU16LE(bytes, byteOff);
+      const nlen = readU16LE(bytes, byteOff + 2);
+      if ((len ^ 0xffff) !== nlen) {
+        throw new Error(`Longitud DEFLATE almacenada corrupta en '${label}'`);
+      }
+      const nextByte = byteOff + 4 + len;
+      if (nextByte > bytes.length) {
+        throw new Error(`Datos DEFLATE truncados en '${label}'`);
+      }
+      bitPos = nextByte * 8;
+      continue;
+    }
+
+    let litTable: HuffNode;
+    let distTable: HuffNode | null = null;
+    if (btype === 1) {
+      litTable = FIXED_LIT_TABLE;
+    } else {
+      const hlit = readBits(5) + 257;
+      const hdist = readBits(5) + 1;
+      const hclen = readBits(4) + 4;
+      const clLens = new Array<number>(19).fill(0);
+      for (let i = 0; i < hclen; i++) {
+        clLens[CL_ORDER[i]] = readBits(3);
+      }
+      const clTable = buildHuffmanTable(clLens);
+      const codeLengths: number[] = [];
+      const targetCount = hlit + hdist;
+      while (codeLengths.length < targetCount) {
+        const s = readSym(clTable);
+        if (s < 16) {
+          codeLengths.push(s);
+        } else if (s === 16) {
+          if (codeLengths.length === 0) throw new Error(`Tabla DEFLATE invalida en '${label}'`);
+          const rep = 3 + readBits(2);
+          const prev = codeLengths[codeLengths.length - 1];
+          for (let r = 0; r < rep; r++) codeLengths.push(prev);
+        } else if (s === 17) {
+          const rep = 3 + readBits(3);
+          for (let r = 0; r < rep; r++) codeLengths.push(0);
+        } else {
+          const rep = 11 + readBits(7);
+          for (let r = 0; r < rep; r++) codeLengths.push(0);
+        }
+      }
+      if (codeLengths.length !== targetCount) {
+        throw new Error(`Tabla dinamica DEFLATE desalineada en '${label}'`);
+      }
+      litTable = buildHuffmanTable(codeLengths.slice(0, hlit));
+      distTable = buildHuffmanTable(codeLengths.slice(hlit));
+    }
+
+    while (true) {
+      const sym = readSym(litTable);
+      if (sym < 256) continue;
+      if (sym === 256) break;
+      if (sym > 285) throw new Error(`Simbolo de longitud DEFLATE invalido en '${label}'`);
+      const lenExtra = LEN_EXTRA[sym - 257];
+      if (lenExtra > 0) readBits(lenExtra);
+      const dist = distTable ? readSym(distTable) : readBits(5);
+      if (dist > 29) throw new Error(`Simbolo de distancia DEFLATE invalido en '${label}'`);
+      const distExtra = DIST_EXTRA[dist];
+      if (distExtra > 0) readBits(distExtra);
+    }
+  } while (bfinal === 0);
+
+  const bytesUsed = Math.ceil(bitPos / 8);
+  if (bytesUsed !== bytes.length) {
+    throw new Error(
+      `Flujo DEFLATE seguido de ${bytes.length - bytesUsed} byte(s) sobrante(s) en '${label}'`
+    );
+  }
+}
+
 export class BoundedZipArchive {
   private readonly bytes: Uint8Array;
   private readonly entries: Map<string, StrictZipEntry>;
   private readonly maxTotalUncompressedBytes: number;
+  private readonly strictDraft03: boolean;
   private totalDecompressedSoFar = 0;
 
   constructor(
     bytes: Uint8Array,
     entries: Map<string, StrictZipEntry>,
-    maxTotalUncompressedBytes: number
+    maxTotalUncompressedBytes: number,
+    strictDraft03 = false
   ) {
     this.bytes = bytes;
     this.entries = entries;
     this.maxTotalUncompressedBytes = maxTotalUncompressedBytes;
+    this.strictDraft03 = strictDraft03;
   }
 
   public listPaths(): string[] {
@@ -205,9 +446,14 @@ export class BoundedZipArchive {
       throw new Error(`Se esperaba archivo y se encontro directorio: ${path}`);
     }
 
+    if (maxEntryBytes !== undefined && entry.uncompressedSize > maxEntryBytes) {
+      throw new Error(`Entrada '${path}' excede el limite de ${maxEntryBytes} bytes`);
+    }
     const remainingGlobal = this.maxTotalUncompressedBytes - this.totalDecompressedSoFar;
     const limit =
-      maxEntryBytes !== undefined ? Math.min(maxEntryBytes, remainingGlobal, entry.uncompressedSize) : Math.min(remainingGlobal, entry.uncompressedSize);
+      maxEntryBytes !== undefined
+        ? Math.min(maxEntryBytes, remainingGlobal, entry.uncompressedSize)
+        : Math.min(remainingGlobal, entry.uncompressedSize);
     if (limit < 0) {
       throw new Error('Contenido descomprimido supera el limite total permitido');
     }
@@ -227,7 +473,7 @@ export class BoundedZipArchive {
       }
       out = new Uint8Array(compressedSlice);
     } else if (entry.method === 8) {
-      out = await inflateRawBounded(compressedSlice, limit, path);
+      out = await inflateRawBounded(compressedSlice, limit, path, this.strictDraft03);
     } else {
       throw new Error(`Metodo de compresion ZIP no soportado (${entry.method}) en ${path}`);
     }
@@ -260,8 +506,12 @@ export class BoundedZipArchive {
 async function inflateRawBounded(
   compressed: Uint8Array,
   maxBytes: number,
-  label: string
+  label: string,
+  strictTrailingCheck: boolean
 ): Promise<Uint8Array> {
+  if (strictTrailingCheck) {
+    verifyRawDeflateExactEnd(compressed, label);
+  }
   if (typeof DecompressionStream !== 'undefined') {
     const ds = new DecompressionStream('deflate-raw');
     const writer = ds.writable.getWriter();
@@ -348,6 +598,7 @@ export async function inspectAndOpenZip(
   input: ArrayBuffer | Uint8Array,
   opts: InspectZipOptions
 ): Promise<BoundedZipArchive> {
+  const strictDraft03 = Boolean(opts.strictDraft03);
   const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
   if (bytes.byteLength < 22) {
     throw new Error('Archivo ZIP truncado o demasiado pequeno');
@@ -356,25 +607,49 @@ export async function inspectAndOpenZip(
     throw new Error(`Archivo ZIP supera el limite de ${opts.maxCompressedBytes} bytes`);
   }
 
-  // Locate End of Central Directory (0x06054b50) within last 65557 bytes
-  const minEocdOff = Math.max(0, bytes.byteLength - 65557);
   let eocdOff = -1;
-  for (let i = bytes.byteLength - 22; i >= minEocdOff; i--) {
-    if (
-      bytes[i] === 0x50 &&
-      bytes[i + 1] === 0x4b &&
-      bytes[i + 2] === 0x05 &&
-      bytes[i + 3] === 0x06
-    ) {
-      const commentLen = readU16LE(bytes, i + 20);
-      if (i + 22 + commentLen === bytes.byteLength) {
-        eocdOff = i;
-        break;
+  if (strictDraft03) {
+    const cand = bytes.byteLength - 22;
+    if (readU32LE(bytes, cand) === 0x06054b50) {
+      const commentLen = readU16LE(bytes, cand + 20);
+      if (commentLen !== 0) {
+        throw new Error('Comentarios de archivo ZIP o datos sobrantes no permitidos');
+      }
+      eocdOff = cand;
+    } else {
+      // Check if an EOCD appeared earlier (trailing data or archive comment)
+      let foundEarlier = false;
+      const minOff = Math.max(0, bytes.byteLength - 65557);
+      for (let i = bytes.byteLength - 23; i >= minOff; i--) {
+        if (readU32LE(bytes, i) === 0x06054b50) {
+          foundEarlier = true;
+          break;
+        }
+      }
+      if (foundEarlier) {
+        throw new Error('Comentarios de archivo ZIP o datos sobrantes tras el directorio central');
+      }
+      throw new Error('Cabecera EOCD ZIP ausente o archivo truncado');
+    }
+  } else {
+    const minEocdOff = Math.max(0, bytes.byteLength - 65557);
+    for (let i = bytes.byteLength - 22; i >= minEocdOff; i--) {
+      if (
+        bytes[i] === 0x50 &&
+        bytes[i + 1] === 0x4b &&
+        bytes[i + 2] === 0x05 &&
+        bytes[i + 3] === 0x06
+      ) {
+        const commentLen = readU16LE(bytes, i + 20);
+        if (i + 22 + commentLen === bytes.byteLength) {
+          eocdOff = i;
+          break;
+        }
       }
     }
-  }
-  if (eocdOff < 0) {
-    throw new Error('Cabecera EOCD ZIP ausente o corrupta (datos sobrantes o archivo truncado)');
+    if (eocdOff < 0) {
+      throw new Error('Cabecera EOCD ZIP ausente o corrupta (datos sobrantes o archivo truncado)');
+    }
   }
 
   // Reject ZIP64 EOCD locator right before EOCD
@@ -390,28 +665,38 @@ export async function inspectAndOpenZip(
   const cdOffset = readU32LE(bytes, eocdOff + 16);
 
   if (
-    diskNum !== 0 ||
-    cdDisk !== 0 ||
-    entriesOnDisk !== totalEntries ||
     totalEntries === 0xffff ||
+    entriesOnDisk === 0xffff ||
     cdSize === 0xffffffff ||
     cdOffset === 0xffffffff
   ) {
-    throw new Error('Archivos ZIP multidisco o ZIP64 no soportados');
+    throw new Error('Archivos ZIP64 no soportados');
+  }
+  if (diskNum !== 0 || cdDisk !== 0 || entriesOnDisk !== totalEntries) {
+    throw new Error('Archivos ZIP multidisco no soportados');
+  }
+  if (strictDraft03 && totalEntries === 0) {
+    throw new Error('Archivo ZIP vacio sin entradas');
   }
   if (totalEntries > opts.maxEntries) {
     throw new Error(`Demasiadas entradas ZIP (${totalEntries} > max ${opts.maxEntries})`);
   }
-  if (cdOffset + cdSize > eocdOff) {
+  if (strictDraft03) {
+    if (cdOffset + cdSize !== eocdOff) {
+      throw new Error('Directorio central ZIP desalineado con EOCD (hueco, solape o truncado)');
+    }
+  } else if (cdOffset + cdSize > eocdOff) {
     throw new Error('Directorio central ZIP truncado o fuera de limites');
   }
 
   const entries = new Map<string, StrictZipEntry>();
   const seenLower = new Set<string>();
   const occupied: Array<[number, number]> = [];
+  const cdRows: Array<{ entry: StrictZipEntry; nameBytes: Uint8Array; versionNeeded: number }> = [];
   let claimedTotalUncompressed = 0;
   let pos = cdOffset;
   const cdEnd = cdOffset + cdSize;
+  const maxNameLen = opts.maxNameBytes ?? 255;
 
   for (let idx = 0; idx < totalEntries; idx++) {
     if (pos + 46 > cdEnd) {
@@ -422,6 +707,8 @@ export async function inspectAndOpenZip(
       throw new Error('Firma de directorio central ZIP invalida');
     }
 
+    const madeBy = readU16LE(bytes, pos + 4);
+    const versionNeeded = readU16LE(bytes, pos + 6);
     const flags = readU16LE(bytes, pos + 8);
     const method = readU16LE(bytes, pos + 10);
     const crc = readU32LE(bytes, pos + 16);
@@ -440,15 +727,23 @@ export async function inspectAndOpenZip(
     if (diskStart !== 0) {
       throw new Error('Entrada ZIP multidisco no permitida');
     }
+    if (strictDraft03 && commentLen !== 0) {
+      throw new Error('Comentarios por entrada ZIP no permitidos');
+    }
+    if (strictDraft03 && (nameLen === 0 || nameLen > maxNameLen)) {
+      throw new Error(`Longitud de nombre ZIP fuera de rango (1..${maxNameLen})`);
+    }
+    if (strictDraft03 && versionNeeded > 20) {
+      throw new Error(`Version ZIP requerida no soportada (${versionNeeded / 10})`);
+    }
 
-    // Reject encryption (bit 0 or bit 6) or unsupported methods
-    if ((flags & 0x0001) !== 0 || (flags & 0x0040) !== 0 || method === 99) {
+    // Reject encryption (bit 0, bit 6, bit 13) or unsupported methods
+    if ((flags & 0x0001) !== 0 || (flags & 0x0040) !== 0 || (flags & 0x2000) !== 0 || method === 99) {
       throw new Error('Entradas ZIP cifradas no permitidas');
     }
     if ((flags & 0x0008) !== 0 && !opts.allowDataDescriptor) {
       throw new Error('Data descriptor ZIP (bit 3) no permitido en modo estricto');
     }
-    // Reject unsupported flags outside {bit 1/2 deflate opts, bit 3 optional, bit 11 UTF-8}
     const allowedFlagMask = (opts.allowDataDescriptor ? 0x0008 : 0) | 0x0806;
     if ((flags & ~allowedFlagMask) !== 0) {
       throw new Error(`Flags ZIP no soportados (0x${flags.toString(16)})`);
@@ -464,24 +759,36 @@ export async function inspectAndOpenZip(
       throw new Error('Campos ZIP64 no permitidos');
     }
 
-    // Reject symlinks and non-regular POSIX file types (except dir when allowed)
-    const unixMode = (externalAttrs >>> 16) & 0o170000;
-    if (unixMode === 0o120000) {
-      throw new Error('Enlaces simbolicos (symlinks) prohibidos en archivo ZIP');
-    }
-    if (
-      unixMode !== 0 &&
-      unixMode !== 0o100000 &&
-      unixMode !== 0o040000
-    ) {
-      throw new Error(`Tipo de archivo POSIX especial prohibido en ZIP (0o${unixMode.toString(8)})`);
+    const extraBytes = bytes.subarray(pos + 46 + nameLen, pos + 46 + nameLen + extraLen);
+    if (strictDraft03 && extraLen > 0) {
+      validateZipExtraFields(extraBytes, `entrada #${idx}`);
     }
 
     const nameBytes = bytes.subarray(pos + 46, pos + 46 + nameLen);
+    if (strictDraft03) {
+      for (let k = 0; k < nameBytes.length; k++) {
+        if (nameBytes[k] >= 0x80) {
+          throw new Error('Los nombres de entrada en paquetes Draft 0.3 deben ser ASCII exactos');
+        }
+      }
+    }
     const rawName = decodeUtf8Strict(nameBytes, `nombre de entrada #${idx}`);
+
+    // Reject symlinks and non-regular POSIX/DOS attributes
+    const host = madeBy >>> 8;
+    const unixMode = (externalAttrs >>> 16) & 0o170000;
+    if (unixMode === 0o120000) {
+      throw new Error(`Enlaces simbolicos (symlinks) prohibidos en archivo ZIP: ${rawName}`);
+    }
+    if (host === 3 || unixMode !== 0) {
+      if (unixMode !== 0 && unixMode !== 0o100000 && !(unixMode === 0o040000 && opts.allowDirectories)) {
+        throw new Error(`Tipo de archivo POSIX especial prohibido en ZIP (0o${unixMode.toString(8)}): ${rawName}`);
+      }
+    }
+
     const isDir = rawName.endsWith('/') || (externalAttrs & 0x10) !== 0 || unixMode === 0o040000;
     if (isDir && !opts.allowDirectories) {
-      throw new Error(`Directorios no permitidos en paquete: ${rawName}`);
+      throw new Error(`Directorios o atributo de directorio no permitido en paquete: ${rawName}`);
     }
     if (isDir && (compSize !== 0 || uncompSize !== 0)) {
       throw new Error(`Entrada de directorio con carga no vacia: ${rawName}`);
@@ -492,54 +799,14 @@ export async function inspectAndOpenZip(
       rejectNestedArchives: true,
     });
 
-    const lower = rawName.toLowerCase();
-    if (seenLower.has(lower)) {
+    const folded = rawName.normalize('NFC').toLowerCase();
+    if (entries.has(rawName)) {
+      throw new Error(`Ruta duplicada en ZIP: ${rawName}`);
+    }
+    if (seenLower.has(folded)) {
       throw new Error(`Rutas duplicadas o colision de mayusculas: ${rawName}`);
     }
-    seenLower.add(lower);
-
-    // Inspect matching Local File Header BEFORE decompression
-    if (localHeaderOff + 30 > cdOffset) {
-      throw new Error(`Local File Header fuera de rango para ${rawName}`);
-    }
-    if (readU32LE(bytes, localHeaderOff) !== 0x04034b50) {
-      throw new Error(`Firma Local File Header invalida para ${rawName}`);
-    }
-
-    const lfhFlags = readU16LE(bytes, localHeaderOff + 6);
-    const lfhMethod = readU16LE(bytes, localHeaderOff + 8);
-    const lfhCrc = readU32LE(bytes, localHeaderOff + 14);
-    const lfhCompSize = readU32LE(bytes, localHeaderOff + 18);
-    const lfhUncompSize = readU32LE(bytes, localHeaderOff + 22);
-    const lfhNameLen = readU16LE(bytes, localHeaderOff + 26);
-    const lfhExtraLen = readU16LE(bytes, localHeaderOff + 28);
-
-    if (lfhNameLen !== nameLen) {
-      throw new Error(`Inconsistencia de longitud de ruta entre CD y LFH: ${rawName}`);
-    }
-    const dataOffset = localHeaderOff + 30 + lfhNameLen + lfhExtraLen;
-    if (dataOffset > cdOffset || dataOffset + compSize > cdOffset) {
-      throw new Error(`Datos comprimidos truncados o fuera de limites: ${rawName}`);
-    }
-    const rangeEnd = dataOffset + compSize;
-    if (occupied.some(([start, end]) => localHeaderOff < end && rangeEnd > start)) {
-      throw new Error(`Entradas ZIP solapadas: ${rawName}`);
-    }
-    occupied.push([localHeaderOff, rangeEnd]);
-    const lfhNameBytes = bytes.subarray(localHeaderOff + 30, localHeaderOff + 30 + lfhNameLen);
-    for (let k = 0; k < nameLen; k++) {
-      if (lfhNameBytes[k] !== nameBytes[k]) {
-        throw new Error(`Inconsistencia de ruta entre CD y LFH en ${rawName}`);
-      }
-    }
-    if (lfhFlags !== flags || lfhMethod !== method) {
-      throw new Error(`Inconsistencia de flags/metodo entre CD y LFH en ${rawName}`);
-    }
-    if ((flags & 0x0008) === 0) {
-      if (lfhCrc !== crc || lfhCompSize !== compSize || lfhUncompSize !== uncompSize) {
-        throw new Error(`Inconsistencia de tamano/CRC entre CD y LFH en ${rawName}`);
-      }
-    }
+    seenLower.add(folded);
 
     if (method === 0 && compSize !== uncompSize) {
       throw new Error(`Entrada STORED con tamanos desiguales en ${rawName}`);
@@ -555,7 +822,7 @@ export async function inspectAndOpenZip(
       throw new Error('Tamano descomprimido declarado supera el limite permitido');
     }
 
-    entries.set(rawName, {
+    const entryObj: StrictZipEntry = {
       path: rawName,
       isDir,
       method,
@@ -564,9 +831,11 @@ export async function inspectAndOpenZip(
       compressedSize: compSize,
       uncompressedSize: uncompSize,
       localHeaderOffset: localHeaderOff,
-      dataOffset,
+      dataOffset: 0,
       externalAttrs,
-    });
+    };
+    entries.set(rawName, entryObj);
+    cdRows.push({ entry: entryObj, nameBytes, versionNeeded });
 
     pos += 46 + nameLen + extraLen + commentLen;
   }
@@ -575,7 +844,106 @@ export async function inspectAndOpenZip(
     throw new Error('Longitud de directorio central ZIP inconsistente');
   }
 
-  return new BoundedZipArchive(bytes, entries, opts.maxTotalUncompressedBytes);
+  // Validate Local File Headers in file-offset order
+  cdRows.sort((a, b) => a.entry.localHeaderOffset - b.entry.localHeaderOffset);
+  let expectOffset = 0;
+
+  for (const row of cdRows) {
+    const m = row.entry;
+    if (strictDraft03 && m.localHeaderOffset !== expectOffset) {
+      throw new Error(
+        `Hueco, solape o bytes previos no referenciados antes de '${m.path}' (offset ${m.localHeaderOffset} != ${expectOffset})`
+      );
+    }
+    if (m.localHeaderOffset + 30 > cdOffset) {
+      throw new Error(`Local File Header fuera de rango para ${m.path}`);
+    }
+    if (readU32LE(bytes, m.localHeaderOffset) !== 0x04034b50) {
+      throw new Error(`Firma Local File Header invalida para ${m.path}`);
+    }
+
+    const lfhFlags = readU16LE(bytes, m.localHeaderOffset + 6);
+    const lfhMethod = readU16LE(bytes, m.localHeaderOffset + 8);
+    const lfhCrc = readU32LE(bytes, m.localHeaderOffset + 14);
+    const lfhCompSize = readU32LE(bytes, m.localHeaderOffset + 18);
+    const lfhUncompSize = readU32LE(bytes, m.localHeaderOffset + 22);
+    const lfhNameLen = readU16LE(bytes, m.localHeaderOffset + 26);
+    const lfhExtraLen = readU16LE(bytes, m.localHeaderOffset + 28);
+
+    if (lfhNameLen !== row.nameBytes.length) {
+      throw new Error(`Inconsistencia de longitud de ruta entre CD y LFH: ${m.path}`);
+    }
+    const dataOffset = m.localHeaderOffset + 30 + lfhNameLen + lfhExtraLen;
+    if (dataOffset > cdOffset || dataOffset + m.compressedSize > cdOffset) {
+      throw new Error(`Datos comprimidos truncados o fuera de limites: ${m.path}`);
+    }
+    if (strictDraft03 && lfhExtraLen > 0) {
+      validateZipExtraFields(
+        bytes.subarray(m.localHeaderOffset + 30 + lfhNameLen, dataOffset),
+        m.path
+      );
+    }
+
+    const lfhNameBytes = bytes.subarray(
+      m.localHeaderOffset + 30,
+      m.localHeaderOffset + 30 + lfhNameLen
+    );
+    for (let k = 0; k < row.nameBytes.length; k++) {
+      if (lfhNameBytes[k] !== row.nameBytes[k]) {
+        throw new Error(`Inconsistencia de ruta entre CD y LFH en ${m.path}`);
+      }
+    }
+    if (lfhFlags !== m.flags || lfhMethod !== m.method) {
+      throw new Error(`Inconsistencia de flags/metodo entre CD y LFH en ${m.path}`);
+    }
+    if ((m.flags & 0x0008) !== 0) {
+      const zeroOrMatch =
+        (lfhCrc === 0 && lfhCompSize === 0 && lfhUncompSize === 0) ||
+        (lfhCrc === m.crc32 &&
+          lfhCompSize === m.compressedSize &&
+          lfhUncompSize === m.uncompressedSize);
+      if (strictDraft03 && !zeroOrMatch) {
+        throw new Error(`Inconsistencia de tamano/CRC en LFH con data descriptor en ${m.path}`);
+      }
+    } else if (
+      lfhCrc !== m.crc32 ||
+      lfhCompSize !== m.compressedSize ||
+      lfhUncompSize !== m.uncompressedSize
+    ) {
+      throw new Error(`Inconsistencia de tamano/CRC entre CD y LFH en ${m.path}`);
+    }
+
+    let rangeEnd = dataOffset + m.compressedSize;
+    if (strictDraft03 && (m.flags & 0x0008) !== 0) {
+      if (rangeEnd + 4 <= cdOffset && readU32LE(bytes, rangeEnd) === 0x08074b50) {
+        rangeEnd += 4;
+      }
+      if (rangeEnd + 12 > cdOffset) {
+        throw new Error(`Data descriptor truncado para ${m.path}`);
+      }
+      if (
+        readU32LE(bytes, rangeEnd) !== m.crc32 ||
+        readU32LE(bytes, rangeEnd + 4) !== m.compressedSize ||
+        readU32LE(bytes, rangeEnd + 8) !== m.uncompressedSize
+      ) {
+        throw new Error(`Data descriptor inconsistente con CD en ${m.path}`);
+      }
+      rangeEnd += 12;
+    }
+
+    if (occupied.some(([start, end]) => m.localHeaderOffset < end && rangeEnd > start)) {
+      throw new Error(`Entradas ZIP solapadas: ${m.path}`);
+    }
+    occupied.push([m.localHeaderOffset, rangeEnd]);
+    m.dataOffset = dataOffset;
+    expectOffset = rangeEnd;
+  }
+
+  if (strictDraft03 && expectOffset !== cdOffset) {
+    throw new Error('Bytes no referenciados antes del directorio central ZIP');
+  }
+
+  return new BoundedZipArchive(bytes, entries, opts.maxTotalUncompressedBytes, strictDraft03);
 }
 
 export interface CanonicalZipInputEntry {
@@ -588,14 +956,14 @@ export interface CanonicalZipInputEntry {
  * - Fixed member order (caller order or sorted)
  * - Fixed DOS epoch timestamp (1980-01-01 00:00:00)
  * - Fixed POSIX regular file mode 0644
- * - Zero dynamic timestamps or environment-dependent headers
+ * - Flags = 0 for ASCII paths (per Draft 0.3 write_canonical), UTF-8 bit 11 only when needed
  */
 export async function buildCanonicalZip(
   inputs: CanonicalZipInputEntry[],
   opts: { sortEntries?: boolean; compress?: boolean } = {}
 ): Promise<Uint8Array> {
   const seen = new Set<string>();
-  const prepared: Array<{ path: string; nameBytes: Uint8Array; raw: Uint8Array }> = [];
+  const prepared: Array<{ path: string; nameBytes: Uint8Array; raw: Uint8Array; isAscii: boolean }> = [];
 
   for (const item of inputs) {
     assertSafeArchivePath(item.path, { allowTrailingSlash: false, rejectNestedArchives: true });
@@ -605,10 +973,13 @@ export async function buildCanonicalZip(
     }
     seen.add(low);
     const raw = typeof item.data === 'string' ? utf8Enc.encode(item.data) : new Uint8Array(item.data);
+    const nameBytes = utf8Enc.encode(item.path);
+    const isAscii = nameBytes.every((b) => b < 0x80);
     prepared.push({
       path: item.path,
-      nameBytes: utf8Enc.encode(item.path),
+      nameBytes,
       raw,
+      isAscii,
     });
   }
 
@@ -638,11 +1009,12 @@ export async function buildCanonicalZip(
         method = 8;
       }
     }
+    const flags = entry.isAscii ? 0 : UTF8_FLAG;
 
     const lfh = new Uint8Array(30 + entry.nameBytes.length);
     writeU32LE(lfh, 0, 0x04034b50);
     writeU16LE(lfh, 4, 20);
-    writeU16LE(lfh, 6, UTF8_FLAG);
+    writeU16LE(lfh, 6, flags);
     writeU16LE(lfh, 8, method);
     writeU16LE(lfh, 10, DOS_TIME);
     writeU16LE(lfh, 12, DOS_DATE);
@@ -657,7 +1029,7 @@ export async function buildCanonicalZip(
     writeU32LE(cdh, 0, 0x02014b50);
     writeU16LE(cdh, 4, 0x031e); // Unix + PKZIP 3.0
     writeU16LE(cdh, 6, 20);
-    writeU16LE(cdh, 8, UTF8_FLAG);
+    writeU16LE(cdh, 8, flags);
     writeU16LE(cdh, 10, method);
     writeU16LE(cdh, 12, DOS_TIME);
     writeU16LE(cdh, 14, DOS_DATE);
@@ -709,11 +1081,20 @@ export async function buildCanonicalZip(
 
 /**
  * Strict JSON parser:
+ * - Rejects UTF-8 BOM
  * - Decodes Uint8Array using fatal UTF-8
  * - Rejects duplicate object keys at every depth
+ * - Rejects unpaired UTF-16 surrogates
  * - Enforces maximum nesting depth
  */
 export function parseStrictJson(input: string | Uint8Array, maxDepth = 32): unknown {
+  if (input instanceof Uint8Array) {
+    if (input.length >= 3 && input[0] === 0xef && input[1] === 0xbb && input[2] === 0xbf) {
+      throw new Error('UTF-8 BOM prohibido en JSON');
+    }
+  } else if (input.startsWith('\uFEFF')) {
+    throw new Error('UTF-8 BOM prohibido en JSON');
+  }
   const text = typeof input === 'string' ? input : decodeUtf8Strict(input, 'JSON');
   let i = 0;
   const len = text.length;
@@ -734,7 +1115,11 @@ export function parseStrictJson(input: string | Uint8Array, maxDepth = 32): unkn
       const c = text.charCodeAt(i);
       if (c === 0x22) {
         i++;
-        return JSON.parse(text.slice(start, i)) as string;
+        const decoded = JSON.parse(text.slice(start, i)) as string;
+        if (hasUnpairedSurrogate(decoded)) {
+          throw new Error('Surrogate UTF-16 sin pareja prohibido en JSON');
+        }
+        return decoded;
       }
       if (c === 0x5c) {
         i += 2;
@@ -749,13 +1134,13 @@ export function parseStrictJson(input: string | Uint8Array, maxDepth = 32): unkn
   }
 
   function parseValue(depth: number): unknown {
-    if (depth > maxDepth) {
-      throw new Error(`Profundidad JSON excede el limite de ${maxDepth}`);
-    }
     skipWs();
     if (i >= len) throw new Error('Fin inesperado de JSON');
     const ch = text[i];
     if (ch === '{') {
+      if (depth + 1 > maxDepth) {
+        throw new Error(`Profundidad JSON excede el limite de ${maxDepth}`);
+      }
       i++;
       const obj: Record<string, unknown> = {};
       const seenKeys = new Set<string>();
@@ -785,6 +1170,9 @@ export function parseStrictJson(input: string | Uint8Array, maxDepth = 32): unkn
       }
     }
     if (ch === '[') {
+      if (depth + 1 > maxDepth) {
+        throw new Error(`Profundidad JSON excede el limite de ${maxDepth}`);
+      }
       i++;
       const arr: unknown[] = [];
       skipWs();
@@ -802,6 +1190,9 @@ export function parseStrictJson(input: string | Uint8Array, maxDepth = 32): unkn
         if (text[i] !== ',') throw new Error(`Se esperaba ',' o ']' en arreglo JSON`);
         i++;
       }
+    }
+    if (depth > maxDepth) {
+      throw new Error(`Profundidad JSON excede el limite de ${maxDepth}`);
     }
     if (ch === '"') {
       return parseString();

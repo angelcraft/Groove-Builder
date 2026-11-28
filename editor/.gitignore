@@ -1,8 +1,26 @@
 node_modules/
 build/
 dist/
+dev-dist/
 coverage/
 .DS_Store
 *.log
 .env*
 !.env.example
+
+# User-extracted local game resources (must never be committed or distributed)
+local_assets/
+extracted_assets/
+romfs/
+.groove-vault/
+*.bntx
+*.bfres
+*.bflyt
+*.bflan
+*.bars
+*.bwav
+*.bfstm
+*.sarc
+*.zs
+*.szs
+firebase-applet-config.json

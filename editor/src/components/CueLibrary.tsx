@@ -1,9 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { Search, Plus, ArrowRightLeft, Sparkles, Volume2 } from 'lucide-react';
 import {
-  CueDef,
+  type CueDef,
   GAME_META,
-  GameId,
+  type GameId,
   GAMES,
   getCuesForGame,
   LAYOUT_OFF,

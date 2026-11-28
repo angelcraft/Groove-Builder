@@ -1,15 +1,24 @@
 import React from 'react';
-import { Trash2, Copy, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import {
+  Trash2,
+  Copy,
+  AlertTriangle,
+  CheckCircle2,
+  BookmarkPlus,
+  ChevronLeft,
+  ChevronRight,
+  ArrowRightLeft,
+} from 'lucide-react';
 import {
   findCueDef,
   GAME_META,
-  GameId,
+  type GameId,
   GAMES,
   JINGLE_PRESETS,
   PROLOGUE_TYPES,
   SCORE_TAGS,
   THE_A_WORDS,
-  TheAWord,
+  type TheAWord,
   TPB,
 } from '../engine/cues.ts';
 import {
@@ -20,32 +29,43 @@ import {
 } from '../engine/engineContract.ts';
 import {
   formatBeats,
-  Timeline,
-  TimelineEvent,
-  ValidationReport,
+  type Timeline,
+  type TimelineEvent,
+  type ValidationReport,
 } from '../engine/gtfEngine.ts';
 
 interface InspectorPanelProps {
   timeline: Timeline;
-  selectedEvent: TimelineEvent | null;
+  selectedEvents: TimelineEvent[];
   validation: ValidationReport;
   onUpdateTimeline: (patch: Partial<Timeline>) => void;
   onUpdateEvent: (id: string, patch: Partial<TimelineEvent>) => void;
-  onDeleteEvent: (id: string) => void;
-  onDuplicateEvent: (id: string) => void;
+  onBatchNudge: (ids: string[], deltaTicks: number) => void;
+  onBatchTag: (ids: string[], tag: string | null) => void;
+  onDeleteEvents: (ids: string[]) => void;
+  onDuplicateEvents: (ids: string[]) => void;
+  onSaveSelectionAsPattern: () => void;
+  onInsertSwitchBeforeCue: (ev: TimelineEvent) => void;
   onSeekTick: (tick: number) => void;
 }
 
 export const InspectorPanel: React.FC<InspectorPanelProps> = ({
   timeline,
-  selectedEvent,
+  selectedEvents,
   validation,
   onUpdateTimeline,
   onUpdateEvent,
-  onDeleteEvent,
-  onDuplicateEvent,
+  onBatchNudge,
+  onBatchTag,
+  onDeleteEvents,
+  onDuplicateEvents,
+  onSaveSelectionAsPattern,
+  onInsertSwitchBeforeCue,
   onSeekTick,
 }) => {
+  const selectedEvent = selectedEvents.length === 1 ? selectedEvents[0] : null;
+  const selectedIds = selectedEvents.map((e) => e.id);
+
   const cueDef =
     selectedEvent?.op === 'call' && selectedEvent.game
       ? findCueDef(
@@ -58,7 +78,93 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
 
   return (
     <aside className="flex flex-col h-full bg-[#12161F] overflow-y-auto">
-      {selectedEvent ? (
+      {/* Multi-Selection Batch Inspector (RHREfresh style) */}
+      {selectedEvents.length >= 2 && (
+        <div className="p-3.5 border-b border-white/10 space-y-3 bg-[#151A24]">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <div className="text-xs font-bold text-white">
+                {selectedEvents.length} Events Selected
+              </div>
+              <div className="text-[11px] font-mono text-slate-400 tabular-nums">
+                {formatBeats(Math.min(...selectedEvents.map((e) => e.tick)))}b ..{' '}
+                {formatBeats(Math.max(...selectedEvents.map((e) => e.tick)))}b
+              </div>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => onDuplicateEvents(selectedIds)}
+                className="p-2 rounded-lg border border-white/10 bg-[#1B2230] text-slate-300 hover:text-white"
+                title="Duplicate selected events"
+                aria-label="Duplicate selected events"
+              >
+                <Copy className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={() => onDeleteEvents(selectedIds)}
+                className="p-2 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20"
+                title="Delete selected events"
+                aria-label="Delete selected events"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={onSaveSelectionAsPattern}
+            className="w-full inline-flex items-center justify-center gap-1.5 h-9 rounded-lg border border-emerald-500/40 bg-emerald-500/15 hover:bg-emerald-500/25 text-xs font-semibold text-emerald-200"
+          >
+            <BookmarkPlus className="w-4 h-4" />
+            Save Selection as Reusable Pattern
+          </button>
+
+          <div>
+            <div className="text-[11px] text-slate-400 mb-1">Batch Nudge Timing</div>
+            <div className="grid grid-cols-4 gap-1">
+              {[
+                { label: '-1b', ticks: -TPB },
+                { label: '-1/4', ticks: -TPB / 4 },
+                { label: '+1/4', ticks: TPB / 4 },
+                { label: '+1b', ticks: TPB },
+              ].map((step) => (
+                <button
+                  key={step.label}
+                  type="button"
+                  onClick={() => onBatchNudge(selectedIds, step.ticks)}
+                  className="h-8 rounded border border-white/10 bg-[#1B2230] hover:bg-[#252E40] font-mono text-[11px] text-slate-200"
+                >
+                  {step.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-[11px] text-slate-400 mb-1">Batch Score Tag</label>
+            <select
+              defaultValue=""
+              onChange={(e) => {
+                onBatchTag(selectedIds, e.target.value || null);
+              }}
+              className="w-full h-9 px-2 rounded-lg border border-white/10 bg-[#0E1117] text-xs text-white"
+            >
+              <option value="">Clear tag (-)</option>
+              {SCORE_TAGS.map((t) => (
+                <option key={t} value={t}>
+                  Set tag: {t}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+      )}
+
+      {/* Single Event Mechanics Inspector (Heaven Studio style) */}
+      {selectedEvent && (
         <div className="p-3.5 border-b border-white/10 space-y-3">
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -78,7 +184,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => onDuplicateEvent(selectedEvent.id)}
+                onClick={() => onDuplicateEvents([selectedEvent.id])}
                 className="p-2 rounded-lg border border-white/10 bg-[#1B2230] text-slate-300 hover:text-white"
                 title="Duplicate event"
                 aria-label="Duplicate event"
@@ -87,7 +193,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onDeleteEvent(selectedEvent.id)}
+                onClick={() => onDeleteEvents([selectedEvent.id])}
                 className="p-2 rounded-lg border border-rose-500/30 bg-rose-500/10 text-rose-300 hover:bg-rose-500/20"
                 title="Delete event"
                 aria-label="Delete event"
@@ -132,90 +238,157 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             </div>
           </div>
 
-          {selectedEvent.op === 'call' && (
+          {selectedEvent.op === 'call' && selectedEvent.game && (
             <>
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-[11px] text-slate-400 mb-1">Score Tag</label>
-                  <select
-                    value={selectedEvent.tag ?? ''}
-                    onChange={(e) =>
-                      onUpdateEvent(selectedEvent.id, { tag: e.target.value || null })
-                    }
-                    className="w-full h-9 px-2 rounded-lg border border-white/10 bg-[#0E1117] text-xs text-white"
-                  >
-                    <option value="">None (-)</option>
-                    {SCORE_TAGS.map((t) => (
-                      <option key={t} value={t}>
-                        {t}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                {selectedEvent.game === 'THE_A' && (
-                  <div>
-                    <label className="block text-[11px] text-slate-400 mb-1">Word</label>
-                    <select
-                      value={selectedEvent.word ?? 'TEA'}
-                      onChange={(e) =>
-                        onUpdateEvent(selectedEvent.id, { word: e.target.value as TheAWord })
-                      }
-                      className="w-full h-9 px-2 rounded-lg border border-white/10 bg-[#0E1117] font-mono text-xs text-white"
-                    >
-                      {THE_A_WORDS.map((w) => (
-                        <option key={w} value={w}>
-                          {w}
-                        </option>
-                      ))}
-                    </select>
+              {/* Heaven Studio-inspired Mechanic Readout */}
+              <div className="rounded-lg border border-white/10 bg-[#0E1117] px-2.5 py-2 flex items-center justify-between gap-2 text-[11px]">
+                <div className="space-y-0.5">
+                  <div className="text-slate-300 font-medium">
+                    Lead-in: <span className="font-mono text-white">{cueDef?.leadInBeats ?? 0}b</span> · Hit @{' '}
+                    <span className="font-mono text-sky-300">
+                      {formatBeats(selectedEvent.tick + Math.round((cueDef?.leadInBeats ?? 0) * TPB))}b
+                    </span>
                   </div>
-                )}
+                  <div className="text-[10px] font-mono text-slate-500">
+                    fn 0x{(selectedEvent.fn ?? 0).toString(16).toUpperCase()} · {cueDef?.status ?? 'contract'}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => onInsertSwitchBeforeCue(selectedEvent)}
+                  className="inline-flex items-center gap-1 px-2 h-7 rounded bg-[#1D2433] hover:bg-[#273044] text-[10px] font-medium text-sky-300 whitespace-nowrap shrink-0"
+                  title="Insert switch to this game right before the cue"
+                >
+                  <ArrowRightLeft className="w-3 h-3" />
+                  Switch
+                </button>
               </div>
 
-              {selectedEvent.game !== 'THE_A' && selectedEvent.game && selectedEvent.fn !== undefined && (() => {
+              <div>
+                <label className="block text-[11px] text-slate-400 mb-1">Score Tag</label>
+                <select
+                  value={selectedEvent.tag ?? ''}
+                  onChange={(e) =>
+                    onUpdateEvent(selectedEvent.id, { tag: e.target.value || null })
+                  }
+                  className="w-full h-9 px-2 rounded-lg border border-white/10 bg-[#0E1117] text-xs text-white"
+                >
+                  <option value="">None (-)</option>
+                  {SCORE_TAGS.map((t) => (
+                    <option key={t} value={t}>
+                      {t}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {selectedEvent.game === 'THE_A' && (
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">The-A Word Phrase</label>
+                  <div className="grid grid-cols-4 gap-1">
+                    {THE_A_WORDS.map((w) => (
+                      <button
+                        key={w}
+                        type="button"
+                        onClick={() => onUpdateEvent(selectedEvent.id, { word: w as TheAWord })}
+                        className={`h-8 rounded border font-mono text-[11px] font-semibold transition-colors ${
+                          (selectedEvent.word ?? 'TEA') === w
+                            ? 'border-[#FF5A36] bg-[#FF5A36]/25 text-white'
+                            : 'border-white/10 bg-[#0E1117] text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        {w}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {selectedEvent.game !== 'THE_A' && selectedEvent.fn !== undefined && (() => {
                 const args = selectedEvent.args ?? [0, 0, 0, 0];
                 const contractCheck = validateCueArgsContract(selectedEvent.game, selectedEvent.fn, args);
                 if (isRingMaskCue(selectedEvent.game, selectedEvent.fn)) {
                   const rm = ENGINE_CONTRACT.ring_mask;
+                  const mask = args[0];
                   return (
-                    <div className="space-y-2">
-                      <label className="block text-[11px] text-slate-400">
-                        Hoop Mask Domain (ring_mask: a={rm.min}..{rm.max}, b=0|1)
-                      </label>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <span className="block text-[10px] text-slate-500 mb-0.5">Mask (a)</span>
-                          <input
-                            type="number"
-                            min={rm.min}
-                            max={rm.max}
-                            step={1}
-                            value={args[0]}
-                            onChange={(e) => {
-                              const raw = parseInt(e.target.value, 10);
-                              if (!Number.isFinite(raw)) return;
-                              const clamped = Math.max(rm.min, Math.min(rm.max, raw));
-                              onUpdateEvent(selectedEvent.id, { args: [clamped, args[1] === 1 ? 1 : 0, 0, 0] });
-                            }}
-                            className="w-full h-8 px-2 rounded border border-white/10 bg-[#0E1117] font-mono text-xs text-white text-center tabular-nums"
-                          />
-                        </div>
-                        <div>
-                          <span className="block text-[10px] text-slate-500 mb-0.5">Pass Mode (b)</span>
-                          <select
-                            value={args[1] === 1 ? 1 : 0}
-                            onChange={(e) =>
-                              onUpdateEvent(selectedEvent.id, {
-                                args: [Math.max(rm.min, Math.min(rm.max, args[0])), Number(e.target.value), 0, 0],
-                              })
-                            }
-                            className="w-full h-8 px-2 rounded border border-white/10 bg-[#0E1117] font-mono text-xs text-white"
-                          >
-                            <option value={0}>0 (Standard)</option>
-                            <option value={1}>1 (Pass / Alt)</option>
-                          </select>
-                        </div>
+                    <div className="space-y-2 rounded-lg border border-cyan-500/25 bg-cyan-500/5 p-2.5">
+                      <div className="flex items-center justify-between">
+                        <label className="text-[11px] font-semibold text-cyan-200">
+                          Hoop Ring Bitmask (ring_mask)
+                        </label>
+                        <span className="font-mono text-[11px] text-cyan-300 tabular-nums">
+                          mask={mask}
+                        </span>
+                      </div>
+                      <div className="grid grid-cols-4 gap-1">
+                        {[0, 1, 2, 3].map((bit) => {
+                          const on = mask >= 0 && (mask & (1 << bit)) !== 0;
+                          return (
+                            <button
+                              key={bit}
+                              type="button"
+                              onClick={() => {
+                                const base = mask < 0 ? 0 : mask;
+                                const nextMask = base ^ (1 << bit);
+                                onUpdateEvent(selectedEvent.id, {
+                                  args: [Math.max(rm.min, Math.min(rm.max, nextMask)), args[1] === 1 ? 1 : 0, 0, 0],
+                                });
+                              }}
+                              className={`h-8 rounded border font-mono text-[11px] font-semibold transition-colors ${
+                                on
+                                  ? 'border-cyan-400 bg-cyan-500/30 text-white'
+                                  : 'border-white/10 bg-[#0E1117] text-slate-400'
+                              }`}
+                            >
+                              H{bit + 1}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      <div className="grid grid-cols-3 gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onUpdateEvent(selectedEvent.id, {
+                              args: [-1, args[1] === 1 ? 1 : 0, 0, 0],
+                            })
+                          }
+                          className={`h-7 rounded border font-mono text-[10px] ${
+                            mask === -1
+                              ? 'border-cyan-400 bg-cyan-500/25 text-white'
+                              : 'border-white/10 bg-[#0E1117] text-slate-400'
+                          }`}
+                        >
+                          Clear (-1)
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            onUpdateEvent(selectedEvent.id, {
+                              args: [15, args[1] === 1 ? 1 : 0, 0, 0],
+                            })
+                          }
+                          className={`h-7 rounded border font-mono text-[10px] ${
+                            mask === 15
+                              ? 'border-cyan-400 bg-cyan-500/25 text-white'
+                              : 'border-white/10 bg-[#0E1117] text-slate-400'
+                          }`}
+                        >
+                          All 4 (15)
+                        </button>
+                        <select
+                          value={args[1] === 1 ? 1 : 0}
+                          onChange={(e) =>
+                            onUpdateEvent(selectedEvent.id, {
+                              args: [Math.max(rm.min, Math.min(rm.max, args[0])), Number(e.target.value), 0, 0],
+                            })
+                          }
+                          className="h-7 px-1.5 rounded border border-white/10 bg-[#0E1117] font-mono text-[10px] text-white"
+                          aria-label="Hoop Pass Mode"
+                        >
+                          <option value={0}>Std (b=0)</option>
+                          <option value={1}>Pass (b=1)</option>
+                        </select>
                       </div>
                     </div>
                   );
@@ -224,11 +397,42 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                 const profiles = getAllowedCueProfiles(selectedEvent.game, selectedEvent.fn);
                 const currentKey = args.join(',');
                 const inContract = contractCheck.ok;
+                const currentIdx = profiles.findIndex((p) => p.join(',') === currentKey);
                 return (
                   <div className="space-y-1.5">
-                    <label className="block text-[11px] text-slate-400">
-                      Verified Native Args [a, b, c, d]
-                    </label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-[11px] text-slate-400">
+                        Verified Mechanic Args ({profiles.length})
+                      </label>
+                      {profiles.length > 1 && (
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const nextIdx = currentIdx <= 0 ? profiles.length - 1 : currentIdx - 1;
+                              onUpdateEvent(selectedEvent.id, { args: [...profiles[nextIdx]] as [number, number, number, number] });
+                            }}
+                            className="p-1 rounded border border-white/10 bg-[#1B2230] text-slate-300 hover:text-white"
+                            title="Previous verified profile"
+                            aria-label="Previous profile"
+                          >
+                            <ChevronLeft className="w-3 h-3" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const nextIdx = currentIdx < 0 || currentIdx >= profiles.length - 1 ? 0 : currentIdx + 1;
+                              onUpdateEvent(selectedEvent.id, { args: [...profiles[nextIdx]] as [number, number, number, number] });
+                            }}
+                            className="p-1 rounded border border-white/10 bg-[#1B2230] text-slate-300 hover:text-white"
+                            title="Next verified profile"
+                            aria-label="Next profile"
+                          >
+                            <ChevronRight className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                     <select
                       value={inContract ? currentKey : '__invalid__'}
                       onChange={(e) => {
@@ -344,7 +548,11 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
                 <div>
                   <label className="block text-[11px] text-slate-400 mb-1">Game (Verified Layout)</label>
                   <select
-                    value={selectedEvent.game && ENGINE_CONTRACT.layouts[selectedEvent.game] !== undefined ? selectedEvent.game : 'KAERU'}
+                    value={
+                      selectedEvent.game && ENGINE_CONTRACT.layouts[selectedEvent.game] !== undefined
+                        ? selectedEvent.game
+                        : 'KAERU'
+                    }
                     onChange={(e) => {
                       const g = e.target.value as GameId;
                       const verifiedLayout = ENGINE_CONTRACT.layouts[g];
@@ -392,7 +600,7 @@ export const InspectorPanel: React.FC<InspectorPanelProps> = ({
             </div>
           )}
         </div>
-      ) : null}
+      )}
 
       {/* Remix Header Settings */}
       <div className="p-3.5 border-b border-white/10 space-y-2.5">
