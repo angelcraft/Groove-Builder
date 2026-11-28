@@ -1,4 +1,6 @@
 #include "v0_execution.hpp"
+#include "v0_native.hpp"
+#include "v0_file_io.hpp"
 #include <map>
 #include <string>
 #include <vector>
@@ -17,6 +19,26 @@ struct FS:gsv::IO {
  bool rename(const char* a,const char* b)override{if(!op()||!files.count(a)||files.count(b))return false;files[b]=files[a];files.erase(a);return true;}
  bool remove(const char* p)override{if(!op()||!files.count(p))return false;files.erase(p);return true;}
 };
+struct FileApi {
+ FS store;bool sentinel=false,journal=false,syncSupported=true;
+ bool ready(){return true;}int probe(const char* p){assert(std::strcmp(p,".installer.mutex"));return !std::strcmp(p,".installer/lock")?int(sentinel):int(journal);}
+ gsv::Read read(const char* p,uint8_t* b,unsigned cap,unsigned& n){return store.read(p,b,cap,n);}
+ bool createNew(const char* p,const uint8_t* b,unsigned n){return store.create(p,b,n);}
+ bool flush(const char* p){return store.flush(p);}bool syncDirectory(){return syncSupported&&store.sync();}
+ bool renameNoReplace(const char* a,const char* b){return store.rename(a,b);}bool remove(const char* p){return store.remove(p);}
+};
+namespace binding {
+constexpr uintptr_t base=0x10000000,manager=base+0x10A75F0;
+static uint8_t mgr[0x4000],map[0x6000];static uint32_t bits;
+uintptr_t ptr(uintptr_t p){return p>=manager&&p<manager+sizeof(mgr)?reinterpret_cast<uintptr_t>(mgr)+p-manager:p;}
+bool range(uintptr_t p,size_t n){for(auto r:{std::pair<uintptr_t,size_t>{reinterpret_cast<uintptr_t>(mgr),sizeof(mgr)},{reinterpret_cast<uintptr_t>(map),sizeof(map)},{reinterpret_cast<uintptr_t>(&bits),sizeof(bits)}})if(p>=r.first&&p-r.first<=r.second&&n<=r.second-(p-r.first))return true;return false;}
+bool read(uintptr_t p,void* out,size_t n){p=ptr(p);if(!range(p,n))return false;std::memcpy(out,reinterpret_cast<void*>(p),n);return true;}
+bool write(uintptr_t p,const void* in,size_t n){p=ptr(p);if(!range(p,n))return false;std::memcpy(reinterpret_cast<void*>(p),in,n);return true;}
+uint64_t original(uint64_t,uint64_t,uint64_t,uint64_t,uint64_t,uint64_t,uint64_t,uint64_t){return 77;}
+uint64_t nonce(){static uint64_t n=900000;return ++n;}
+template<class T>void set(uint8_t* b,unsigned off,T v){std::memcpy(b+off,&v,sizeof(v));}
+uint64_t dispatch(Hook h,Frame f){return groove_v0_dispatch(unsigned(h),&f);}
+}
 static Loader loader;static Execution execution;
 struct Resources {
  std::map<std::string,std::string> files;
@@ -64,12 +86,16 @@ int main(){
  assert(gsv::load(control,B,decoded)==gsv::Status::Initial);
  control.files[paths.backup][0]^=1;assert(gsv::load(control,A,decoded)==gsv::Status::Blocked);assert(control.files[paths.main]==evidence);
  r.seq=UINT32_MAX;assert(!gsv::intent(r,3,false,second));
+ // Shared nn::fs policy: permanent mutex ignored, sentinel gates, no invented sync.
+ FileApi api;FileIO<FileApi> policy(api);api.sentinel=true;assert(!policy.lock(A));api.sentinel=false;
+ assert(policy.lock(A));assert(!policy.lock(A));uint8_t one=1;assert(!policy.create("custom-saves/org.example.beta.gsv",&one,1));policy.unlock();
+ api.syncSupported=false;assert(gsv::commit(policy,A,first)==gsv::Status::Pending);assert(!api.store.files.count(paths.main));api.syncSupported=true;assert(gsv::commit(policy,A,first)==gsv::Status::Committed);
  // Same session snapshot -> constructor -> confirmed finish -> H9, all in one harness.
  FS fs;Resources resources;resources.package(A,"RING.hoop");resources.package(B,"RING.hoop 2 0");
  resources.files["slots.json"]="{\"format\":\"groove-slots/1\",\"capacity\":2,\"generation\":0,\"slots\":[{\"index\":0,\"coord\":[0,9,0],\"id\":\"org.example.alpha\"},{\"index\":1,\"coord\":[0,9,1],\"id\":\"org.example.beta\"}]}";
  assert(loader.load(resources.source(),false));
- static Execution blocked,unaffected;assert(!blocked.arm(loader,0,control,1));assert(unaffected.arm(loader,1,control,1));
- assert(execution.arm(loader,0,fs,100));assert(!loader.load(resources.source(),true));
+ static Execution blocked,unaffected;assert(!blocked.arm(loader,0,control,1,10001));assert(unaffected.arm(loader,1,control,1,10001));
+ assert(execution.arm(loader,0,fs,100,10100));assert(!loader.load(resources.source(),true));
  loader.package[0].timeline[0]='!'; // must not alter the armed snapshot
  struct Context{unsigned original=0,adopt=0;}ctx;
  MultiFactory factory{&ctx,[](void* c,uintptr_t self,uintptr_t seq,const int* args)->uintptr_t{auto& s=*static_cast<Context*>(c);++s.original;assert(seq==0x1234);for(unsigned i=0;i<5;++i)assert(args[i]==int(7+i));return self;},
@@ -80,15 +106,32 @@ int main(){
  assert(execution.quiesced(token));fs.fail=fs.step+3;execution.persist(fs);fs.fail=-1;assert(execution.persist(fs)==gsv::Status::Committed);assert(execution.persist(fs)==gsv::Status::Committed);
  assert(gsv::load(fs,A,decoded)==gsv::Status::Loaded&&decoded.plays==1&&decoded.clears==1);
  // Reuse same Stage address for B; old callback token cannot affect it.
- assert(execution.arm(loader,1,fs,101));factory.adopt=[](void*,uintptr_t,const groove::MultiTimeline& tl,const Package& p){return tl.valid&&!std::strcmp(p.id,"org.example.beta");};
+ assert(execution.arm(loader,1,fs,101,10101));factory.adopt=[](void*,uintptr_t,const groove::MultiTimeline& tl,const Package& p){return tl.valid&&!std::strcmp(p.id,"org.example.beta");};
  assert(execution.construct(factory,0x5000,0x1234,args));assert(!execution.confirmAbort(token));token=execution.token();assert(execution.confirmAbort(token));assert(execution.quiesced(token));assert(execution.mapReturned(token));assert(execution.persist(fs)==gsv::Status::Committed);
  assert(gsv::load(fs,B,decoded)==gsv::Status::Loaded&&decoded.plays==1&&decoded.clears==0);
- assert(!execution.arm(loader,1,fs,101));assert(!execution.arm(loader,1,fs,0));
+ assert(!execution.arm(loader,1,fs,101,10101));assert(!execution.arm(loader,1,fs,0,10000));
  // Failed adoption retains ownership information instead of pretending dtor/free ran.
- static Execution faulted;assert(faulted.arm(loader,1,fs,200));MultiFactory rejected=factory;
+ static Execution faulted;assert(faulted.arm(loader,1,fs,200,10200));MultiFactory rejected=factory;
  rejected.adopt=[](void*,uintptr_t,const groove::MultiTimeline&,const Package&){return false;};
  unsigned originalBefore=ctx.original;assert(!faulted.construct(rejected,0x6000,0x1234,args));
  assert(ctx.original==originalBefore+1&&faulted.phase==ExecutionPhase::OwnershipFault&&faulted.token().stage==0x6000);
  assert(faulted.persist(fs)==gsv::Status::Blocked);
+ // Dispatcher -> SessionState -> Execution -> constructor -> H9, no live binding.
+ assert(loader.load(resources.source(),false));static Execution bound;FS boundIo;
+ Backend backend{binding::base,{binding::read,binding::write},{}};
+ for(auto& fn:backend.original)fn=binding::original;
+ MultiFactory boundFactory{nullptr,[](void*,uintptr_t self,uintptr_t,const int*){return self;},[](void*,uintptr_t,const groove::MultiTimeline& tl,const Package&){return tl.valid;}};
+ backend.execution=&bound;backend.levels=&loader;backend.saves=&boundIo;backend.factory=&boundFactory;backend.newTransaction=binding::nonce;
+ assert(groove_v0_bind(&backend));assert(groove_v0_configure_loaded());
+ binding::set(binding::mgr,0xBA0,int16_t(-1));binding::set(binding::mgr,0xBA2,int16_t(-1));binding::set(binding::mgr,0x2904,int(-1));binding::set(binding::mgr,0x3AA0,reinterpret_cast<uintptr_t>(&binding::bits));
+ binding::set(binding::map,0x5274,int(0));binding::set(binding::map,0x5298,int(9));binding::set(binding::map,0x529C,int(0));
+ Frame mapFrame{{reinterpret_cast<uintptr_t>(binding::map)}};binding::dispatch(Hook::MapInit,mapFrame);
+ assert(binding::dispatch(Hook::Launch,mapFrame)==77);assert(groove_v0_construct_bound_multi(0x9900,0x1234,args));
+ StageToken bt=bound.token();assert(!groove_v0_finish(bt.stage));SaveIntent legacy;assert(groove_v0_prepare_save(&legacy)==unsigned(Close::Busy));assert(groove_v0_finish_token(bt));assert(groove_v0_quiet_token(bt,false));binding::dispatch(Hook::MapReturn,mapFrame);
+ assert(groove_v0_persist_bound()==unsigned(gsv::Status::Committed));assert(!groove_v0_session_active());assert(gsv::load(boundIo,A,decoded)==gsv::Status::Loaded&&decoded.plays==1);
+ assert(bound.intent()->token!=bt.session); // durable transaction ID != callback token
+ binding::set(binding::map,0x529C,int(1));assert(binding::dispatch(Hook::Launch,mapFrame)==77);assert(groove_v0_construct_bound_multi(0x9900,0x1234,args));
+ assert(!groove_v0_finish_token(bt));bt=bound.token();assert(groove_v0_quiet_token(bt,true));binding::dispatch(Hook::MapReturn,mapFrame);
+ assert(groove_v0_persist_bound()==unsigned(gsv::Status::Committed));assert(gsv::load(boundIo,B,decoded)==gsv::Status::Loaded&&decoded.plays==1&&decoded.clears==0);
  puts("PASS: GSV1/H9 codec, CRC, ID, failures/retry/recovery, lost ack, A/B snapshots, constructor once, tokens and quiescence gating");
 }

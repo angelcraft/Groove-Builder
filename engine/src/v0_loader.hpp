@@ -21,6 +21,7 @@ struct Source {
 struct Loader {
     Registry registry{},accepted{}; Package package[2]{};
     bool hasAccepted=false;
+    const char* packageError[2]{};
     bool ready=false; const char* error="not loaded";
     // Single owner phase only. Never overwrite an active session's snapshots.
     bool load(const Source&,bool sessionActive);

@@ -1,0 +1,59 @@
+{
+  "base": "195a0e5",
+  "ge155_pin": "4ef974635a691d95ba59c90853c4bcc17fdfcfaf",
+  "host": {
+    "python_methods": 19,
+    "gtf_cases": 19,
+    "asan_ubsan_binaries": 6,
+    "exit_code": 0,
+    "dispatcher_session_execution_constructor_h9_A_B": true,
+    "invalid_manifest_A_preserves_B": true,
+    "permanent_mutex_ignored": true,
+    "sentinel_and_journal_gated": true,
+    "unsupported_sync_never_committed": true
+  },
+  "arm64": {
+    "kind": "ge151-v0-final-elf-synthetic-execution",
+    "grid_cells": 180,
+    "native_delegations": 178,
+    "original_once": true,
+    "lr_sp_callee_saved_preserved": true,
+    "launch_bits_restored": true,
+    "native_gsv1_decoder_executed": true,
+    "native_registry_reader_executed": true,
+    "observed_test_stack_bytes": 688,
+    "transitive_native_stack_bound": false,
+    "originals": "synthetic callbacks, not original game functions",
+    "horizon_services_executed": false,
+    "switch_tested": false,
+    "installable": false
+  },
+  "audit": {
+    "abi": "AArch64 ELF64 LE ET_DYN",
+    "segments": [
+      "RX",
+      "RO",
+      "RW"
+    ],
+    "elf_nso_payloads_identical": true,
+    "nso_segment_hashes_checked": false,
+    "relative_relocations": 676,
+    "unresolved_imports": [],
+    "hardware_validated": false
+  },
+  "artifacts": {
+    "GrooveHT3.nso": {
+      "sha256": "618bc1bf381aa480356cf66acd62fceff0e98bafe4d5e2dde049ebdca651b82d",
+      "bytes": 135372
+    },
+    "GrooveHT3.nss": {
+      "sha256": "dbfdcfdfa8f7fa3b301f6fd88a7089259dbfa394e3dc2a024344db709824b046",
+      "bytes": 683768
+    }
+  },
+  "native_nnfs_executed": false,
+  "native_directory_sync_supported": false,
+  "native_transaction_id_provider": false,
+  "live_binding": false,
+  "installable": false
+}

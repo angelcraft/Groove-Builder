@@ -126,7 +126,7 @@ bool runtimeTimeline(const Package& p,MultiTimeline& out){
 __attribute__((used,retain)) bool Loader::load(const Source& src,bool active){
  static unsigned char loaderBusy=0;TryLease lease(loaderBusy);
  if(!lease.held){return false;}
- if(active){error="session active";return false;}bool previouslyReady=hasAccepted;Registry previous=accepted;ready=false;registry={};for(auto& p:package)p.valid=false;
+ if(active){error="session active";return false;}bool previouslyReady=hasAccepted;Registry previous=accepted;ready=false;registry={};for(auto& p:package)p.valid=false;for(auto& e:packageError)e=nullptr;
  auto gate=[&](){return src.probe&&src.probe(src.context,".installer/lock")==0&&src.probe(src.context,".installer/journal.json")==0;};
  if(!src.read||!gate()){error="installer lock/journal or IO";return false;}
  static char registryText[65537];unsigned size=0;
@@ -135,9 +135,9 @@ __attribute__((used,retain)) bool Loader::load(const Source& src,bool active){
  static MultiTimeline validation; // Scratch, never a live playback owner.
  for(unsigned i=0;i<2;++i){auto& p=package[i];p={};if(!registry.ids[i][0])continue;char path[160];
   std::snprintf(path,sizeof(path),"levels/%s/manifest.json",registry.ids[i]);
-  if(!src.read(src.context,path,p.manifest,16384,&p.manifestSize)||!parseManifest(p)||std::strcmp(registry.ids[i],p.id)){error="manifest";return false;}
+  if(!src.read(src.context,path,p.manifest,16384,&p.manifestSize)||!parseManifest(p)||std::strcmp(registry.ids[i],p.id)){packageError[i]="manifest";continue;}
   std::snprintf(path,sizeof(path),"levels/%s/%s",p.id,p.timelinePath);
-  if(!src.read(src.context,path,p.timeline,61440,&p.timelineSize)||!runtimeTimeline(p,validation)){error="timeline";return false;}p.valid=true;
+  if(!src.read(src.context,path,p.timeline,61440,&p.timelineSize)||!runtimeTimeline(p,validation)){packageError[i]="timeline";continue;}p.valid=true;
  }
  unsigned after=0;static char second[65537];Registry check;
  if(!gate()||!src.read(src.context,"slots.json",second,65536,&after)||after!=size||std::memcmp(second,registryText,size)||!parseRegistry(second,after,check)){error="registry changed";return false;}

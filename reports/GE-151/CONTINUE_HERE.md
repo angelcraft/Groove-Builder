@@ -113,3 +113,24 @@ Siguiente: proveedor IO/locks reales, finalizar post-lease y conectar Execution 
 binding cuando el propietario Stage/join esté probado. La consulta PR #5 no tenía
 respuesta nueva al revisarla en esta iteración; no se ha esperado para desarrollar H9.
 Sin engine.json, instalador, hooks nuevos, Actions ni instalación.
+
+
+## Incremento nn::fs + binding + Custom Remixes A/B
+
+Leer V0_NNFS_BINDING.md y V0_NNFS_BINDING_RESULTS.json. Ya están conectados en harness
+Backend/SessionState/Execution/Loader/constructor/H9 para A y B; no reimplementarlos.
+La API de arm exige identidad durable separada de token de callback. Legacy H9 sin
+token se bloquea si existe Execution. Proveedor V0NnFiles y FileIO compilan: IO prestada,
+scoping por ID, FlushFile real, centinela/journal; .installer.mutex permanente ignorado.
+No hay syncDirectory acreditado: devuelve false y H9 Pending, NO éxito ficticio.
+
+Loader ahora aísla manifest/timeline inválido por paquete. 19 métodos Python +19 GTF
++6 binarios sanitizados pasan, build ARM64 y auditor pasan. Generador
+make_v0_custom_remixes.py crea 2 .groove propios reproducibles, aceptados por GE-155
+4ef9746. Kit es para validación, sin marker ni módulo instalable.
+
+B2 rev2 d2cc779 leída. GE-154 7240789328 exige rev3 con corrección scheduler budget
+exhaustion antes de aceptar evidencia; origin/grok/stage-owner aún rev2 al comprobar.
+No se instala destroyPending ni se omiten dtors. Próxima revisión: V06_DISTRIBUTION_DRAFT
+para estructura/rollback y datos privados requeridos. No esperar a Grok para IO/tests,
+pero no activar hasta evidencia; siguen pendientes sync, tx-ID nativo y retención.

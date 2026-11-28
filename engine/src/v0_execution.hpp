@@ -14,7 +14,7 @@ enum class ExecutionPhase {Idle,Armed,Running,OwnershipFault,Pending,Saved};
 class Execution {
  Package snapshot{};MultiTimeline timeline{};gsv::Record previous{};
  gsv::Intent pending{};bool intentReady=false,finished=false,aborted=false,quiet=false,returned=false;
- uint64_t serial=0;StageToken owner{};
+ uint64_t transaction=0,serial=0;StageToken owner{};
 public:
  Execution()=default;
  Execution(const Execution&)=delete;Execution& operator=(const Execution&)=delete;
@@ -22,11 +22,11 @@ public:
  const Package& package()const{return snapshot;}
  const gsv::Intent* intent()const{return intentReady?&pending:nullptr;}
  StageToken token()const{return owner;}
- bool arm(const Loader& loader,unsigned slot,gsv::IO& io,uint64_t session){
-  if((phase!=ExecutionPhase::Idle&&phase!=ExecutionPhase::Saved)||!session||session<=serial||!loader.ready||slot>=2||!loader.package[slot].valid)return false;
+ bool arm(const Loader& loader,unsigned slot,gsv::IO& io,uint64_t session,uint64_t durableTransaction){
+  if((phase!=ExecutionPhase::Idle&&phase!=ExecutionPhase::Saved)||!durableTransaction||!session||session<=serial||!loader.ready||slot>=2||!loader.package[slot].valid)return false;
   gsv::Record record;auto result=gsv::load(io,loader.package[slot].id,record);
   if(result!=gsv::Status::Initial&&result!=gsv::Status::Loaded)return false;
-  snapshot=loader.package[slot];previous=record;serial=session;owner={0,session};
+  snapshot=loader.package[slot];previous=record;serial=session;transaction=durableTransaction;owner={0,session};
   intentReady=finished=aborted=quiet=returned=false;phase=ExecutionPhase::Armed;return true;
  }
  bool construct(const MultiFactory& factory,uintptr_t self,uintptr_t sequence,const int (&args)[5]){
@@ -53,7 +53,7 @@ public:
   if(phase==ExecutionPhase::Saved)return gsv::Status::Committed;
   if(phase!=ExecutionPhase::Running&&phase!=ExecutionPhase::Pending)return gsv::Status::Blocked;
   if(!quiet||!returned||(!finished&&!aborted))return gsv::Status::Pending;
-  if(!intentReady){if(!gsv::intent(previous,owner.session,finished&&!aborted,pending))return gsv::Status::Blocked;intentReady=true;phase=ExecutionPhase::Pending;}
+  if(!intentReady){if(!gsv::intent(previous,transaction,finished&&!aborted,pending))return gsv::Status::Blocked;intentReady=true;phase=ExecutionPhase::Pending;}
   auto status=gsv::commit(io,snapshot.id,pending);if(status==gsv::Status::Committed)phase=ExecutionPhase::Saved;return status;
  }
 };

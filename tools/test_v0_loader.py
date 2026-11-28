@@ -62,13 +62,13 @@ class NativeLoader(unittest.TestCase):
    with zipfile.ZipFile(p)as z:
     for n in z.namelist():(target/n).write_bytes(z.read(n))
   r={'format':'groove-slots/1','capacity':2,'generation':0,'slots':[{'index':i,'coord':[0,9,i],'id':sid}for i,(sid,p)in enumerate(selected[:2])]}
-  (root/'slots.json').write_text(json.dumps(r));old=Path.cwd()
+  (root/'slots.json').write_text(json.dumps(r));(root/'.installer.mutex').write_text('permanent mutex, ignored by runtime');old=Path.cwd()
   try:
    os.chdir(root);self.assertEqual(self.lib.load(),1);self.assertEqual(self.lib.compile(0),1);self.assertEqual(self.lib.compile(1),1)
    (root/'.installer').mkdir(exist_ok=True);(root/'.installer/lock').write_text('x');self.assertEqual(self.lib.load(),0);self.assertEqual(self.lib.compile(0),0)
    (root/'.installer/lock').unlink();self.assertEqual(self.lib.load(),1)
    # Source changes after snapshot do not change compiled data until a reload.
-   manifest=root/'levels'/selected[0][0]/'manifest.json';saved=manifest.read_bytes();manifest.write_text('{}');self.assertEqual(self.lib.compile(0),1);self.assertEqual(self.lib.load(),0)
+   manifest=root/'levels'/selected[0][0]/'manifest.json';saved=manifest.read_bytes();manifest.write_text('{}');self.assertEqual(self.lib.compile(0),1);self.assertEqual(self.lib.load(),1);self.assertEqual(self.lib.compile(0),0);self.assertEqual(self.lib.compile(1),1)
    manifest.write_bytes(saved);r['generation']=1;(root/'slots.json').write_text(json.dumps(r));self.assertEqual(self.lib.load(),1)
    r['generation']=0;(root/'slots.json').write_text(json.dumps(r));self.assertEqual(self.lib.load(),0)
   finally:os.chdir(old)

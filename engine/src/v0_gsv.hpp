@@ -45,7 +45,10 @@ enum class Status {Initial,Loaded,RecoveryAvailable,Blocked,Pending,Committed,Co
 // Reads bounded incl actual file length; writes create-new, renames never replace.
 // flush(file) and sync(directory) have distinct fault points. No FAT durability claim.
 struct IO {
- virtual ~IO()=default;
+protected:
+ // Borrowed interface: providers own their lifetime; never delete through IO*.
+ ~IO()=default;
+public:
  virtual bool lock(const char*)=0;virtual void unlock()=0;
  virtual Read read(const char*,uint8_t*,unsigned,unsigned&)=0;
  virtual bool create(const char*,const uint8_t*,unsigned)=0;

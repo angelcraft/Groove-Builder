@@ -74,7 +74,7 @@ class Module:
 def verify(root):
     m=Module(root/'build/GrooveHT3.nss');backend=HEAP;slots=HEAP+0x1000;mp=HEAP+0x4000;c=HEAP+0x18000;intent=HEAP+0x19000
     ptrs=[CALLS+0x100+4*i for i in range(N)]
-    m.put(backend,struct.pack('<'+'Q'*(4+N),GAME,CALLS,CALLS+4,*ptrs,0));assert m.call('groove_v0_bind',backend)==1
+    m.put(backend,struct.pack('<'+'Q'*(9+N),GAME,CALLS,CALLS+4,*ptrs,0,0,0,0,0,0));assert m.call('groove_v0_bind',backend)==1
     b=bytearray(208)
     for i,sid in enumerate((b'org.example.alpha',b'org.example.beta')):
         b[i*104:i*104+len(sid)]=sid;b[i*104+97:i*104+99]=b'\1\1';struct.pack_into('<I',b,i*104+100,9)

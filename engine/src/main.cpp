@@ -27,6 +27,7 @@
 #include "metadata.hpp"
 #include "v0_loader.hpp"
 #include "v0_native.hpp"
+#include "v0_file_io.hpp"
 
 #define GROOVE_HT3_VERSION "0.5.1"
 
@@ -354,6 +355,48 @@ extern "C" __attribute__((used,retain,visibility("default"))) bool groove_v0_loa
     if(!gV0Stat)gV0Stat=reinterpret_cast<V0Stat>(hk::ro::lookupSymbol("_ZN2nn2fs12GetEntryTypeEPNS0_18DirectoryEntryTypeEPKc"));
     if(!gV0Stat)return false;
     return gV0Packages.load({nullptr,v0Read,v0Probe},false);
+}
+
+// nn::fs implementation for GSV IO. Disconnected from gameplay, no auto-write.
+struct V0NnFiles {
+    nn::Result (*flushFile)(nn::fs::FileHandle)=nullptr;
+    bool ready(){return gFsOk&&gV0Stat&&flushFile;}
+    int probe(const char* relative){return v0Probe(nullptr,relative);}
+    groove::v0::gsv::Read read(const char* relative,uint8_t* data,unsigned cap,unsigned& n){
+        using R=groove::v0::gsv::Read;char path[192];int type=v0Path(relative,path,true);
+        if(type==0)return R::Missing;if(type!=1)return R::Error;
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Read).IsFailure())return R::Error;
+        long size=0,after=0;R result=R::Error;
+        if(!gFs.GetFileSize(&size,h).IsFailure()&&size>=0){
+            if(size>long(cap))result=R::Oversized;
+            else if(!gFs.ReadFile(h,0,data,size).IsFailure()&&!gFs.GetFileSize(&after,h).IsFailure()&&after==size){n=unsigned(size);result=R::Present;}
+        }gFs.CloseFile(h);return result;
+    }
+    bool createNew(const char* relative,const uint8_t* data,unsigned size){
+        char directory[192];int dir=v0Path("custom-saves",directory,false);if(dir<0)return false;
+        if(dir==0&&gFs.CreateDirectory(directory).IsFailure())return false;
+        char path[192];if(v0Path(relative,path,true)!=0)return false;
+        if(gFs.CreateFile(path,size).IsFailure())return false; // native create-new, never truncate
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Write).IsFailure())return false;
+        auto option=nn::fs::WriteOption::CreateOption(0);
+        bool ok=!gFs.WriteFile(h,0,data,size,option).IsFailure();gFs.CloseFile(h);return ok;
+    }
+    bool flush(const char* relative){char path[192];if(v0Path(relative,path,true)!=1)return false;
+        nn::fs::FileHandle h{};if(gFs.OpenFile(&h,path,nn::fs::OpenMode_Write).IsFailure())return false;
+        bool ok=!flushFile(h).IsFailure();gFs.CloseFile(h);return ok;}
+    bool renameNoReplace(const char* from,const char* to){char a[192],b[192];
+        if(v0Path(from,a,true)!=1||v0Path(to,b,true)!=0)return false;
+        return !gFs.RenameFile(a,b).IsFailure(); // nn::fs destination-exists rejection still requires Horizon verification
+    }
+    bool remove(const char* relative){char path[192];return v0Path(relative,path,true)==1&&!gFs.DeleteFile(path).IsFailure();}
+    bool syncDirectory(){return false;} // SD directory sync guarantee is NOT provided by FlushFile/CommitSaveData.
+} gV0NnFiles;
+groove::v0::FileIO<V0NnFiles> gV0SaveIo(gV0NnFiles);
+extern "C" __attribute__((used,retain,visibility("default"))) groove::v0::gsv::IO* groove_v0_get_save_io(){
+    if(!gFsOk)return nullptr;
+    if(!gV0Stat)gV0Stat=reinterpret_cast<V0Stat>(hk::ro::lookupSymbol("_ZN2nn2fs12GetEntryTypeEPNS0_18DirectoryEntryTypeEPKc"));
+    if(!gV0NnFiles.flushFile)gV0NnFiles.flushFile=reinterpret_cast<decltype(gV0NnFiles.flushFile)>(hk::ro::lookupSymbol("_ZN2nn2fs9FlushFileENS0_10FileHandleE"));
+    return gV0NnFiles.ready()?&gV0SaveIo:nullptr;
 }
 
 // Multi timeline resolution (v0.5.0): .gtf first, then .gtl.
