@@ -12,7 +12,7 @@ GE-154 Draft 0.3 V0 decisions (docs/GROOVE_INTEGRATION_V0_DECISIONS.md @ 3642b7e
 
 Layout under <SD>/groove/:
   levels/<id>/{manifest.json, timeline.gtf|timeline.gtl}    slots.json    engine.json (read only)
-  .installer/lock  .installer/journal.json  .installer/tx-<12 hex>/{new-level/, old-level/, slots.json.new, slots.json.old}
+  .installer.mutex (permanent OS mutex, not gate)  .installer/lock (gate sentinel)  .installer/journal.json  .installer/tx-<12 hex>/{new-level/, old-level/, slots.json.new, slots.json.old}
 
 Protocol: lock -> journal(staging) -> stage in tx + fsync -> journal(prepared) -> atomic renames
 -> journal(committed) -> cleanup -> unlock. Recovery: staging/aborted -> discard tx; prepared ->
@@ -71,7 +71,8 @@ class SD:
         self.state = os.path.join(self.groove, ".installer")
         self.slots_path = os.path.join(self.groove, "slots.json")
         self.journal_path = os.path.join(self.state, "journal.json")
-        self.lock_path = os.path.join(self.state, "lock")
+        self.lock_path = os.path.join(self.state, "lock")           # sentinel: runtime gate (with journal.json)
+        self.mutex_path = os.path.join(self.groove, ".installer.mutex")  # persistent OS mutex, not part of the gate
         self.fs = fs or FS()
 
     # ------------------------------------------------------------------ paths
@@ -93,7 +94,7 @@ class SD:
         st = lstat_or_none(self.root)
         if st is None or not stat.S_ISDIR(st.st_mode) and not is_link_like(st):
             raise InstallError("SD_NOT_FOUND", f"SD root {self.root} does not exist")
-        self._chk(self.groove, self.levels, self.state, self.slots_path, self.saves, self.backups)
+        self._chk(self.groove, self.levels, self.state, self.slots_path, self.saves, self.backups, self.mutex_path)
         for d in (self.groove, self.levels, self.state):
             self.fs.mkdir(d)
 
@@ -348,7 +349,7 @@ class SD:
 
     def _locked(self, fn, need_clean=True):
         self._ensure_dirs()
-        lk = InstallerLock(self.lock_path)
+        lk = InstallerLock(self.lock_path, self.mutex_path)
         lk.acquire()
         keep_lock_file = False
         try:

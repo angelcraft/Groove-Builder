@@ -28,7 +28,7 @@ A10, A11, B10 = "synthetic-a-1.0.0.groove", "synthetic-a-1.1.0.groove", "synthet
 
 def snapshot(root, exclude=()):
     """{relative path: sha256 | 'DIR'} for the whole tree (symlinks recorded as LINK)."""
-    exclude = tuple(os.path.normpath(e) for e in exclude)
+    exclude = tuple(os.path.normpath(e) for e in exclude) + (os.path.normpath("groove/.installer.mutex"),)
     out = {}
     for d, dirs, files in os.walk(root):
         rel_d = os.path.relpath(d, root)

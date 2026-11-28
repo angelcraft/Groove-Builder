@@ -91,9 +91,10 @@ py -3 tools\groove_sd_sim.py --cli C:\ruta\GrooveInstall.exe
    válido…»). Para arreglarlo, desinstala B y vuelve a instalar `synthetic-b-1.0.0.groove` (reinstalar
    encima daría `VERSION_CONFLICT`, porque el contenido instalado ya no coincide).
 9. Contención del lock: con la GUI abierta, en PowerShell ejecuta
-   `py -3 -c "import sys; sys.path.insert(0,'tools'); from groove_package.lock import InstallerLock; l=InstallerLock(r'C:\sim-sd\groove\.installer\lock').acquire(); input('pulsa Enter para soltar')"`
+   `py -3 -c "import sys; sys.path.insert(0,'tools'); from groove_package.lock import InstallerLock; l=InstallerLock(r'C:\sim-sd\groove\.installer\lock', r'C:\sim-sd\groove\.installer.mutex').acquire(); input('pulsa Enter para soltar')"`
    y, mientras espera, pulsa «Instalar» en la GUI: debe decir que otro instalador está usando la SD. Pulsa
-   Enter en PowerShell y repite: ahora funciona y `groove\.installer\` queda vacío.
+   Enter en PowerShell y repite: ahora funciona y `groove\.installer\` queda vacío (el archivo permanente
+   `groove\.installer.mutex` se queda: es normal y el motor debe ignorarlo).
 10. «Desinstalar...» A y B. Comprueba que `C:\sim-sd\groove\custom-saves\` sigue con sus 4 archivos y que
     `atmosphere\`, `JKSV\` y `switch\` no han cambiado.
 11. Cierra la GUI a mitad de una instalación no es reproducible a mano de forma fiable; los cortes los cubre

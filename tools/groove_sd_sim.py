@@ -43,7 +43,8 @@ TITLE = "0100D9F01D474000"
 BUILD_ID = "03FF4A3BEC96BDE3A2E37CE3AA4CAA0CAE8935A8"
 MARKER = {"format": "groove-engine/1", "engine_version": "0.6.0", "engine_contract": 1, "build_id": BUILD_ID,
           "capabilities": ["package.runtime/1", "registry.slots/1", "adapter.multi", "timeline.gtf", "timeline.gtl"]}
-INSTALLER_OWNED = ("groove/levels", "groove/slots.json", "groove/.installer", "groove/backups")
+INSTALLER_OWNED = ("groove/levels", "groove/slots.json", "groove/.installer", "groove/.installer.mutex",
+                   "groove/backups")
 
 # Placeholders only: every byte below is invented. Nothing here is game data.
 PLACEHOLDERS = {
@@ -101,7 +102,7 @@ def foreign(root):
 
 def level_state(root):
     """Logical installer state, ignoring backups/ (recovery evidence) and empty infra dirs."""
-    s = snapshot(root, skip=("groove/backups",))
+    s = snapshot(root, skip=("groove/backups", "groove/.installer.mutex"))
     inst = os.path.join(root, "groove", ".installer")
     leftovers = sorted(os.listdir(inst)) if os.path.isdir(inst) else []
     return s, leftovers
@@ -261,8 +262,8 @@ class Runner:
         sd.install(pkg(A10))
         holder = subprocess.Popen(
             [sys.executable, "-c", "import sys; sys.path.insert(0, sys.argv[1]);"
-             "from groove_package.lock import InstallerLock; lk = InstallerLock(sys.argv[2]).acquire();"
-             "print('locked', flush=True); sys.stdin.read(); lk.release()", HERE, sd.lock_path],
+             "from groove_package.lock import InstallerLock; lk = InstallerLock(sys.argv[2], sys.argv[3]).acquire();"
+             "print('locked', flush=True); sys.stdin.read(); lk.release()", HERE, sd.lock_path, sd.mutex_path],
             stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
         try:
             if holder.stdout.readline().strip() != "locked":

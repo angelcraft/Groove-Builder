@@ -116,7 +116,7 @@ HOLDER = textwrap.dedent("""
     import sys
     sys.path.insert(0, sys.argv[1])
     from groove_package.lock import InstallerLock
-    lk = InstallerLock(sys.argv[2]).acquire()
+    lk = InstallerLock(sys.argv[2], sys.argv[3]).acquire()
     print("locked", flush=True)
     sys.stdin.read()
     lk.release()
@@ -125,7 +125,7 @@ HOLDER = textwrap.dedent("""
 
 class Concurrency(Base):
     def hold_lock(self):
-        p = subprocess.Popen([sys.executable, "-c", HOLDER, os.path.join(REPO, "tools"), self.sd.lock_path],
+        p = subprocess.Popen([sys.executable, "-c", HOLDER, os.path.join(REPO, "tools"), self.sd.lock_path, self.sd.mutex_path],
                              stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True)
         self.assertEqual(p.stdout.readline().strip(), "locked")
         return p
@@ -155,10 +155,10 @@ class Concurrency(Base):
         self.assertFalse(os.path.exists(self.sd.lock_path))
 
     def test_same_process_second_lock_conflicts(self):
-        a = InstallerLock(self.sd.lock_path).acquire()
+        a = InstallerLock(self.sd.lock_path, self.sd.mutex_path).acquire()
         try:
             with self.assertRaises(InstallError):
-                InstallerLock(self.sd.lock_path).acquire()
+                InstallerLock(self.sd.lock_path, self.sd.mutex_path).acquire()
         finally:
             a.release()
 

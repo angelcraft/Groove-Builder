@@ -1,23 +1,28 @@
-"""Exclusive installer lock using an OS file lock (fcntl.flock on POSIX/Android, msvcrt on Windows).
+"""Installer lock = persistent OS MUTEX file + removable SENTINEL file (GE-154 review 7240284577).
 
-The lock is held by an open handle for the whole operation, so a crashed process never leaves a
-*held* lock (the OS drops it with the handle). The lock FILE doubles as half of the runtime gate:
+  mutex     groove/.installer.mutex   never deleted by the installer; holds an OS lock for the whole
+                                      operation (fcntl.flock on POSIX/Android, msvcrt.locking on Windows).
+                                      A crashed process loses it automatically (the OS drops the handle).
+  sentinel  groove/.installer/lock    the half of the runtime gate that means "an installer is running or
+                                      crashed" (the other half is .installer/journal.json). Created, written,
+                                      and removed ONLY while holding the mutex, so no two installers can ever
+                                      interleave on it: no re-acquire/abandon race, no unlink of a sentinel
+                                      that another operation deliberately kept (journal pending).
 
-    groove/.installer/lock  OR  groove/.installer/journal.json present  =>  no custom launches
+Why two files: on Windows an open file cannot be deleted and `release()` had to close the handle before
+removing it, leaving a window in which another process could acquire, finish (and keep the sentinel because
+a journal was left) before our unlink. With a permanent mutex the sentinel is never the thing being locked.
 
-Gate/lock/journal ordering (GE-154 review 7239548049):
-  * acquire: open/create -> OS lock -> write {pid,time,token} completely -> fsync; any failure in
-    between unlocks, closes the handle and removes the file only if THIS call created it.
-  * the installer writes journal.json (same directory, dir fsync) only after acquire, and removes it
-    (dir fsync) before release, so at every instant of a mutation at least one gate file exists.
-  * a journal left behind (crash, cleanup error, tampering) keeps the lock file too (release(remove=False)).
-  * release never unlinks a lock file that belongs to another process:
-      POSIX:   unlink only while still holding the OS lock AND the path is still our inode.
-      Windows: unlock + close, then remove only if the file still carries OUR token. Python opens files
-               without FILE_SHARE_DELETE, so a process that already re-opened the file makes the remove
-               fail (ignored) and the token check covers a completed re-acquire.
-The lock is advisory between installers on this host; it is not a protection against other agents
-(see README: offline, trusted file system, no TOCTOU guarantees against external writers).
+  acquire:  open/create mutex -> OS lock (LOCKED if held) -> create sentinel with O_EXCL (so `preexisting`
+            proves whether THIS call created it; an existing/stale one is reused) -> write {pid,time,token}
+            completely -> fsync -> close the sentinel handle. Any failure: remove the sentinel only if this
+            call created it, unlock the mutex, close the handle, raise LOCK_IO_ERROR.
+  release:  [remove the sentinel unless a journal/crash keeps the gate closed] -> unlock -> close.
+
+Gate ordering for GE-151 (unchanged): sentinel (fsync) -> journal (fsync dir) -> ... -> journal removed (fsync)
+-> sentinel removed. At every instant of a mutation at least one of {sentinel, journal} exists. The mutex file is
+NOT part of the gate: the runtime must ignore it. The lock is advisory between installers using this code; it
+is not protection against other programs (see README: offline, trusted file system, no TOCTOU promise).
 """
 import json
 import os
@@ -29,7 +34,7 @@ from .errors import InstallError
 WINDOWS = os.name == "nt"
 MAX_LOCK_BYTES = 256
 
-if WINDOWS:  # pragma: no cover - exercised on Windows only
+if WINDOWS:  # pragma: no cover - exercised on Windows only (CI windows-latest)
     import msvcrt
 
     def _try_lock(fd):
@@ -62,9 +67,12 @@ else:
         except OSError:
             pass
 
+BIN = getattr(os, "O_BINARY", 0)
+NOFOLLOW = getattr(os, "O_NOFOLLOW", 0)
+
 
 def _write_all(fd, data: bytes):
-    """os.write may write less than asked (and FAT/USB stacks do); loop until complete."""
+    """os.write may write less than asked (FAT/USB stacks do); loop until complete."""
     view = memoryview(data)
     while view:
         n = os.write(fd, view)
@@ -81,9 +89,9 @@ def _close(fd):
 
 
 def read_token(path):
-    """Token of the lock file at `path`, or None (absent, unreadable, locked by another process, junk)."""
+    """Token stored in the sentinel at `path`, or None (absent, unreadable, junk)."""
     try:
-        fd = os.open(path, os.O_RDONLY | getattr(os, "O_BINARY", 0) | getattr(os, "O_NOFOLLOW", 0))
+        fd = os.open(path, os.O_RDONLY | BIN | NOFOLLOW)
     except OSError:
         return None
     try:
@@ -100,103 +108,83 @@ def read_token(path):
         return None
 
 
-def _same_file(fd, path):
-    try:
-        return os.path.samestat(os.fstat(fd), os.lstat(path))
-    except OSError:
-        return False
-
-
 class InstallerLock:
-    def __init__(self, path):
-        self.path = path
-        self.fd = None
+    def __init__(self, path, mutex_path=None):
+        self.path = path                                  # sentinel (runtime gate)
+        self.mutex_path = mutex_path or (path + ".mutex")
+        self.fd = None                                    # handle on the mutex while held
         self.token = None
-        self.preexisting = False
-        self.windows = WINDOWS  # tests flip this to exercise the Windows release order on any host
+        self.preexisting = False                          # sentinel existed (stale/kept) when we acquired
+        self.created = False                              # THIS acquire created the sentinel (O_EXCL)
 
-    # ------------------------------------------------------------------ acquire
-    def _abandon(self, fd, created):
-        """Failure after the OS lock was taken: never leave a held lock, a leaked fd or our own new file."""
-        if created and self.windows:
-            try:
-                os.ftruncate(fd, 0)  # so the size check below recognises our own partial file
-            except OSError:
-                pass
+    def _open_sentinel(self):
+        """Create with O_EXCL (proves ownership of creation) or reuse an existing one. Mutex is held."""
+        flags = os.O_RDWR | BIN | NOFOLLOW
         try:
-            if created and not self.windows and _same_file(fd, self.path):
-                try:
-                    os.remove(self.path)  # still holding the lock: nobody else can own this inode
-                except OSError:
-                    pass
-        finally:
-            _unlock(fd)
-            _close(fd)
-        if created and self.windows:
-            try:
-                if os.path.getsize(self.path) == 0:  # nothing written by anyone else
-                    os.remove(self.path)
-            except OSError:
-                pass  # another process opened it meanwhile; it owns it now
+            return os.open(self.path, flags | os.O_CREAT | os.O_EXCL, 0o644), True
+        except FileExistsError:
+            return os.open(self.path, flags, 0o644), False
+
+    def _rm_sentinel(self):
+        try:
+            os.remove(self.path)
+        except FileNotFoundError:
+            pass
 
     def acquire(self):
-        for _ in range(3):
-            preexisting = os.path.lexists(self.path)
-            try:
-                fd = os.open(self.path, os.O_RDWR | os.O_CREAT | getattr(os, "O_BINARY", 0)
-                             | getattr(os, "O_NOFOLLOW", 0), 0o644)
-            except OSError as e:
-                raise InstallError("LOCK_IO_ERROR", f"cannot open {self.path}: {e}") from None
-            try:
-                locked = _try_lock(fd)
-            except BaseException:
-                _close(fd)
-                raise
-            if not locked:
-                _close(fd)
-                raise InstallError("LOCKED", "another installer or recovery is running on this SD")
-            if not self.windows and not _same_file(fd, self.path):
-                # The previous holder unlinked the file between our open and our lock: retry on the new path.
-                _unlock(fd)
-                _close(fd)
-                continue
+        try:
+            mfd = os.open(self.mutex_path, os.O_RDWR | os.O_CREAT | BIN | NOFOLLOW, 0o644)
+        except OSError as e:
+            raise InstallError("LOCK_IO_ERROR", f"cannot open {self.mutex_path}: {e}") from None
+        try:
+            locked = _try_lock(mfd)
+        except BaseException:
+            _close(mfd)
+            raise
+        if not locked:
+            _close(mfd)
+            raise InstallError("LOCKED", "another installer or recovery is running on this SD")
+        created = False
+        sfd = None
+        try:
+            sfd, created = self._open_sentinel()
             token = secrets.token_hex(16)
             payload = json.dumps({"pid": os.getpid(), "time": int(time.time()), "token": token}).encode("ascii")
+            os.ftruncate(sfd, 0)
+            os.lseek(sfd, 0, os.SEEK_SET)
+            _write_all(sfd, payload)
+            os.fsync(sfd)
+            _close(sfd)
+            sfd = None
+        except BaseException as e:
+            if sfd is not None:
+                _close(sfd)  # Windows: must be closed before the unlink below
             try:
-                os.ftruncate(fd, 0)
-                os.lseek(fd, 0, os.SEEK_SET)
-                _write_all(fd, payload)
-                os.fsync(fd)
-            except BaseException as e:
-                self._abandon(fd, created=not preexisting)
-                if isinstance(e, OSError):
-                    raise InstallError("LOCK_IO_ERROR", f"cannot write {self.path}: {e}") from None
-                raise
-            self.fd, self.token, self.preexisting = fd, token, preexisting
-            return self
-        raise InstallError("LOCKED", "lock file is being replaced concurrently; retry")
+                if created:
+                    self._rm_sentinel()
+            except OSError:
+                pass
+            _unlock(mfd)
+            _close(mfd)
+            if isinstance(e, OSError):
+                raise InstallError("LOCK_IO_ERROR", f"cannot write {self.path}: {e}") from None
+            raise
+        self.fd, self.token, self.created, self.preexisting = mfd, token, created, not created
+        return self
 
-    # ------------------------------------------------------------------ release
     def release(self, remove=True):
+        """Remove the sentinel (unless the gate must stay closed), then drop the mutex. Never touches
+        the sentinel without holding the mutex; never deletes the mutex file."""
         if self.fd is None:
             return
-        fd, token = self.fd, self.token
+        fd = self.fd
         self.fd = self.token = None
-        if self.windows:  # an open file cannot be deleted on Windows: unlock, close, then remove if still ours
-            _unlock(fd)
-            _close(fd)
-            if remove and read_token(self.path) == token:
-                try:
-                    os.remove(self.path)
-                except OSError:
-                    pass  # another process opened it in between; it owns it now
-            return
         try:
-            if remove and _same_file(fd, self.path):
+            if remove:
                 try:
-                    os.remove(self.path)
-                except FileNotFoundError:
-                    pass
+                    self._rm_sentinel()
+                except OSError:
+                    pass  # e.g. a reader has it open on Windows: it stays, which is the safe (closed) side
         finally:
             _unlock(fd)
             _close(fd)

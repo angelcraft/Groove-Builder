@@ -148,7 +148,7 @@ class AssignRevalidation(SDCase):
         def spy(pid):
             seen.append(os.path.exists(self.sd.lock_path))
             with self.assertRaises(InstallError) as cm:
-                InstallerLock(self.sd.lock_path).acquire()
+                InstallerLock(self.sd.lock_path, self.sd.mutex_path).acquire()
             self.assertEqual(cm.exception.code, "LOCKED")
             return orig(pid)
 
@@ -227,44 +227,44 @@ def open_fds():
         return None
 
 
-class LockAcquireFailure(unittest.TestCase):
+class LockBase(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.mkdtemp()
         self.addCleanup(shutil.rmtree, self.tmp, True)
         self.path = os.path.join(self.tmp, "lock")
+        self.mutex = os.path.join(self.tmp, "mutex")
 
+    def lock(self):
+        return InstallerLock(self.path, self.mutex)
+
+
+class LockAcquireFailure(LockBase):
     def boom(self, *a, **k):
         raise OSError(28, "No space left on device (injected)")
 
-    def check_failure(self, patcher, windows=False, preexisting=False):
-        if preexisting:
-            with open(self.path, "w") as f:
-                f.write('{"pid": 1}')
-        fds = open_fds()
-        lk = InstallerLock(self.path)
-        lk.windows = windows
-        with patcher:
-            with self.assertRaises(InstallError) as cm:
-                lk.acquire()
-        self.assertEqual(cm.exception.code, "LOCK_IO_ERROR")
-        self.assertIsNone(lk.fd)
-        if fds is not None:
-            self.assertEqual(open_fds(), fds, "fd leaked")
-        self.assertEqual(os.path.exists(self.path), preexisting)  # our new file removed, a stale one kept
-        again = InstallerLock(self.path).acquire()  # OS lock was released
-        again.release()
-        self.assertFalse(os.path.exists(self.path))
-
     def test_failures(self):
         for what in ("ftruncate", "fsync", "write"):
-            for windows in (False, True):
-                for pre in (False, True):
-                    with self.subTest(what=what, windows_order=windows, preexisting=pre):
-                        if what == "write":
-                            p = mock.patch.object(lockmod, "_write_all", self.boom)
-                        else:
-                            p = mock.patch.object(lockmod.os, what, self.boom)
-                        self.check_failure(p, windows, pre)
+            for pre in (False, True):
+                with self.subTest(what=what, preexisting=pre):
+                    if pre:
+                        put(self.path, b'{"pid": 1}')
+                    fds = open_fds()
+                    patcher = (mock.patch.object(lockmod, "_write_all", self.boom) if what == "write"
+                               else mock.patch.object(lockmod.os, what, self.boom))
+                    lk = self.lock()
+                    with patcher:
+                        with self.assertRaises(InstallError) as cm:
+                            lk.acquire()
+                    self.assertEqual(cm.exception.code, "LOCK_IO_ERROR")
+                    self.assertIsNone(lk.fd)
+                    if fds is not None:
+                        self.assertEqual(open_fds(), fds, "fd leaked")
+                    # a sentinel THIS call created is removed; a stale/kept one is never removed by a failure
+                    self.assertEqual(os.path.exists(self.path), pre)
+                    again = self.lock().acquire()  # the OS mutex was released
+                    again.release()
+                    self.assertEqual(os.path.exists(self.path), False)
+                    self.assertTrue(os.path.exists(self.mutex))  # the mutex file itself is permanent
 
     def test_open_failure(self):
         os.chmod(self.tmp, 0o500)
@@ -272,145 +272,157 @@ class LockAcquireFailure(unittest.TestCase):
         if os.access(self.tmp, os.W_OK):
             self.skipTest("running as root / permissions not enforced")
         with self.assertRaises(InstallError) as cm:
-            InstallerLock(self.path).acquire()
+            self.lock().acquire()
         self.assertEqual(cm.exception.code, "LOCK_IO_ERROR")
 
     def test_short_writes_are_completed(self):
         real = os.write
         with mock.patch.object(lockmod.os, "write", lambda fd, b: real(fd, bytes(b[:3]))):
-            lk = InstallerLock(self.path).acquire()
+            lk = self.lock().acquire()
         try:
             self.assertEqual(read_token(self.path), lk.token)
             with open(self.path) as f:
-                obj = json.load(f)
-            self.assertEqual(obj["pid"], os.getpid())
+                self.assertEqual(json.load(f)["pid"], os.getpid())
         finally:
             lk.release()
 
     def test_zero_progress_write(self):
         with mock.patch.object(lockmod.os, "write", lambda fd, b: 0):
             with self.assertRaises(InstallError) as cm:
-                InstallerLock(self.path).acquire()
+                self.lock().acquire()
         self.assertEqual(cm.exception.code, "LOCK_IO_ERROR")
         self.assertFalse(os.path.exists(self.path))
 
     def test_stale_content_overwritten(self):
-        with open(self.path, "w") as f:
-            f.write("x" * 200)
-        lk = InstallerLock(self.path).acquire()
+        put(self.path, b"x" * 200)
+        lk = self.lock().acquire()
         with open(self.path) as f:
             self.assertEqual(json.load(f)["token"], lk.token)  # truncated, not appended
         lk.release()
 
 
-class LockRelease(unittest.TestCase):
-    def setUp(self):
-        self.tmp = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, self.tmp, True)
-        self.path = os.path.join(self.tmp, "lock")
+class LockOwnership(LockBase):
+    def test_creation_is_proven_by_o_excl(self):
+        """`preexisting` no longer comes from a lexists() before O_CREAT: a sentinel that appears between
+        a check and the open is still reported as pre-existing, and then never removed on failure."""
+        lk = self.lock()
+        real = lockmod.InstallerLock._open_sentinel
 
-    def foreign(self):
-        os.remove(self.path)
-        with open(self.path, "w") as f:
-            f.write('{"pid": 4242, "time": 0, "token": "someone-else"}')
+        def sneaky(self_):
+            put(self.path, b'{"pid": 7}')  # someone else's/kept sentinel appears just before our open
+            return real(self_)
 
-    def test_never_unlinks_foreign_lock_file(self):
-        for windows in (False, True):
-            with self.subTest(windows_order=windows):
-                lk = InstallerLock(self.path)
-                lk.windows = windows
-                lk.acquire()
-                self.foreign()
-                lk.release()
-                self.assertTrue(os.path.exists(self.path))
-                self.assertEqual(read_token(self.path), "someone-else")
-                os.remove(self.path)
-
-    def test_windows_order_release_reacquire_race(self):
-        """Windows releases by unlock -> close -> remove. If another installer re-acquires in that window,
-        the first one must not delete the second one's lock file."""
-        a = InstallerLock(self.path)
-        a.windows = True
-        a.acquire()
-        b = InstallerLock(self.path)
-        b.windows = True
-        real = lockmod.read_token
-
-        def racing_read(path):
-            b.acquire()  # B wins the race after A closed its handle
-            return real(path)
-
-        with mock.patch.object(lockmod, "read_token", racing_read):
-            a.release()
-        self.assertIsNotNone(b.fd)
-        self.assertEqual(read_token(self.path), b.token)
-        with self.assertRaises(InstallError):
-            InstallerLock(self.path).acquire()  # B still holds it
+        with mock.patch.object(lockmod.InstallerLock, "_open_sentinel", sneaky):
+            lk.acquire()
+        self.assertEqual((lk.created, lk.preexisting), (False, True))
+        lk.release(remove=False)
+        self.assertTrue(os.path.exists(self.path))
+        a = self.lock().acquire()
+        self.assertEqual((a.created, a.preexisting), (False, True))
+        a.release()
+        b = self.lock().acquire()
+        self.assertEqual((b.created, b.preexisting), (True, False))
         b.release()
+
+    def test_kept_sentinel_survives_until_next_operation(self):
+        a = self.lock().acquire()
+        a.release(remove=False)  # journal pending: gate must stay closed
+        self.assertTrue(os.path.exists(self.path))
+        with self.assertRaises(InstallError) as cm:  # mutex free, but nobody may drop the sentinel for us
+            b = self.lock().acquire()
+            b.release(remove=False)
+            raise InstallError("X", "never reached by a removal")
+        self.assertEqual(cm.exception.code, "X")
+        self.assertTrue(os.path.exists(self.path))
+
+    def test_held_mutex_blocks_everything_and_touches_nothing(self):
+        a = self.lock().acquire()
+        try:
+            put_before = read_token(self.path)
+            for _ in range(3):
+                with self.assertRaises(InstallError) as cm:
+                    self.lock().acquire()
+                self.assertEqual(cm.exception.code, "LOCKED")
+            self.assertEqual(read_token(self.path), put_before)  # loser did not rewrite/remove the sentinel
+        finally:
+            a.release()
         self.assertFalse(os.path.exists(self.path))
+        self.assertTrue(os.path.exists(self.mutex))
 
-    def test_own_lock_removed_and_keep_flag(self):
-        for windows in (False, True):
-            with self.subTest(windows_order=windows):
-                lk = InstallerLock(self.path)
-                lk.windows = windows
-                lk.acquire().release()
-                self.assertFalse(os.path.exists(self.path))
-                lk.acquire().release(remove=False)
-                self.assertTrue(os.path.exists(self.path))  # gate kept closed on request
-                InstallerLock(self.path).acquire().release()  # stale file is reusable
-                self.assertFalse(os.path.exists(self.path))
-
-    def test_release_idempotent(self):
-        lk = InstallerLock(self.path).acquire()
+    def test_release_idempotent_and_keep_flag(self):
+        lk = self.lock().acquire()
         lk.release()
         lk.release()
         self.assertFalse(os.path.exists(self.path))
+        self.lock().acquire().release(remove=False)
+        self.assertTrue(os.path.exists(self.path))
+        self.lock().acquire().release()  # stale sentinel is reusable and then removed
+        self.assertFalse(os.path.exists(self.path))
+
+    def test_sd_never_deletes_mutex(self):
+        tmp = tempfile.mkdtemp()
+        self.addCleanup(shutil.rmtree, tmp, True)
+        make_sd(tmp)
+        sd = SD(tmp)
+        sd.install(valid(A10))
+        self.assertTrue(os.path.isfile(sd.mutex_path))
+        sd.uninstall(ID_A)
+        self.assertTrue(os.path.isfile(sd.mutex_path))
+        self.assertFalse(os.path.exists(sd.lock_path))
+        self.assertEqual(os.listdir(sd.state), [])  # the gate directory stays clean
 
 
 WORKER = textwrap.dedent("""
-    import os, sys, time
+    import os, random, sys, time
     sys.path.insert(0, sys.argv[1])
     from groove_package.lock import InstallerLock
     from groove_package.errors import InstallError
-    path, owner, n = sys.argv[2], sys.argv[3], int(sys.argv[4])
-    got = locked = 0
-    deadline = time.time() + 60
+    sentinel, mutex, state, n, seed = sys.argv[2], sys.argv[3], sys.argv[4], int(sys.argv[5]), int(sys.argv[6])
+    rnd = random.Random(seed)
+    got = 0
+    deadline = time.time() + 90
     while got < n and time.time() < deadline:
-        lk = InstallerLock(path)
+        lk = InstallerLock(sentinel, mutex)
         try:
             lk.acquire()
         except InstallError as e:
             assert e.code == "LOCKED", e
-            locked += 1
             continue
         try:
-            fd = os.open(owner, os.O_CREAT | os.O_EXCL | os.O_WRONLY)  # fails if two holders overlap
-            os.close(fd)
-            os.remove(owner)
+            # state file (touched only under the mutex) says whether the previous holder kept the sentinel
+            expected = open(state).read() if os.path.exists(state) else "absent"
+            actual = "present" if os.path.exists(sentinel) else "absent"
+            # our own acquire just created/reused it, so compare against what acquire saw:
+            was = "present" if lk.preexisting else "absent"
+            assert was == expected, "sentinel %s but previous holder left it %s" % (was, expected)
+            keep = rnd.random() < 0.4
+            with open(state, "w") as f:
+                f.write("present" if keep else "absent")
         finally:
-            lk.release()
+            lk.release(remove=not keep)
         got += 1
-    print(got, locked)
+    print(got)
 """)
 
 
-class LockMultiProcessRace(unittest.TestCase):
-    """Real processes hammering acquire/release (native msvcrt on Windows, flock elsewhere)."""
+class LockMultiProcessRace(LockBase):
+    """Real processes hammering acquire/release with random keep/remove (native msvcrt on Windows CI, flock
+    elsewhere). Invariant: the sentinel is exactly as the previous holder left it - nobody removes a kept
+    one and nobody leaves a removed one behind."""
 
-    def test_mutual_exclusion_and_cleanup(self):
-        tmp = tempfile.mkdtemp()
-        self.addCleanup(shutil.rmtree, tmp, True)
-        path, owner = os.path.join(tmp, "lock"), os.path.join(tmp, "owner")
-        n = 150
-        procs = [subprocess.Popen([sys.executable, "-c", WORKER, os.path.join(REPO, "tools"), path, owner, str(n)],
-                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for _ in range(3)]
+    def test_mutual_exclusion_and_sentinel_integrity(self):
+        state = os.path.join(self.tmp, "state")
+        n = 200
+        procs = [subprocess.Popen([sys.executable, "-c", WORKER, os.path.join(REPO, "tools"), self.path,
+                                   self.mutex, state, str(n), str(i)],
+                                  stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True) for i in range(4)]
         for p in procs:
-            out, err = p.communicate(timeout=120)
+            out, err = p.communicate(timeout=150)
             self.assertEqual(p.returncode, 0, err)
             self.assertEqual(int(out.split()[0]), n, out)
-        self.assertFalse(os.path.exists(owner))
-        self.assertFalse(os.path.exists(path), "last release must remove its own lock file")
+        with open(state) as f:
+            self.assertEqual(os.path.exists(self.path), f.read() == "present")
+        self.assertTrue(os.path.exists(self.mutex))
 
 
 # ------------------------------------------------------------------------------- gate coherence
