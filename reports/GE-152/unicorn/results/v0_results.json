@@ -1,0 +1,3061 @@
+{
+ "custom": {
+  "V1 A complete": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V2 B complete": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      1,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    },
+    {
+     "id": "org.example.b",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      1
+     ],
+     "org.example.b",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.b",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V3 A->B->A reentry": {
+   "PASS": true,
+   "launches": 3,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    },
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      1,
+      1
+     ],
+     "note": null
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      2
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      2
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      3
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 2,
+     "clears": 2,
+     "bestRank": 5,
+     "bestScore": 99
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 1,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 10
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      1
+     ],
+     "org.example.b",
+     3
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     4
+    ],
+    [
+     "H0",
+     "map init",
+     5
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      1,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.b",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     3
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     5
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     6
+    ],
+    [
+     "H0",
+     "map init",
+     7
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     2
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V4 abort/reentry A": {
+   "PASS": true,
+   "launches": 3,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      2
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      2
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      3
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 3,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     3
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     4
+    ],
+    [
+     "H0",
+     "map init",
+     5
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     2
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     5
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     6
+    ],
+    [
+     "H0",
+     "map init",
+     7
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     3
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    },
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V5 host state7 perfect=2": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V6 PC target=50": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V7 PC target=67(host)": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x6",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V8 PC none, others state6": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V9 PC target=50 cntBB4=5": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V10 mode1 rejected (A)": {
+   "PASS": true,
+   "launches": 0,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": false,
+     "visual_cursor": null,
+     "note": "no launch"
+    }
+   ],
+   "write_points": [],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "F0",
+     "mode/map-reject",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V11 partial install: B off": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launched": false,
+     "visual_cursor": null,
+     "note": "no launch"
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V13 B has no id": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      1
+     ],
+     "launched": false,
+     "visual_cursor": null,
+     "note": "no launch"
+    },
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    null
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V14 custom gsv state 9": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 9,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     6
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V15 custom gsv wrong id": {
+   "PASS": true,
+   "launches": 0,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": false,
+     "visual_cursor": null,
+     "note": "no launch"
+    }
+   ],
+   "write_points": [],
+   "gsv": [
+    {
+     "id": "org.example.zzz",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "F0",
+     "invalid gsv",
+     [
+      0,
+      9,
+      0
+     ]
+    ]
+   ],
+   "F4": [],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V16 session bits preserved": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "save131440",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "save131440",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      2
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x4a",
+     "0x40",
+     "0x4a"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "save131440",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V17 x restored by H6": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      3
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      3
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      3
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V18 PC target=50 remaining=0": {
+   "PASS": true,
+   "launches": 1,
+   "plays": [
+    {
+     "cell": [
+      0,
+      9,
+      0
+     ],
+     "launched": true,
+     "visual_cursor": [
+      0,
+      9,
+      0,
+      1
+     ],
+     "note": null
+    }
+   ],
+   "write_points": [
+    {
+     "phase": "writeSave",
+     "kind": "writeSave-pre",
+     "bytes_compared": 4488,
+     "diff_offsets": [],
+     "saveCount": [
+      0,
+      0
+     ]
+    },
+    {
+     "phase": "writeSave",
+     "kind": "async-staging",
+     "bytes_compared": 4488,
+     "diff_offsets": [
+      "0x560"
+     ],
+     "saveCount": [
+      0,
+      1
+     ]
+    }
+   ],
+   "gsv": [
+    {
+     "id": "org.example.a",
+     "state": 3,
+     "plays": 1,
+     "clears": 1,
+     "bestRank": 4,
+     "bestScore": 85
+    },
+    {
+     "id": "org.example.b",
+     "state": 2,
+     "plays": 0,
+     "clears": 0,
+     "bestRank": 0,
+     "bestScore": 0
+    }
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H2b",
+     "confirm state from slot",
+     2
+    ],
+    [
+     "F1",
+     "arm",
+     [
+      0,
+      9,
+      0
+     ],
+     "org.example.a",
+     1
+    ],
+    [
+     "H5",
+     "setSel suppressed",
+     [
+      0,
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H3post",
+     "bits",
+     "0x0",
+     "0x0",
+     "0x0"
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ],
+    [
+     "H6",
+     "visual cursor",
+     [
+      0,
+      9,
+      0,
+      1
+     ]
+    ],
+    [
+     "H10",
+     "commit skipped"
+    ],
+    [
+     "H9",
+     "gsv",
+     "org.example.a",
+     1
+    ]
+   ],
+   "F4": [
+    {
+     "phase": "writeSave",
+     "diff": []
+    }
+   ],
+   "medal_path": 0,
+   "tripwires": []
+  },
+  "V12 A then native Remix8": {
+   "PASS": true,
+   "native_changed_bytes": 7,
+   "fields": [
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ]
+  }
+ },
+ "native": {
+  "N1 native Remix8 rank4": {
+   "PASS": true,
+   "write_points": 2,
+   "bytes_compared_per_point": 4488,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "medal_path": [
+    0,
+    0
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ]
+   ]
+  },
+  "N2 native HT2 rank5": {
+   "PASS": true,
+   "write_points": 2,
+   "bytes_compared_per_point": 4488,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[41].best",
+    "kind1[41].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.world[0]"
+   ],
+   "medal_path": [
+    0,
+    0
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ]
+   ]
+  },
+  "N3 native Remix8 exit": {
+   "PASS": true,
+   "write_points": 2,
+   "bytes_compared_per_point": 4488,
+   "fields_changed": [
+    "hdr.saveCount",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "medal_path": [
+    0,
+    0
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ]
+   ]
+  },
+  "N4 native Remix8 PC target=50": {
+   "PASS": true,
+   "write_points": 2,
+   "bytes_compared_per_point": 4488,
+   "fields_changed": [
+    "campaign.cntBB4",
+    "hdr.saveCount",
+    "kind1[67].best",
+    "kind1[67].plays",
+    "pending.rank[0]",
+    "pending.score[0]+0",
+    "sel.col[0]",
+    "sel.row[0]"
+   ],
+   "medal_path": [
+    0,
+    0
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ]
+   ]
+  },
+  "N5 native Remix8 mode1": {
+   "PASS": true,
+   "write_points": 2,
+   "bytes_compared_per_point": 4488,
+   "fields_changed": [
+    "blob+0xCC4",
+    "hdr.saveCount",
+    "pending.rank[1]",
+    "sel.col[1]",
+    "sel.row[1]",
+    "sel.world[1]"
+   ],
+   "medal_path": [
+    0,
+    0
+   ],
+   "hook_log": [
+    [
+     "H0",
+     "map init",
+     1
+    ],
+    [
+     "H0",
+     "map destroyed",
+     2
+    ],
+    [
+     "H0",
+     "map init",
+     3
+    ]
+   ]
+  }
+ },
+ "selftest": {
+  "no-H5": {
+   "case": "V1 A complete",
+   "detected": true,
+   "first_failures": [
+    "V1 A complete [mutation no-H5]: point 0 writeSave/writeSave-pre: bytes outside allow-list [('0xb9a', 'sel.col[0]')]",
+    "V1 A complete [mutation no-H5]: point 1 writeSave/async-staging: bytes outside allow-list [('0xb9a', 'sel.col[0]')]"
+   ]
+  },
+  "no-H4": {
+   "case": "V1 A complete",
+   "detected": true,
+   "first_failures": [
+    "V1 A complete [mutation no-H4]: point 0 writeSave/writeSave-pre: bytes outside allow-list [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]')]",
+    "V1 A complete [mutation no-H4]: point 1 writeSave/async-staging: bytes outside allow-list [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]')]"
+   ]
+  },
+  "no-H10": {
+   "case": "V18 PC target=50 remaining=0",
+   "detected": true,
+   "first_failures": [
+    "V18 PC target=50 remaining=0 [mutation no-H10]: point 0 writeSave/writeSave-pre: bytes outside allow-list [('0xbb0', 'campaign.target'), ('0xbb1', 'campaign.target+1')]",
+    "V18 PC target=50 remaining=0 [mutation no-H10]: point 1 writeSave/async-staging: bytes outside allow-list [('0xbb0', 'campaign.target'), ('0xbb1', 'campaign.target+1')]"
+   ]
+  },
+  "no-H2b": {
+   "case": "V5 host state7 perfect=2",
+   "detected": true,
+   "first_failures": [
+    "exception UcError() (medal path with harness map: map+0x6D68 unbacked)"
+   ]
+  },
+  "no-H6": {
+   "case": "V17 x restored by H6",
+   "detected": true,
+   "first_failures": [
+    "V17 x restored by H6 [mutation no-H6]: bounded state not cleared: sess=None reject=None cursor={'mode': 0, 'sel': (0, 0, 9, 0, 3), 'id': 'org.example.a'}",
+    "V17 x restored by H6 [mutation no-H6]: visual cursor (0, 1, 0, 1) != (0, 9, 0, 3)"
+   ]
+  },
+  "no-H3post": {
+   "case": "V16 session bits preserved",
+   "detected": true,
+   "first_failures": [
+    "V16 session bits preserved [mutation no-H3post]: write points 2 != expected 4",
+    "V16 session bits preserved [mutation no-H3post]: session bits not preserved: 0x40"
+   ]
+  }
+ },
+ "unit": {
+  "H1 no id / invalid id": {
+   "PASS": true,
+   "info": {
+    "(0, 9, 0)": [
+     1,
+     67
+    ],
+    "(0, 9, 1)": [
+     0,
+     13
+    ],
+    "invalid_with_id": [
+     [
+      1,
+      67
+     ],
+     1
+    ]
+   }
+  },
+  "H2b validated state < 7": {
+   "PASS": true,
+   "info": {
+    "states": {
+     "2": 2,
+     "3": 3,
+     "6": 6,
+     "7": 6,
+     "9": 6,
+     "255": 6
+    },
+    "invalid_300": 1,
+    "destroyed_map": 1
+   }
+  },
+  "H3 Map*/gen/re-entry/bounds": {
+   "PASS": true,
+   "info": {
+    "reentry": [
+     null,
+     0,
+     [
+      "F1",
+      "reject",
+      [
+       0,
+       9,
+       0
+      ],
+      "re-entry (session already armed)"
+     ]
+    ],
+    "foreign_map": [
+     "F1",
+     "reject",
+     [
+      0,
+      9,
+      0
+     ],
+     "map not captured/destroyed"
+    ],
+    "destroyed_map": [
+     "F1",
+     "reject",
+     [
+      0,
+      9,
+      0
+     ],
+     "map not captured/destroyed"
+    ],
+    "stale_session": [
+     [
+      "H0",
+      "session dropped (no stage)",
+      "org.example.a"
+     ]
+    ],
+    "gen": 5
+   }
+  },
+  "H7 call site only + tripwires": {
+   "PASS": true,
+   "info": {
+    "callsite_session": 73,
+    "other_callsite_session": 0,
+    "direct_2E90_session": 0,
+    "x_ctor_tripwire": 1,
+    "callsite_no_session": 0,
+    "native_67": 73,
+    "tripwires": [
+     [
+      "callsite 0x206A54 during custom session",
+      "org.example.a"
+     ],
+     [
+      "scene_perfect ctor during custom session",
+      "org.example.a"
+     ]
+    ]
+   }
+  },
+  "H1b reverse map": {
+   "PASS": true,
+   "info": {
+    "bytes_compared": 2448,
+    "bytes_different": 0
+   }
+  }
+ },
+ "medal_positive_control": {
+  "medal_block_hits": 1,
+  "note": "native (1,1,0)->(1,41) state 7, no V0",
+  "stopped_by": "UcError()"
+ },
+ "failures": []
+}

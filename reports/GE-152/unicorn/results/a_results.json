@@ -1,0 +1,4726 @@
+[
+ {
+  "case": "F0 invalid package: cellState->1 (locked)",
+  "launchA_reached": false,
+  "calls": [
+   "0x1cbca0",
+   "0x1cc420",
+   "0x4ee970",
+   "0x514fd0"
+  ],
+  "blob_diff": [],
+  "SE_0x4EE970": true
+ },
+ {
+  "case": "F0 control: cellState->4 (enabled), no guards",
+  "launchA_reached": true,
+  "calls": [
+   "0x12d310",
+   "0x139b70",
+   "0x1cbca0",
+   "0x1cc420",
+   "0x206d00",
+   "0x4e0680",
+   "0x509570",
+   "0x514fd0"
+  ],
+  "blob_diff": [
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1
+   ],
+   [
+    "0xb9a",
+    "sel.col[0]",
+    1,
+    9
+   ],
+   [
+    "0xb9e",
+    "sel.x[0]",
+    1,
+    0
+   ],
+   [
+    "0xba0",
+    "pending.curIdx[0]",
+    255,
+    67
+   ],
+   [
+    "0xba1",
+    "pending.curIdx[0]+1",
+    255,
+    0
+   ]
+  ],
+  "SE_0x4EE970": false
+ },
+ {
+  "case": "F0+F1-F3: enabled, guards",
+  "launchA_reached": true,
+  "calls": [
+   "0x12d310",
+   "0x139b70",
+   "0x1cbca0",
+   "0x1cc420",
+   "0x1d3130",
+   "0x206d00",
+   "0x48b0",
+   "0x4e0680",
+   "0x509570",
+   "0x514fd0"
+  ],
+  "blob_diff": [
+   [
+    "0xb9a",
+    "sel.col[0]",
+    1,
+    9
+   ],
+   [
+    "0xb9e",
+    "sel.x[0]",
+    1,
+    0
+   ]
+  ],
+  "SE_0x4EE970": false
+ },
+ {
+  "case": "N1 native Remix8 (0,8,4) results rank4",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 4,
+   "score": 85
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best",
+    0,
+    64,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    4,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    85,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9dc",
+    "kind1[67].best"
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "N2 native HT2 (1,1,0) results rank5",
+  "cell": [
+   1,
+   1,
+   0
+  ],
+  "host": [
+   1,
+   41
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 41,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 41,
+   "rank": 5,
+   "score": 100
+  },
+  "map_after": {
+   "pend5278": 41,
+   "col": 1,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x83c",
+    "kind1[41].best",
+    0,
+    75,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x840",
+    "kind1[41].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    5,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    100,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x83c",
+    "kind1[41].best"
+   ],
+   [
+    "0x840",
+    "kind1[41].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "N3 native Remix8 exit/quit (no results)",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "N4 native Remix8 + guards inactive (control)",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 4,
+   "score": 85
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best",
+    0,
+    64,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    4,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    85,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9dc",
+    "kind1[67].best"
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C1 custom v0.5 IPS (1,9,4) exit, no guards",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C1p custom IPS exit, host state7 perfect=2, flag bit0",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   1,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x2"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    2,
+    [
+     "nextSave@0x3d7c",
+     "save131440@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0x9e4",
+    "kind1[67].perfect",
+    2,
+    0,
+    [
+     "mapEnter+commit@0x484c"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ],
+   [
+    "0xba6",
+    "pending.flags[0]",
+    0,
+    1,
+    [
+     "launchA@0x48c4"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0x9e4",
+    "kind1[67].perfect"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba6",
+    "pending.flags[0]"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x13148c",
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d3240",
+    "0x1d3250",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 2,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 3,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1,
+   "0x4ee970": 1
+  }
+ },
+ {
+  "case": "N5 native Remix8 first clear (state2) results rank4",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 4,
+   "score": 85
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9d8",
+    "kind1[67].state",
+    2,
+    3,
+    [
+     "refresh@0x4054"
+    ]
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best",
+    0,
+    85,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    4,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    85,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9d8",
+    "kind1[67].state"
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best"
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1,
+   "0x1cc190": 1
+  }
+ },
+ {
+  "case": "C1s custom IPS exit, host state2",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C2s custom guards, host state2",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C2h custom guards, HT2 host (hoop adapter)",
+  "cell": [
+   0,
+   9,
+   1
+  ],
+  "host": [
+   1,
+   41
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 1,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C2 custom (0,9,0) exit, guards F1-F4",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "C2p custom guards, host state7 perfect=2 flag bit0",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   1,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PC-N native Remix8, campaign target=50",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 4,
+   "score": 85
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best",
+    0,
+    64,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    4,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    85,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ],
+   [
+    "0xbb4",
+    "campaign.cntBB4",
+    1,
+    2,
+    [
+     "launchA@0x4a80"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9dc",
+    "kind1[67].best"
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ],
+   [
+    "0xbb4",
+    "campaign.cntBB4"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PC-C1 custom IPS no guards, campaign target=50",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ],
+   [
+    "0xbb4",
+    "campaign.cntBB4",
+    1,
+    2,
+    [
+     "launchA@0x4a80"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xbb4",
+    "campaign.cntBB4"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PC-C2 custom guards, campaign target=50",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PCH-C1 custom IPS no guards, campaign target=67(host)",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x6"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    2,
+    [
+     "nextSave@0x3d7c",
+     "save131440@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ],
+   [
+    "0xbb2",
+    "campaign.remaining",
+    3,
+    2,
+    [
+     "save131440@0x49fc"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xbb2",
+    "campaign.remaining"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x13148c",
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d31dc",
+    "0x1d31ec",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 2,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 3,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1,
+   "0x4ee970": 1
+  }
+ },
+ {
+  "case": "PCH-C2 custom guards, campaign target=67(host)",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d31dc",
+    "0x1d31ec",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PC4-C2 custom guards, campaign target=50 cntBB4=5 (expiry edge)",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": false
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0xbb0",
+    "campaign.target",
+    50,
+    255,
+    [
+     "mapEnter+commit@0x49c4"
+    ]
+   ],
+   [
+    "0xbb1",
+    "campaign.target+1",
+    0,
+    255,
+    [
+     "mapEnter+commit@0x49c4"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0xbb0",
+    "campaign.target"
+   ],
+   [
+    "0xbb1",
+    "campaign.target+1"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b8": [
+    "0x646c"
+   ],
+   "mgr+0x28bc": [
+    "0x6474"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "PC0-N native Remix8, no campaign, all others state6",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 4,
+   "score": 85
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9dc",
+    "kind1[67].best",
+    0,
+    64,
+    [
+     "mapEnter+commit@0x47e4"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    4,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0",
+     "results@0x492c"
+    ]
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0",
+    0,
+    85,
+    [
+     "initGameplay@0x4930",
+     "launchA@0x48cc",
+     "results@0x4930"
+    ]
+   ],
+   [
+    "0xbb3",
+    "campaign.cntBB3",
+    0,
+    1,
+    [
+     "launchA@0x4a40"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9dc",
+    "kind1[67].best"
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xba8",
+    "pending.score[0]+0"
+   ],
+   [
+    "0xbb3",
+    "campaign.cntBB3"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "mgr+0x28b0": [
+    "0x63d0"
+   ],
+   "mgr+0x28b4": [
+    "0x63d4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d08a0": 1,
+   "0x1d0cb0": 1,
+   "0x1d0d00": 1
+  }
+ },
+ {
+  "case": "PC0-C1 custom IPS no guards, no campaign, all others state6",
+  "cell": [
+   1,
+   9,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": true,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "after_launch": {
+   "curIdx0": 67,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": 67,
+   "rank": 1,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 9,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0x9e0",
+    "kind1[67].plays",
+    0,
+    1,
+    [
+     "launchA@0x48e4"
+    ]
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ],
+   [
+    "0xbb3",
+    "campaign.cntBB3",
+    0,
+    1,
+    [
+     "launchA@0x4a40"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0x9e0",
+    "kind1[67].plays"
+   ],
+   [
+    "0xba4",
+    "pending.rank[0]"
+   ],
+   [
+    "0xbb3",
+    "campaign.cntBB3"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d08a0": 1
+  }
+ },
+ {
+  "case": "PC0-C2 custom guards, no campaign, all others state6",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 0,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 0,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x2b50": 1,
+   "0x2b60": 1,
+   "0x1d08f0": 1,
+   "0x1d08a0": 1
+  }
+ },
+ {
+  "case": "M1 custom guards, map mode 1",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 1,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 1,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 0,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    0,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0xb99",
+    "sel.world[1]",
+    2,
+    0,
+    [
+     "mapEnter+commit@0x4894"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0xb99",
+    "sel.world[1]"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "M1b custom guards, map mode 1, bit0 0x10B8C10 set",
+  "cell": [
+   0,
+   9,
+   0
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": true,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 1,
+  "F1_precondition_curIdx": -1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": -1,
+   "mode2904": 1,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": -1,
+   "col": 9,
+   "row": 0,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "F4": [
+   {
+    "phase": "nextSave",
+    "crc_equal": true
+   }
+  ],
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [
+   "nextSave"
+  ],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x1d0890": 1
+  }
+ },
+ {
+  "case": "M1-N native Remix8 map mode 1 exit",
+  "cell": [
+   0,
+   8,
+   4
+  ],
+  "host": [
+   1,
+   67
+  ],
+  "ips": false,
+  "guards": false,
+  "flags": [
+   0,
+   0
+  ],
+  "mapmode": 1,
+  "after_launch": {
+   "curIdx0": -1,
+   "curIdx1": 67,
+   "mode2904": 1,
+   "sess3AA8": "0x0"
+  },
+  "pending_before_map": {
+   "curIdx": -1,
+   "rank": 0,
+   "score": 0
+  },
+  "map_after": {
+   "pend5278": 67,
+   "col": 8,
+   "row": 4,
+   "scroll": 0,
+   "sel": [
+    0,
+    2,
+    1,
+    0,
+    0,
+    0,
+    1,
+    0
+   ]
+  },
+  "blob_diff": [
+   [
+    "0x560",
+    "hdr.saveCount",
+    0,
+    1,
+    [
+     "nextSave@0x3d7c"
+    ]
+   ],
+   [
+    "0xba5",
+    "pending.rank[1]",
+    0,
+    1,
+    [
+     "initGameplay@0x492c",
+     "launchA@0x48c0"
+    ]
+   ],
+   [
+    "0xcc4",
+    "blob+0xCC4",
+    0,
+    1,
+    [
+     "launchA@0x48f8"
+    ]
+   ]
+  ],
+  "staging_vs_B0": [
+   [
+    "0xba5",
+    "pending.rank[1]"
+   ],
+   [
+    "0xcc4",
+    "blob+0xCC4"
+   ]
+  ],
+  "ram": {
+   "mgr+0x3aa8": [
+    "0x1d3188",
+    "0x1d3198",
+    "0x1d31a8",
+    "0x1d337c",
+    "0x1d3930"
+   ],
+   "bss 0x10b7ba0": [
+    "0x18ae60"
+   ],
+   "mgr+0x2904": [
+    "0x1d3430",
+    "0x1d38c4"
+   ],
+   "mgr+0x2870": [
+    "0x5ae0"
+   ],
+   "mgr+0x2874": [
+    "0x5af0"
+   ],
+   "mgr+0x2878": [
+    "0x5b00"
+   ],
+   "mgr+0x287c": [
+    "0x5b10"
+   ],
+   "mgr+0x2880": [
+    "0x5b20"
+   ],
+   "mgr+0x2884": [
+    "0x5b30"
+   ],
+   "mgr+0x2888": [
+    "0x5b40"
+   ],
+   "mgr+0x288c": [
+    "0x5b50"
+   ],
+   "mgr+0x2890": [
+    "0x5b60"
+   ],
+   "mgr+0x2894": [
+    "0x5b70"
+   ],
+   "mgr+0x2898": [
+    "0x5b80"
+   ],
+   "mgr+0x289c": [
+    "0x5b90"
+   ],
+   "mgr+0x28a0": [
+    "0x5ba0"
+   ],
+   "mgr+0x28a4": [
+    "0x5bb0"
+   ],
+   "mgr+0x28a8": [
+    "0x5bc0"
+   ],
+   "mgr+0x28ac": [
+    "0x5bd0"
+   ],
+   "mgr+0x3be8": [
+    "0x78e8"
+   ],
+   "mgr+0x3bec": [
+    "0x78f4"
+   ],
+   "bss 0x10b8c10": [
+    "0x1d3964"
+   ]
+  },
+  "async_write_requests": 1,
+  "writeSave_calls": [],
+  "launch_calls": [
+   "fake:sceneMgr.vt+0x48",
+   "unlisted:0x12d310",
+   "unlisted:0x206d00",
+   "unlisted:0x4e0680",
+   "unlisted:0x509570"
+  ],
+  "unlisted_total": {
+   "0x206d00": 1,
+   "0x509570": 1,
+   "0x4e0680": 16,
+   "0x12d310": 1,
+   "0x130f90": 1,
+   "0x130300": 1,
+   "0x6a40": 1,
+   "0x1cf800": 1,
+   "0x1cc550": 1,
+   "0x1d0130": 1,
+   "0x1d2750": 1,
+   "0x1d3810": 1,
+   "0x1d2710": 1,
+   "0x4f8210": 1,
+   "0x1d11e0": 1,
+   "0x1d0890": 1
+  }
+ }
+]

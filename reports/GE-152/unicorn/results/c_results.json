@@ -1,0 +1,320 @@
+{
+ "revmap": {
+  "orig": {
+   "built_flag": 1
+  },
+  "ips": {
+   "built_flag": 1,
+   "entries_differing_from_orig": 4,
+   "diff": {
+    "1,41": [
+     [
+      0,
+      0,
+      1,
+      1,
+      0,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      9,
+      1,
+      0
+     ]
+    ],
+    "1,67": [
+     [
+      0,
+      0,
+      0,
+      8,
+      4,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      9,
+      4,
+      0
+     ]
+    ],
+    "1,77": [
+     [
+      0,
+      0,
+      1,
+      8,
+      2,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      9,
+      2,
+      0
+     ]
+    ],
+    "1,78": [
+     [
+      0,
+      0,
+      1,
+      8,
+      3,
+      0
+     ],
+     [
+      0,
+      0,
+      1,
+      9,
+      3,
+      0
+     ]
+    ]
+   }
+  },
+  "ips+guard": {
+   "built_flag": 1,
+   "entries_differing_from_orig": 0,
+   "diff": {}
+  },
+  "slots(0,9,0)/(0,9,1)->{1,67},{1,41} no guard": {
+   "built_flag": 1,
+   "entries_differing_from_orig": 1,
+   "diff": {
+    "1,67": [
+     [
+      0,
+      0,
+      0,
+      8,
+      4,
+      0
+     ],
+     [
+      0,
+      0,
+      0,
+      9,
+      0,
+      0
+     ]
+    ]
+   }
+  },
+  "slots + guard": {
+   "built_flag": 1,
+   "entries_differing_from_orig": 0,
+   "diff": {}
+  },
+  "orig_samples": {
+   "1,41": [
+    0,
+    0,
+    1,
+    1,
+    0,
+    0
+   ],
+   "1,67": [
+    0,
+    0,
+    0,
+    8,
+    4,
+    0
+   ],
+   "1,77": [
+    0,
+    0,
+    1,
+    8,
+    2,
+    0
+   ],
+   "1,78": [
+    0,
+    0,
+    1,
+    8,
+    3,
+    0
+   ]
+  }
+ },
+ "two_slot": [
+  {
+   "cell": [
+    0,
+    9,
+    0
+   ],
+   "custom": true,
+   "F1_slot": 0,
+   "launchA_reached": true,
+   "curIdx": -1,
+   "blob_diff": [
+    [
+     "0xb9a",
+     "sel.col[0]",
+     1,
+     9
+    ],
+    [
+     "0xb9e",
+     "sel.x[0]",
+     1,
+     0
+    ]
+   ],
+   "SE_locked": false
+  },
+  {
+   "cell": [
+    0,
+    9,
+    1
+   ],
+   "custom": true,
+   "F1_slot": 1,
+   "launchA_reached": true,
+   "curIdx": -1,
+   "blob_diff": [
+    [
+     "0xb9a",
+     "sel.col[0]",
+     1,
+     9
+    ],
+    [
+     "0xb9c",
+     "sel.row[0]",
+     0,
+     1
+    ],
+    [
+     "0xb9e",
+     "sel.x[0]",
+     1,
+     0
+    ]
+   ],
+   "SE_locked": false
+  },
+  {
+   "cell": [
+    0,
+    8,
+    4
+   ],
+   "custom": false,
+   "F1_slot": null,
+   "launchA_reached": true,
+   "curIdx": 67,
+   "blob_diff": [
+    [
+     "0x9e0",
+     "kind1[67].plays",
+     0,
+     1
+    ],
+    [
+     "0xb9a",
+     "sel.col[0]",
+     1,
+     8
+    ],
+    [
+     "0xb9c",
+     "sel.row[0]",
+     0,
+     4
+    ],
+    [
+     "0xb9e",
+     "sel.x[0]",
+     1,
+     0
+    ],
+    [
+     "0xba0",
+     "pending.curIdx[0]",
+     255,
+     67
+    ],
+    [
+     "0xba1",
+     "pending.curIdx[0]+1",
+     255,
+     0
+    ]
+   ],
+   "SE_locked": false
+  },
+  {
+   "cell": [
+    1,
+    1,
+    0
+   ],
+   "custom": false,
+   "F1_slot": null,
+   "launchA_reached": true,
+   "curIdx": 41,
+   "blob_diff": [
+    [
+     "0x840",
+     "kind1[41].plays",
+     0,
+     1
+    ],
+    [
+     "0xb98",
+     "sel.world[0]",
+     0,
+     1
+    ],
+    [
+     "0xb9e",
+     "sel.x[0]",
+     1,
+     0
+    ],
+    [
+     "0xba0",
+     "pending.curIdx[0]",
+     255,
+     41
+    ],
+    [
+     "0xba1",
+     "pending.curIdx[0]+1",
+     255,
+     0
+    ]
+   ],
+   "SE_locked": false
+  },
+  {
+   "cell": [
+    0,
+    9,
+    1
+   ],
+   "custom": true,
+   "F1_slot": null,
+   "launchA_reached": false,
+   "curIdx": -1,
+   "blob_diff": [],
+   "SE_locked": true
+  }
+ ]
+}

@@ -1,0 +1,38 @@
+SELFTEST {"no-vptr": {"kind": "HT2", "caught": true, "detail": {"exception": "UcError()"}}, "no-runner": {"kind": "R21", "caught": true, "detail": {"automap": [], "null": [["tick:T19c30", "R", "0x514b4c", "0x50"], ["tick:T19c30", "R", "0x514b4c", "0x58"], ["tick:T19c30", "R", "0x5153a0", "0x8"]]}}}
+HT2 reap 1 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 reap 3 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 reap 6 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 clear 1 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 clear 3 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 clear 6 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 step 1 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 step 3 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 step 6 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 barrier 1 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 2, 'states': ['done', 'done']}
+HT2 barrier 3 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 2, 'states': ['done', 'done']}
+HT2 barrier 6 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 2, 'states': ['done', 'done']}
+HT2 tstop-only 1 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 tstop-only 3 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 tstop-only 6 children 2 late 0 threads_freed 2 list 2 automap 0 null 0  
+HT2 resume-after-free 1 children 2 late 28 threads_freed 2 list 2 automap 0 null 0 TRIGGERED 
+HT2 resume-after-free 3 children 2 late 28 threads_freed 2 list 2 automap 0 null 0 TRIGGERED 
+HT2 resume-after-free 6 children 2 late 28 threads_freed 2 list 2 automap 0 null 0 TRIGGERED 
+R21 reap 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 reap 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 reap 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 clear 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 clear 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 clear 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 step 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 step 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 step 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 barrier 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 22, 'states': ['done', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'done', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled', 'never-started/cancelled']}
+R21 barrier 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 22, 'states': ['done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done']}
+R21 barrier 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  {'quiescent': True, 'rounds': 2, 'children': 22, 'states': ['done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done', 'done']}
+R21 tstop-only 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 tstop-only 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 tstop-only 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0  
+R21 resume-after-free 1 children 22 late 0 threads_freed 22 list 22 automap 0 null 0 INCONCLUSIVE 
+R21 resume-after-free 3 children 22 late 0 threads_freed 22 list 22 automap 0 null 0 INCONCLUSIVE 
+R21 resume-after-free 6 children 22 late 0 threads_freed 22 list 22 automap 0 null 0 INCONCLUSIVE 
+FAILURES: 0

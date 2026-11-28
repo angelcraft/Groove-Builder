@@ -1,0 +1,1481 @@
+{
+ "results": [
+  {
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "hoopsSent": 2,
+     "commentsSent": 1,
+     "bgSent": 2,
+     "resultsMode": 0,
+     "saved": 1,
+     "partsStarted": 1
+    },
+    "seq_next": 51
+   },
+   "ticks": 7,
+   "trace_tail": [
+    [
+     4,
+     4,
+     2
+    ],
+    [
+     5,
+     4,
+     2
+    ],
+    [
+     6,
+     4,
+     1
+    ],
+    [
+     7,
+     4,
+     0
+    ]
+   ],
+   "max_threads": 4,
+   "io_calls_worker": {
+    "8flushLogEv": 2,
+    "9writeSaveEv": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     4
+    ],
+    "children": 4,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2140": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2400": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@26c0": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "hoopsSent": 2,
+     "commentsSent": 1,
+     "bgSent": 2,
+     "resultsMode": 0,
+     "saved": 1,
+     "partsStarted": 1
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 4
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/finish"
+  },
+  {
+   "abandon_at_tick": 2,
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "1": 1,
+     "0": 3
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 0,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     4
+    ],
+    "children": 4,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2140": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "heap@2400": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "heap@26c0": [
+      2,
+      false,
+      "no-os-thread"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 0,
+     "finished": 0,
+     "stopped": 1,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 4
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "9writeSaveEv": 1,
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/abandon@tick2"
+  },
+  {
+   "abandon_at_tick": 3,
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     4
+    ],
+    "children": 4,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2140": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2400": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@26c0": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 1,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 4
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "9writeSaveEv": 1,
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/abandon@tick3"
+  },
+  {
+   "A_before": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "A": {
+    "barrier": {
+     "quiescent": true,
+     "rounds": 1,
+     "per_round": [
+      4
+     ],
+     "children": 4,
+     "final": {
+      "thread@c00": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@2140": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@2400": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@26c0": [
+       2,
+       false,
+       "done"
+      ]
+     }
+    },
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_during_teardown": 0,
+    "global_list_has_stage": false,
+    "io_calls_in_teardown": {
+     "9writeSaveEv": 1,
+     "8flushLogEv": 1
+    },
+    "appends_during_barrier": 0
+   },
+   "B_ticks": 7,
+   "B_before": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "hoopsSent": 2,
+     "commentsSent": 1,
+     "bgSent": 2,
+     "resultsMode": 0,
+     "saved": 1,
+     "partsStarted": 1
+    },
+    "seq_next": 51
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     4
+    ],
+    "children": 4,
+    "final": {
+     "heap@b700": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@cb80": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@ce40": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@d100": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "hoopsSent": 2,
+     "commentsSent": 1,
+     "bgSent": 2,
+     "resultsMode": 0,
+     "saved": 1,
+     "partsStarted": 1
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 4
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/retry(A->B)"
+  },
+  {
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "module_threads": 3,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     4
+    ],
+    "children": 4,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2140": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@2400": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@26c0": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 4
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 1,
+     "hoopsSent": 2,
+     "commentsSent": 1,
+     "bgSent": 2,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 4
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "9writeSaveEv": 1,
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "sched_events": {},
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/info: tStop ignored by module bodies (bounded?)"
+  },
+  {
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "module_threads": 3,
+   "barrier": {
+    "quiescent": false,
+    "why": "join did not complete (deadlock/runaway)",
+    "rounds": 1,
+    "per_round": [
+     4
+    ]
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 4,
+    "states": {
+     "2": 2,
+     "1": 2
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 1,
+     "hoopsSent": 1,
+     "commentsSent": 0,
+     "bgSent": 1,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "policy": "safe-stop (non-returning): orig(0x5096F0) not called",
+   "intact": true,
+   "io_calls_after_barrier": {},
+   "sched_events": {
+    "DEADLOCK": 1
+   },
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/fail-nonreturning: stuck body after cancel"
+  },
+  {
+   "before_b2": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "decision": "safe-stop",
+   "barrier": {
+    "quiescent": false,
+    "why": "not run: safe-stop"
+   },
+   "intact": true,
+   "after": {
+    "threads": 4,
+    "states": {
+     "1": 3,
+     "2": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "hoopsSent": 0,
+     "commentsSent": 0,
+     "bgSent": 0,
+     "resultsMode": 0,
+     "saved": 0,
+     "partsStarted": 1
+    },
+    "seq_next": -1
+   },
+   "io_calls_after_barrier": {},
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/HT2/fail-nonreturning: identity/LR guard"
+  },
+  {
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "ticks": 5,
+   "trace_tail": [
+    [
+     2,
+     5,
+     2
+    ],
+    [
+     3,
+     5,
+     1
+    ],
+    [
+     4,
+     5,
+     1
+    ],
+    [
+     5,
+     5,
+     0
+    ]
+   ],
+   "max_threads": 5,
+   "io_calls_worker": {
+    "8flushLogEv": 2,
+    "14writeMultiSaveEv": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     5
+    ],
+    "children": 5,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@51c0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5480": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5740": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 5
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/finish"
+  },
+  {
+   "abandon_at_tick": 2,
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "1": 2,
+     "2": 3
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 0,
+     "saved": 0,
+     "calls": 0,
+     "callsSkipped": 1,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": -1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     5
+    ],
+    "children": 5,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@51c0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5480": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5740": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 0,
+     "stopped": 1,
+     "saved": 0,
+     "calls": 0,
+     "callsSkipped": 1,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": -1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 5
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "14writeMultiSaveEv": 1,
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/abandon@tick2"
+  },
+  {
+   "abandon_at_tick": 3,
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     5
+    ],
+    "children": 5,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@51c0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5480": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5740": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 1,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 5
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/abandon@tick3"
+  },
+  {
+   "A_before": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "A": {
+    "barrier": {
+     "quiescent": true,
+     "rounds": 1,
+     "per_round": [
+      5
+     ],
+     "children": 5,
+     "final": {
+      "thread@3dc0": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@51c0": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@5480": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@5740": [
+       2,
+       false,
+       "done"
+      ],
+      "heap@5a00": [
+       2,
+       false,
+       "done"
+      ]
+     }
+    },
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_during_teardown": 0,
+    "global_list_has_stage": false,
+    "io_calls_in_teardown": {
+     "8flushLogEv": 1
+    },
+    "appends_during_barrier": 0
+   },
+   "B_ticks": 5,
+   "B_before": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     5
+    ],
+    "children": 5,
+    "final": {
+     "heap@2c40": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@3fc0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@4280": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@4540": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@4800": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 5
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/retry(A->B)"
+  },
+  {
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "module_threads": 4,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     5
+    ],
+    "children": 5,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@51c0": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5480": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5740": [
+      2,
+      false,
+      "done"
+     ],
+     "heap@5a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 5
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 5
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "io_calls_in_teardown": {
+    "8flushLogEv": 1
+   },
+   "module_stage_ptr_after": 0,
+   "sched_events": {},
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/info: tStop ignored by module bodies (bounded?)"
+  },
+  {
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "module_threads": 4,
+   "barrier": {
+    "quiescent": false,
+    "why": "join did not complete (deadlock/runaway)",
+    "rounds": 1,
+    "per_round": [
+     5
+    ]
+   },
+   "appends_during_barrier": 0,
+   "after_barrier": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 3,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "policy": "safe-stop (non-returning): orig(0x5096F0) not called",
+   "intact": true,
+   "io_calls_after_barrier": {},
+   "sched_events": {
+    "DEADLOCK": 1
+   },
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/fail-nonreturning: stuck body after cancel"
+  },
+  {
+   "before_b2": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "decision": "safe-stop",
+   "barrier": {
+    "quiescent": false,
+    "why": "not run: safe-stop"
+   },
+   "intact": true,
+   "after": {
+    "threads": 5,
+    "states": {
+     "2": 4,
+     "1": 1
+    },
+    "run": {
+     "started": 1,
+     "gameplayStarted": 1,
+     "reachedEnd": 1,
+     "finished": 1,
+     "stopped": 0,
+     "saved": 1,
+     "calls": 0,
+     "callsSkipped": 2,
+     "switches": 0,
+     "fades": 0,
+     "anims": 0,
+     "late": 0
+    },
+    "seq_next": 51
+   },
+   "io_calls_after_barrier": {},
+   "module_relocs": 676,
+   "parse_ok": true,
+   "parse_err": "",
+   "null_fnptr_calls": {},
+   "unmapped": [],
+   "null_page_rw": 0,
+   "tag": "T10/R21/fail-nonreturning: identity/LR guard"
+  }
+ ],
+ "FAILURES": []
+}

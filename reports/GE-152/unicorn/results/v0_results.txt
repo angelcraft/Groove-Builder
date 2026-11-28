@@ -1,0 +1,30 @@
+PASS V1 A complete
+PASS V2 B complete
+PASS V3 A->B->A reentry
+PASS V4 abort/reentry A
+PASS V5 host state7 perfect=2
+PASS V6 PC target=50
+PASS V7 PC target=67(host)
+PASS V8 PC none, others state6
+PASS V9 PC target=50 cntBB4=5
+PASS V10 mode1 rejected (A)
+PASS V11 partial install: B off
+PASS V13 B has no id
+PASS V14 custom gsv state 9
+PASS V15 custom gsv wrong id
+PASS V16 session bits preserved
+PASS V17 x restored by H6
+PASS V18 PC target=50 remaining=0
+PASS V12 A then native Remix8
+PASS N1 native Remix8 rank4
+PASS N2 native HT2 rank5
+PASS N3 native Remix8 exit
+PASS N4 native Remix8 PC target=50
+PASS N5 native Remix8 mode1
+PASS H1 no id / invalid id
+PASS H2b validated state < 7
+PASS H3 Map*/gen/re-entry/bounds
+PASS H7 call site only + tripwires
+PASS H1b reverse map
+SELFTEST {'no-H5': True, 'no-H4': True, 'no-H10': True, 'no-H2b': True, 'no-H6': True, 'no-H3post': True}
+FAILURES: 0

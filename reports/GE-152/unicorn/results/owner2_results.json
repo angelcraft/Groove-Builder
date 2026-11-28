@@ -1,0 +1,2302 @@
+{
+ "results": [
+  {
+   "kind": "HT2",
+   "mode": "native",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 1,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-success",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 1
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-fail-selfjoin",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": false,
+    "why": "self-join"
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "policy": "safe-stop: 0x5096F0 not entered, nothing destroyed or freed",
+   "seq_freed": false,
+   "stage_freed": false,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {},
+   "order": [],
+   "os_final": {
+    "blocked": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-fail-fixedpoint",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": false,
+    "why": "forced: no fixed point",
+    "rounds": 2
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "policy": "safe-stop: 0x5096F0 not entered, nothing destroyed or freed",
+   "seq_freed": false,
+   "stage_freed": false,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {},
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B1-quarantine",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 1,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": false,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": true
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "skip 0x4291a0": 1,
+    "0x4ee330": 2,
+    "0x5148f0": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "skip",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "control-resume-after-stage-free",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "resumed": 1,
+   "seq_freed": false,
+   "stage_freed": true,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": false,
+    "parent_list_has_stage": false,
+    "group_registered": false,
+    "threads_in_runner": 4
+   },
+   "late_access": {
+    "freed:stage": 14
+   },
+   "late_samples": [
+    [
+     "control:T20c30",
+     "W",
+     "0x4290e8",
+     "0x6831",
+     "freed:stage"
+    ],
+    [
+     "control:T20c30",
+     "R",
+     "0x1370c8",
+     "0x29d8",
+     "freed:stage"
+    ],
+    [
+     "control:T20c30",
+     "R",
+     "0x1370f8",
+     "0x29d8",
+     "freed:stage"
+    ],
+    [
+     "control:T20c30",
+     "W",
+     "0x137104",
+     "0x2a74",
+     "freed:stage"
+    ],
+    [
+     "control:T20c30",
+     "W",
+     "0x4293d4",
+     "0x5be8",
+     "freed:stage"
+    ]
+   ],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1,
+    "0x429330": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 1,
+    "0x5148f0": 1,
+    "0x505ab0": 1,
+    "0x505620": 1
+   },
+   "order": [
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ]
+   ],
+   "os_final": {
+    "blocked": 1
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "native",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "child_events_during_teardown": 1,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 11,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x4207f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "order": [
+    [
+     "call",
+     "0x420c40",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4207f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     58704
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ]
+   ],
+   "os_final": {
+    "done": 11
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "B2-success",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 11
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 11,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x4207f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x420c40",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4207f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     58704
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ]
+   ],
+   "os_final": {
+    "done": 11
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "B2-fail-selfjoin",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "barrier": {
+    "quiescent": false,
+    "why": "self-join"
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "policy": "safe-stop: 0x5096F0 not entered, nothing destroyed or freed",
+   "seq_freed": false,
+   "stage_freed": false,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {},
+   "order": [],
+   "os_final": {
+    "blocked": 1,
+    "done": 10
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "B2-fail-fixedpoint",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "barrier": {
+    "quiescent": false,
+    "why": "forced: no fixed point",
+    "rounds": 2
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "policy": "safe-stop: 0x5096F0 not entered, nothing destroyed or freed",
+   "seq_freed": false,
+   "stage_freed": false,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {},
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ]
+   ],
+   "os_final": {
+    "done": 11
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "B1-quarantine",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "child_events_during_teardown": 1,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": false,
+   "threads_freed": 11,
+   "final": {
+    "global_list_has_stage": true
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {
+    "skip 0x420c40": 1,
+    "0x4ee330": 2,
+    "0x5148f0": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "order": [
+    [
+     "skip",
+     "0x420c40",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 11
+   }
+  },
+  {
+   "kind": "R21",
+   "mode": "control-resume-after-stage-free",
+   "seq_class": 0,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 11,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 11
+   },
+   "resumed": 1,
+   "seq_freed": false,
+   "stage_freed": true,
+   "threads_freed": 0,
+   "final": {
+    "global_list_has_stage": false,
+    "parent_list_has_stage": false,
+    "group_registered": false,
+    "threads_in_runner": 11
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1
+   },
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x4207f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 1,
+    "0x5148f0": 1,
+    "0x505ab0": 1,
+    "0x505620": 1
+   },
+   "order": [
+    [
+     "call",
+     "0x420c40",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4207f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     58704
+    ]
+   ],
+   "os_final": {
+    "blocked": 1,
+    "done": 10
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-success",
+   "seq_class": 1,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 1
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-success",
+   "seq_class": 2,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 1
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-success",
+   "seq_class": 3,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 1
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  },
+  {
+   "kind": "HT2",
+   "mode": "B2-success",
+   "seq_class": 4,
+   "after_ctor": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "children": 1,
+   "after_ticks": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 2,
+    "children": 1
+   },
+   "after_barrier": {
+    "global_list_has_stage": true,
+    "parent_list_has_stage": true,
+    "group_registered": true,
+    "threads_in_runner": 1
+   },
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "deadlock": false,
+   "seq_freed": true,
+   "stage_freed": true,
+   "threads_freed": 1,
+   "final": {
+    "global_list_has_stage": false
+   },
+   "late_access": {},
+   "late_samples": [],
+   "unmapped": [],
+   "null_page": 0,
+   "null_samples": [],
+   "nested_entries": {
+    "0x1398b0": 1,
+    "0x1367f0": 1,
+    "0x42b740": 1
+   },
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x4290f0": 1,
+    "0x1363d0": 1,
+    "0x4ee330": 3,
+    "0x5148f0": 2,
+    "0x505ab0": 1,
+    "0x505620": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "order": [
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4291a0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4290f0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x1363d0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "stage+0x2b20"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "stage+0x2978"
+    ],
+    [
+     "call",
+     "0x505ab0",
+     "stage"
+    ],
+    [
+     "call",
+     "0x505620",
+     "seq+0x30"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "free",
+     "stage",
+     31440
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x9610"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x4ee330",
+     "seq+0x94e0"
+    ],
+    [
+     "free",
+     "heap",
+     24
+    ],
+    [
+     "call",
+     "0x5148f0",
+     "seq+0xeb0"
+    ],
+    [
+     "call",
+     "0x515290",
+     "runner"
+    ],
+    [
+     "call",
+     "0x514bc0",
+     "thread"
+    ],
+    [
+     "free",
+     "thread",
+     664
+    ],
+    [
+     "free",
+     "heap",
+     48
+    ],
+    [
+     "free",
+     "seq",
+     41088
+    ]
+   ],
+   "os_final": {
+    "done": 1
+   }
+  }
+ ],
+ "FAILURES": []
+}

@@ -1,0 +1,269 @@
+== F0 invalid package: cellState->1 (locked)
+   {'launchA_reached': False, 'SE_0x4EE970': True, 'blob_diff': [], 'calls': ['0x1cbca0', '0x1cc420', '0x4ee970', '0x514fd0']}
+== F0 control: cellState->4 (enabled), no guards
+   {'launchA_reached': True, 'SE_0x4EE970': False, 'blob_diff': [('0x9e0', 'kind1[67].plays', 0, 1), ('0xb9a', 'sel.col[0]', 1, 9), ('0xb9e', 'sel.x[0]', 1, 0), ('0xba0', 'pending.curIdx[0]', 255, 67), ('0xba1', 'pending.curIdx[0]+1', 255, 0)], 'calls': ['0x12d310', '0x139b70', '0x1cbca0', '0x1cc420', '0x206d00', '0x4e0680', '0x509570', '0x514fd0']}
+== F0+F1-F3: enabled, guards
+   {'launchA_reached': True, 'SE_0x4EE970': False, 'blob_diff': [('0xb9a', 'sel.col[0]', 1, 9), ('0xb9e', 'sel.x[0]', 1, 0)], 'calls': ['0x12d310', '0x139b70', '0x1cbca0', '0x1cc420', '0x1d3130', '0x206d00', '0x48b0', '0x4e0680', '0x509570', '0x514fd0']}
+== N1 native Remix8 (0,8,4) results rank4
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 4, 'score': 85}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9dc', 'kind1[67].best', 0, 64, ['mapEnter+commit@0x47e4'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 4, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 85, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+  staging_vs_B0: [('0x9dc', 'kind1[67].best'), ('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0')]
+== N2 native HT2 (1,1,0) results rank5
+  after_launch: {'curIdx0': 41, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 41, 'rank': 5, 'score': 100}
+  map_after: {'pend5278': 41, 'col': 1, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x83c', 'kind1[41].best', 0, 75, ['mapEnter+commit@0x47e4'])
+     ('0x840', 'kind1[41].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 5, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 100, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+  staging_vs_B0: [('0x83c', 'kind1[41].best'), ('0x840', 'kind1[41].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0')]
+== N3 native Remix8 exit/quit (no results)
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]')]
+== N4 native Remix8 + guards inactive (control)
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 4, 'score': 85}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9dc', 'kind1[67].best', 0, 64, ['mapEnter+commit@0x47e4'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 4, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 85, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+  staging_vs_B0: [('0x9dc', 'kind1[67].best'), ('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0')]
+== C1 custom v0.5 IPS (1,9,4) exit, no guards
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]')]
+== C1p custom IPS exit, host state7 perfect=2, flag bit0
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x2'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 2
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 2, ['nextSave@0x3d7c', 'save131440@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0x9e4', 'kind1[67].perfect', 2, 0, ['mapEnter+commit@0x484c'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+     ('0xba6', 'pending.flags[0]', 0, 1, ['launchA@0x48c4'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0x9e4', 'kind1[67].perfect'), ('0xba4', 'pending.rank[0]'), ('0xba6', 'pending.flags[0]')]
+== N5 native Remix8 first clear (state2) results rank4
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 4, 'score': 85}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9d8', 'kind1[67].state', 2, 3, ['refresh@0x4054'])
+     ('0x9dc', 'kind1[67].best', 0, 85, ['mapEnter+commit@0x47e4'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 4, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 85, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+  staging_vs_B0: [('0x9d8', 'kind1[67].state'), ('0x9dc', 'kind1[67].best'), ('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0')]
+== C1s custom IPS exit, host state2
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]')]
+== C2s custom guards, host state2
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== C2h custom guards, HT2 host (hoop adapter)
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 1, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== C2 custom (0,9,0) exit, guards F1-F4
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== C2p custom guards, host state7 perfect=2 flag bit0
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== PC-N native Remix8, campaign target=50
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 4, 'score': 85}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9dc', 'kind1[67].best', 0, 64, ['mapEnter+commit@0x47e4'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 4, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 85, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+     ('0xbb4', 'campaign.cntBB4', 1, 2, ['launchA@0x4a80'])
+  staging_vs_B0: [('0x9dc', 'kind1[67].best'), ('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0'), ('0xbb4', 'campaign.cntBB4')]
+== PC-C1 custom IPS no guards, campaign target=50
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+     ('0xbb4', 'campaign.cntBB4', 1, 2, ['launchA@0x4a80'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xbb4', 'campaign.cntBB4')]
+== PC-C2 custom guards, campaign target=50
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== PCH-C1 custom IPS no guards, campaign target=67(host)
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x6'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 2
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 2, ['nextSave@0x3d7c', 'save131440@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+     ('0xbb2', 'campaign.remaining', 3, 2, ['save131440@0x49fc'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xbb2', 'campaign.remaining')]
+== PCH-C2 custom guards, campaign target=67(host)
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== PC4-C2 custom guards, campaign target=50 cntBB4=5 (expiry edge)
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': False}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0xbb0', 'campaign.target', 50, 255, ['mapEnter+commit@0x49c4'])
+     ('0xbb1', 'campaign.target+1', 0, 255, ['mapEnter+commit@0x49c4'])
+  staging_vs_B0: [('0xbb0', 'campaign.target'), ('0xbb1', 'campaign.target+1')]
+== PC0-N native Remix8, no campaign, all others state6
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 4, 'score': 85}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9dc', 'kind1[67].best', 0, 64, ['mapEnter+commit@0x47e4'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 4, ['initGameplay@0x492c', 'launchA@0x48c0', 'results@0x492c'])
+     ('0xba8', 'pending.score[0]+0', 0, 85, ['initGameplay@0x4930', 'launchA@0x48cc', 'results@0x4930'])
+     ('0xbb3', 'campaign.cntBB3', 0, 1, ['launchA@0x4a40'])
+  staging_vs_B0: [('0x9dc', 'kind1[67].best'), ('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xba8', 'pending.score[0]+0'), ('0xbb3', 'campaign.cntBB3')]
+== PC0-C1 custom IPS no guards, no campaign, all others state6
+  after_launch: {'curIdx0': 67, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': 67, 'rank': 1, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 9, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0x9e0', 'kind1[67].plays', 0, 1, ['launchA@0x48e4'])
+     ('0xba4', 'pending.rank[0]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+     ('0xbb3', 'campaign.cntBB3', 0, 1, ['launchA@0x4a40'])
+  staging_vs_B0: [('0x9e0', 'kind1[67].plays'), ('0xba4', 'pending.rank[0]'), ('0xbb3', 'campaign.cntBB3')]
+== PC0-C2 custom guards, no campaign, all others state6
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 0, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== M1 custom guards, map mode 1
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 1, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 0, 'row': 0, 'scroll': 0, 'sel': [0, 0, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0xb99', 'sel.world[1]', 2, 0, ['mapEnter+commit@0x4894'])
+  staging_vs_B0: [('0xb99', 'sel.world[1]')]
+== M1b custom guards, map mode 1, bit0 0x10B8C10 set
+  F1_precondition_curIdx: -1
+  after_launch: {'curIdx0': -1, 'curIdx1': -1, 'mode2904': 1, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': -1, 'col': 9, 'row': 0, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  F4: [{'phase': 'nextSave', 'crc_equal': True}]
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+  staging_vs_B0: []
+== M1-N native Remix8 map mode 1 exit
+  after_launch: {'curIdx0': -1, 'curIdx1': 67, 'mode2904': 1, 'sess3AA8': '0x0'}
+  pending_before_map: {'curIdx': -1, 'rank': 0, 'score': 0}
+  map_after: {'pend5278': 67, 'col': 8, 'row': 4, 'scroll': 0, 'sel': [0, 2, 1, 0, 0, 0, 1, 0]}
+  async_write_requests: 1
+  blob_diff:
+     ('0x560', 'hdr.saveCount', 0, 1, ['nextSave@0x3d7c'])
+     ('0xba5', 'pending.rank[1]', 0, 1, ['initGameplay@0x492c', 'launchA@0x48c0'])
+     ('0xcc4', 'blob+0xCC4', 0, 1, ['launchA@0x48f8'])
+  staging_vs_B0: [('0xba5', 'pending.rank[1]'), ('0xcc4', 'blob+0xCC4')]

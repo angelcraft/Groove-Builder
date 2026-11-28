@@ -1,0 +1,724 @@
+{
+ "results": [
+  {
+   "kind": "HT2",
+   "ticks": 1,
+   "states_before": {
+    "1": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     1
+    ],
+    "children": 1,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "HT2/B2-rev3/ticks1"
+  },
+  {
+   "kind": "HT2",
+   "ticks": 3,
+   "states_before": {
+    "1": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     1
+    ],
+    "children": 1,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "HT2/B2-rev3/ticks3"
+  },
+  {
+   "kind": "HT2",
+   "ticks": 6,
+   "states_before": {
+    "1": 1
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     1
+    ],
+    "children": 1,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 1,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "HT2/B2-rev3/ticks6"
+  },
+  {
+   "kind": "R21",
+   "ticks": 1,
+   "states_before": {
+    "1": 1,
+    "0": 10
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     11
+    ],
+    "children": 11,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5140": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@5400": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@56c0": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@5980": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@5c40": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@5f00": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@61c0": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@6480": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@6740": [
+      2,
+      false,
+      "no-os-thread"
+     ],
+     "thread@6a00": [
+      2,
+      false,
+      "no-os-thread"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 11,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "R21/B2-rev3/ticks1"
+  },
+  {
+   "kind": "R21",
+   "ticks": 3,
+   "states_before": {
+    "1": 1,
+    "2": 10
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     11
+    ],
+    "children": 11,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5140": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5400": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@56c0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5980": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5c40": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5f00": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@61c0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6480": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6740": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 11,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "R21/B2-rev3/ticks3"
+  },
+  {
+   "kind": "R21",
+   "ticks": 6,
+   "states_before": {
+    "1": 1,
+    "2": 10
+   },
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     11
+    ],
+    "children": 11,
+    "final": {
+     "thread@3dc0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5140": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5400": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@56c0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5980": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5c40": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@5f00": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@61c0": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6480": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6740": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@6a00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "appends_during_barrier": 0,
+   "intact_after_barrier": true,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 11,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "sched_events": {},
+   "tag": "R21/B2-rev3/ticks6"
+  },
+  {
+   "rev": 2,
+   "gid_seq": 1,
+   "seqth_state_before": 1,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     1
+    ],
+    "children": 1,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "seqth_state_after_barrier": 1,
+   "child_events_during_teardown": 1,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 2
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 2,
+   "late_access": 1,
+   "late_samples": [
+    [
+     "teardown:T21070",
+     "R",
+     "0x5fff1030",
+     "0x100",
+     "freed:stage"
+    ]
+   ],
+   "global_list_has_stage": false,
+   "tag": "HT2/seq-group-thread/rev2-barrier(Stage group only)"
+  },
+  {
+   "rev": 3,
+   "gid_seq": 1,
+   "seqth_state_before": 1,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     2
+    ],
+    "children": 2,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@1040": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "seqth_state_after_barrier": 2,
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 2
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 2,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "tag": "HT2/seq-group-thread/rev3-barrier(whole Runner)"
+  },
+  {
+   "legacy_sched": false,
+   "barrier": {
+    "quiescent": false,
+    "why": "join did not complete (deadlock/runaway)",
+    "rounds": 1,
+    "per_round": [
+     2
+    ]
+   },
+   "runaway_os_state": "runaway",
+   "runaway_tstate": 2,
+   "sched_events": {
+    "preempt": 3,
+    "RUNAWAY": 1,
+    "DEADLOCK": 1
+   },
+   "policy": "safe-stop",
+   "intact": true,
+   "freed": 1,
+   "freed_labels": {
+    "heap": 1
+   },
+   "tag": "HT2/control-runaway-worker/fixed-sched"
+  },
+  {
+   "legacy_sched": true,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     2
+    ],
+    "children": 2,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ],
+     "thread@1040": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "runaway_os_state": "done",
+   "runaway_tstate": 2,
+   "sched_events": {},
+   "child_events_during_teardown": 0,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 2
+   },
+   "stage_freed": true,
+   "seq_freed": true,
+   "threads_freed": 2,
+   "late_access": 0,
+   "late_samples": [],
+   "global_list_has_stage": false,
+   "tag": "HT2/control-runaway-worker/LEGACY-sched(rev2 bug)"
+  },
+  {
+   "sched_call": "BudgetExhausted",
+   "h_call": "BudgetExhausted",
+   "legacy_sched_call": "returned x0=0x0 (false return)",
+   "tag": "control-truncated-main"
+  },
+  {
+   "pool": 12,
+   "pool_states": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+   ],
+   "barrier": {
+    "quiescent": false,
+    "why": "no fixed point after 8 rounds",
+    "rounds": 8,
+    "pending": 1,
+    "per_round": [
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1,
+     1
+    ]
+   },
+   "linked": 8,
+   "linked_states": [
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     2,
+     "done"
+    ],
+    [
+     1,
+     "blocked"
+    ]
+   ],
+   "intact": true,
+   "freed": 8,
+   "freed_labels": {
+    "heap": 8
+   },
+   "tag": "HT2/fixed-point-exhaustion(real, live siblings)"
+  },
+  {
+   "main": true,
+   "barrier": {
+    "quiescent": true,
+    "rounds": 1,
+    "per_round": [
+     1
+    ],
+    "children": 1,
+    "final": {
+     "thread@c00": [
+      2,
+      false,
+      "done"
+     ]
+    }
+   },
+   "child_evals": 2,
+   "child_true": 0,
+   "tag": "HT2/self-join-guard"
+  },
+  {
+   "kind": "HT2",
+   "decisions": {
+    "foreign_scene": "orig",
+    "bad_lr": "safe-stop",
+    "no_next": "orig",
+    "own_valid": "barrier"
+   },
+   "barrier_A": true,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x4291a0": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 1
+   },
+   "threads_freed": 1,
+   "late_samples": [],
+   "A": {
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_during_teardown": 0,
+    "global_list_has_stage": false
+   },
+   "B_gen": 2,
+   "B_decision": "barrier",
+   "stale_A_seq_rejected": true,
+   "barrier_B": true,
+   "child_events_during_teardown": 0,
+   "stage_freed": true,
+   "seq_freed": true,
+   "late_access": 0,
+   "global_list_has_stage": false,
+   "gen_A": 1,
+   "tag": "HT2/retry(A destroyed -> B created -> B destroyed)"
+  },
+  {
+   "kind": "R21",
+   "decisions": {
+    "foreign_scene": "orig",
+    "bad_lr": "safe-stop",
+    "no_next": "orig",
+    "own_valid": "barrier"
+   },
+   "barrier_A": true,
+   "destroyPending_ret": 1,
+   "dtor_calls": {
+    "0x420c40": 1,
+    "0x1363d0": 1,
+    "0x515290": 1,
+    "0x514bc0": 11
+   },
+   "threads_freed": 11,
+   "late_samples": [],
+   "A": {
+    "stage_freed": true,
+    "seq_freed": true,
+    "late_access": 0,
+    "child_events_during_teardown": 0,
+    "global_list_has_stage": false
+   },
+   "B_gen": 2,
+   "B_decision": "barrier",
+   "stale_A_seq_rejected": true,
+   "barrier_B": true,
+   "child_events_during_teardown": 0,
+   "stage_freed": true,
+   "seq_freed": true,
+   "late_access": 0,
+   "global_list_has_stage": false,
+   "gen_A": 1,
+   "tag": "R21/retry(A destroyed -> B created -> B destroyed)"
+  }
+ ],
+ "FAILURES": []
+}

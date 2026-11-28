@@ -1,0 +1,59 @@
+{
+ "callers_0x2CC0": [
+  "0x1d1878",
+  "0x206a54"
+ ],
+ "callers_X_ctor": [
+  "0x398d08"
+ ],
+ "callers_factory16_ctor": [
+  "0x488c84"
+ ],
+ "X_vtable_slot_0xD1FF80": "0x2068d0",
+ "X_vtable_slot_0xD1FFB8": "0x2067b0",
+ "X_offset_to_top_0xD1FFA0": "0xffffffffffffd688",
+ "factory_cases": {
+  "16": "0x398c80",
+  "67": "0x428d70",
+  "108": "0x4202c0"
+ },
+ "R21 host (ctor/worker/dtor)": {
+  "functions_in_closure": 1192,
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 473
+ },
+ "HT2 host (ctor/worker/dtor/nested)": {
+  "functions_in_closure": 28235,
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72237
+ },
+ "map confirm/launch/return": {
+  "functions_in_closure": 27590,
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72081
+ },
+ "map scene ctor/dtor/init (0x371730/0x371AC0/0x1CD9A0/0x1CE200)": {
+  "functions_in_closure": 28100,
+  "reaches": [],
+  "paths": {},
+  "indirect_sites_not_followed": 72132
+ },
+ "POSITIVE CONTROL factory[16] ctor 0x398C80": {
+  "functions_in_closure": 719,
+  "reaches": [
+   "X ctor 0x2064A0"
+  ],
+  "paths": {
+   "X ctor 0x2064A0": [
+    "0x398c80",
+    "0x2064a0"
+   ]
+  },
+  "indirect_sites_not_followed": 197
+ },
+ "evidence_level": "static [S], direct BL/B only; indirect sites are counted, not resolved -> H7 tripwires cover them at runtime",
+ "failures": []
+}

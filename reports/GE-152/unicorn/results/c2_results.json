@@ -1,0 +1,294 @@
+{
+ "registry": [
+  {
+   "case_B": "ok",
+   "A": "enabled",
+   "B": "enabled",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 1,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9c",
+      "sel.row[0]",
+      0,
+      1
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   }
+  },
+  {
+   "case_B": "manifest missing",
+   "A": "enabled",
+   "B": "manifest missing",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "timeline missing",
+   "A": "enabled",
+   "B": "timeline missing",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "manifest JSON corrupt (truncated)",
+   "A": "enabled",
+   "B": "manifest JSON corrupt",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "id != folder",
+   "A": "enabled",
+   "B": "id != folder",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "engine_min 9.0.0",
+   "A": "enabled",
+   "B": "engine_min > engine",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "timeline > 60 KiB",
+   "A": "enabled",
+   "B": "timeline size 72000",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "adapter hoop + gtf",
+   "A": "enabled",
+   "B": "adapter/format",
+   "unicorn_A": {
+    "launchA_reached": true,
+    "SE_locked": false,
+    "F1_slot": 0,
+    "blob_diff": [
+     [
+      "0xb9a",
+      "sel.col[0]",
+      1,
+      9
+     ],
+     [
+      "0xb9e",
+      "sel.x[0]",
+      1,
+      0
+     ]
+    ]
+   },
+   "unicorn_B": {
+    "launchA_reached": false,
+    "SE_locked": true,
+    "F1_slot": null,
+    "blob_diff": []
+   }
+  },
+  {
+   "case_B": "duplicate id",
+   "A": "enabled",
+   "B": "duplicate id"
+  }
+ ],
+ "gsv": {
+  "after_two_A_runs": [
+   {
+    "seq": 2,
+    "id": "org.example.a",
+    "state": 3,
+    "bestRank": 4,
+    "perfect": 0,
+    "flags": 0,
+    "plays": 2,
+    "clears": 1,
+    "bestScore": 85,
+    "lastScore": 10,
+    "lastRank": 0
+   },
+   ".gsv"
+  ],
+  "B_untouched": true,
+  "corrupt_main -> source": ".gsv.bak",
+  "corrupt_main -> plays": 1,
+  "file of A renamed to B -> B source": "default",
+  "files": [
+   "org.example.a.gsv",
+   "org.example.b.gsv"
+  ]
+ }
+}
