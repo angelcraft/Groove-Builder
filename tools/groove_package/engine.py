@@ -91,14 +91,23 @@ def check_compat(pkg, target: EngineTarget):
     if parse_version(pkg.manifest["engine_min"]) > ev:
         raise InstallError("ENGINE_TOO_OLD",
                            f"package needs engine >= {pkg.manifest['engine_min']}, target is {target.engine_version}")
-    missing = [c for c in required_caps(pkg) if c not in target.capabilities]
+    if pkg.manifest["adapter"] != "multi":  # re-checked here: installed manifests are re-validated too
+        raise InstallError("ENGINE_ADAPTER_UNSUPPORTED", f"adapter {pkg.manifest['adapter']!r} is not supported")
+    # Unknown, well-formed, unique capabilities in the marker are ignored (forward compatible); they
+    # never stand in for a required one, and never make an unknown contract or build acceptable.
+    needed = list(required_caps(pkg)) + [c for c in pkg.manifest["required_capabilities"]
+                                         if c not in required_caps(pkg)]
+    missing = [c for c in needed if c not in target.capabilities]
     if missing:
         raise InstallError("ENGINE_MISSING_CAPABILITY", f"engine does not advertise {missing}")
 
 
 def check_registry_capable(target: EngineTarget):
+    """Gate for NEW slot assignments (assign). Same build/contract/version rules as check_compat."""
     if target.build_id not in limits.KNOWN_BUILD_IDS:
         raise InstallError("ENGINE_UNKNOWN_BUILD", f"game build {target.build_id} is not supported")
+    if target.engine_contract not in limits.SUPPORTED_CONTRACTS:
+        raise InstallError("ENGINE_CONTRACT_UNSUPPORTED", f"engine contract {target.engine_contract} unsupported")
     if parse_version(target.engine_version) < limits.MIN_PACKAGE_ENGINE or \
             "registry.slots/1" not in target.capabilities or "package.runtime/1" not in target.capabilities:
         raise InstallError("ENGINE_MISSING_CAPABILITY", "engine does not advertise package.runtime/1 + registry.slots/1")

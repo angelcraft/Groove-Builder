@@ -34,7 +34,7 @@ Sin `--allow-downgrade` ni `--purge-saves` en V0.
 | `engine.py` | Marcador `groove-engine/1` (claves exactas, ≤ 4 KiB, build completa de 40 hex, capacidades); compatibilidad: contrato 1, motor ≥ 0.6.0 y ≥ `engine_min`, capacidades `package.runtime/1`, `registry.slots/1`, `adapter.multi` + `timeline.gtf`/`timeline.gtl`. |
 | `slots.py` | `groove-slots/1`: capacidad 2..256; casillas ≥ 2 con `coord` e `id` nulos; coords de 3 enteros; `generation` 0..2147483647, +1 exacto por cambio efectivo, sin desbordar; no-op = `unchanged`; sin migraciones silenciosas. |
 | `safefs.py` | Rechazo de symlinks, junctions y reparse points (Windows `FILE_ATTRIBUTE_REPARSE_POINT`) en toda la ruta y árboles; lecturas acotadas con `O_NOFOLLOW` + `fstat`. |
-| `lock.py` | Lock exclusivo del SO (`fcntl.flock` / `msvcrt.locking`), no bloqueante; nunca se borra un lock vivo. |
+| `lock.py` | Lock exclusivo del SO (`fcntl.flock` / `msvcrt.locking`), no bloqueante. Si falla `ftruncate`/`write`/`fsync` al adquirir: desbloquea, cierra el fd y borra el archivo solo si lo creó esa llamada (`LOCK_IO_ERROR`). Escrituras completas (bucle sobre `os.write`). Al liberar nunca borra el lock de otro proceso: en POSIX solo con el lock tomado y si la ruta sigue siendo su inodo; en Windows (unlock → close → remove) solo si el archivo conserva su token aleatorio. |
 | `fsops.py` | Primitivas con fsync e inyección de fallos para las pruebas. |
 | `installer.py` | Transacciones con diario `groove-install-journal/2` (entrada no fiable: esquema estricto, rutas derivadas, hashes verificados antes de mutar). Lock → `staging` → `prepared` → renombrados → `committed` → limpieza. El rollback mueve, nunca borra. |
 
@@ -44,9 +44,20 @@ Sin `--allow-downgrade` ni `--purge-saves` en V0.
 - Lock tomado antes de cualquier lectura/comprobación/asignación y mantenido durante `recover`; con un diario pendiente toda operación devuelve `RECOVERY_NEEDED`.
 - Diario manipulado o corrupto → `JOURNAL_TAMPERED`/`JOURNAL_CORRUPT`, no se toca nada y se conserva la evidencia (el lock queda como barrera).
 - Directorios `tx-*` desconocidos en `.installer/` no se borran nunca (`status` los lista; colisión → `TX_COLLISION`).
+- `assign` relee (acotado) y **revalida por completo** el nivel instalado bajo el mismo lock: manifest, id = carpeta, conjunto exacto de archivos, gramática del timeline, `engine_min`, contrato, adaptador y la capacidad concreta (`timeline.gtf`/`timeline.gtl`) además de `package.runtime/1` + `registry.slots/1` + `adapter.multi`. Nivel editado o incompatible → `INSTALLED_INVALID` / código de compatibilidad, sin tocar nada.
+- `check_registry_capable` comprueba también el contrato (`ENGINE_CONTRACT_UNSUPPORTED`).
+- Capacidades futuras desconocidas, bien formadas y únicas: se ignoran; nunca sustituyen a una requerida ni hacen aceptable un contrato o build desconocidos.
+- **Barrera del runtime coherente**: `groove/.installer/lock` o `journal.json` presentes ⇒ el juego no lanza niveles custom. Orden: lock (fsync) → diario (fsync del directorio) → … → borrar diario (fsync) → borrar lock. Si queda un diario o `journal.json.tmp`, o la operación se interrumpe (Ctrl+C, corte), el archivo de lock se conserva hasta `recover`.
+- **La recuperación conserva la evidencia**: antes de borrar el diario, `recover` mueve la carpeta `tx-*` verificada y una copia del diario a `groove/backups/recovery-<tx>/` (el usuario puede borrarla luego). Si ya existe → `RECOVERY_ARCHIVE_EXISTS` y no se toca nada.
+- `recover`, `uninstall` y `unassign` funcionan **sin** `engine.json` (marcador retirado); `install` y `assign` (nuevas asignaciones) lo exigen.
 - Mismo id y versión con bytes distintos → `VERSION_CONFLICT`; versión menor → `DOWNGRADE_REFUSED`; mismo contenido en otro ZIP → `unchanged`.
 
+## Modelo de confianza (qué NO se promete)
+- Los hashes SHA-256 del diario **detectan incoherencias** (corte de luz, copia a medias, edición accidental); **no autentican**: quien pueda reescribir a la vez los datos y los hashes del diario puede engañar a `recover`. No hay firma.
+- El instalador asume una operación **sin conexión** sobre un sistema de archivos de confianza (la SD en el PC, sin otros programas escribiendo). Comprueba enlaces/junctions y relee bajo el lock, pero **no garantiza protección TOCTOU frente a agentes externos** que modifiquen la SD mientras trabaja.
+- El lock es consultivo entre instaladores de este código; no impide que otro programa escriba en la SD.
+
 ## Windows y Android
-- **Windows**: `py -3 tools\groove_install.py …` o la GUI (`tools/groove_gui/README.md`). Detección de junctions y lock `msvcrt` implementados pero **no probados en Windows real**. Workflow manual en `.github/workflows/package-installer.yml` (no ejecutado; requiere autorización).
+- **Windows**: `py -3 tools\groove_install.py …`, la GUI (`tools/groove_gui/README.md`) o los ejecutables de `tools/windows/` (PyInstaller; se construyen en CI o con `build_windows.ps1`, nunca se suben al repo). Validación con SD simulada: `tools/groove_sd_sim.py` y `reports/GE-155/WINDOWS_VALIDATION.md`. Detección de junctions y lock `msvcrt` implementados pero **no probados en Windows real** todavía. Workflow manual en `.github/workflows/package-installer.yml` (no ejecutado; requiere autorización).
 - **Android**: stdlib pura; con Chaquopy o Termux sobre una ruta real (`/storage/XXXX-XXXX`). **Sin adaptador SAF y sin afirmaciones sobre SAF.** No probado en Android.
 - FAT32/exFAT: las pruebas de fallos en Linux no demuestran durabilidad en FAT/exFAT; el diario cubre el estado lógico, no la corrupción del FS.

@@ -14,11 +14,25 @@ como **decisiones V0**, no como congelación final: falta la confirmación de co
 | F17 | se mantienen `gtf.py` y `engine_contract.json` fijados de GE-151 @ `9b56aab` hasta la integración | `vendor/PIN.json` |
 | F18 | TASKS.md (@ `1e9855c`) ya registra GE-155 → Grok, `tools/groove_package/`, `tools/groove_install.py`, `tests/package/` | — |
 
+## Revisión GE-154 de `d3c971f` (PR #8, comentario 7239548049) — aplicada
+| Punto | Implementación | Pruebas |
+|---|---|---|
+| Capacidades futuras desconocidas, bien formadas y únicas | **Aceptado por GE-154**: se ignoran; nunca sustituyen a una requerida ni permiten contrato/build desconocido | `test_review_7239548049.FutureCapabilities` |
+| `assign` revalida el paquete instalado | lectura acotada bajo el mismo lock + `validate_installed` (manifest, id, archivos, timeline) + `check_compat` (contrato, `engine_min`, adaptador, build, capacidad `timeline.<fmt>`) | `AssignRevalidation` |
+| Contrato en `check_registry_capable` | `ENGINE_CONTRACT_UNSUPPORTED` | `RegistryCapable` |
+| Lock: fallo al adquirir, escrituras completas, sin borrar el lock ajeno, carrera release/reacquire (orden Windows) | `lock.py` reescrito | `LockAcquireFailure`, `LockRelease`, `LockMultiProcessRace` |
+| Coherencia barrera lock/diario | el archivo de lock se conserva si queda diario, `journal.json.tmp` o la operación se interrumpe | `GateCoherence` |
+| Hashes del diario = detección, no autenticación; FS de confianza; sin promesa TOCTOU | documentado en `tools/groove_package/README.md` («Modelo de confianza») | — |
+| Recuperación conserva evidencia y no exige marcador retirado; sin nuevas asignaciones sin marcador | `groove/backups/recovery-<tx>/`; `recover`/`uninstall`/`unassign` sin marcador, `install`/`assign` lo exigen | `RecoveryEvidence` |
+| Matriz Windows/macOS/Linux solo con autorización; mientras, Windows local con SD sintética | workflow manual sin ejecutar; `tools/groove_sd_sim.py` + `WINDOWS_VALIDATION.md` | `test_sd_sim` |
+
+Es **conformidad provisional para integrar en V0, no congelación final**.
+
 ## Abiertos (requieren GE-154 / otros dueños; no decididos aquí)
-1. **Capacidades desconocidas** pero bien formadas en `engine.json`: se aceptan e ignoran (compatibilidad hacia delante). Confirmar.
-2. **Conformidad final de GE-154** sobre esta implementación antes de congelar.
-3. **Productor del marcador** `engine.json`: pertenece a GE-151 (paquete de release). Aquí solo se lee.
-4. **Corpus compartido**: GE-153 debería ejecutar `tests/package/fixtures/` (3 válidos + 113 inválidos, `corpus.json`) contra su exportador.
+1. ~~Capacidades desconocidas~~ — resuelto (ver arriba).
+2. **Aprobación final de GE-154** sobre estas dos correcciones antes de congelar.
+3. **Productor del marcador** `engine.json`: pertenece a GE-151, que solo debe producirlo junto con un cargador funcional. Aquí solo se lee.
+4. **Corpus compartido**: GE-153 debe usar el corpus **de este SHA** y ejecutar `tests/package/fixtures/` (3 válidos + 113 inválidos, `corpus.json`) contra su exportador.
 5. **Pruebas en Windows y Android reales** pendientes (lock `msvcrt`, junctions, GUI). El workflow manual no se ha ejecutado (requiere autorización).
 6. **SAF**: no hay adaptador; no se afirma nada sobre SAF.
 7. **FAT/exFAT**: no se afirma durabilidad; la inyección de fallos en Linux no es prueba para FAT/exFAT.

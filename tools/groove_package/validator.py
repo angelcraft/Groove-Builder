@@ -88,3 +88,29 @@ def validate_package(data: bytes) -> ValidatedPackage:
         id=manifest["id"], version=manifest["version"], title=manifest["title"], manifest=manifest,
         manifest_bytes=raw_manifest, timeline_name=tl_name, timeline_bytes=raw_tl,
         sha256=hashlib.sha256(data).hexdigest(), timeline_info=info, warnings=warnings)
+
+
+def validate_installed(files: dict, pid: str) -> ValidatedPackage:
+    """Re-validate an INSTALLED level directory (already read bounded, under the installer lock) with the
+    same manifest + timeline rules as a package, so `assign` never trusts a level that was edited on the
+    SD or installed by an older/other tool. Raises PackageError. `sha256` is the level digest."""
+    raw_manifest = files.get("manifest.json")
+    if raw_manifest is None:
+        raise PackageError("MANIFEST_MISSING", "manifest.json is missing")
+    if len(raw_manifest) > limits.MAX_MANIFEST_BYTES:
+        raise PackageError("MANIFEST_TOO_LARGE", "manifest.json too large")
+    manifest, warnings = validate_manifest(load_json_strict(raw_manifest))
+    if manifest["id"] != pid:
+        raise PackageError("MANIFEST_BAD_ID", f"manifest id {manifest['id']} != directory {pid}")
+    tl_name = TIMELINES[manifest["timeline"]["format"]]
+    if set(files) != {"manifest.json", tl_name}:
+        raise PackageError("UNEXPECTED_MEMBER", f"installed level must contain exactly manifest.json + {tl_name}")
+    raw_tl = files[tl_name]
+    _, info = validate_timeline(raw_tl, manifest["timeline"]["format"], tl_name)
+    h = hashlib.sha256()
+    for name in sorted(files):
+        h.update(name.encode("ascii") + b"\0" + hashlib.sha256(files[name]).digest())
+    return ValidatedPackage(
+        id=manifest["id"], version=manifest["version"], title=manifest["title"], manifest=manifest,
+        manifest_bytes=raw_manifest, timeline_name=tl_name, timeline_bytes=raw_tl,
+        sha256=h.hexdigest(), timeline_info=info, warnings=warnings)

@@ -16,7 +16,9 @@ Layout under <SD>/groove/:
 
 Protocol: lock -> journal(staging) -> stage in tx + fsync -> journal(prepared) -> atomic renames
 -> journal(committed) -> cleanup -> unlock. Recovery: staging/aborted -> discard tx; prepared ->
-roll back by moving content (never deleting it); committed -> discard tx.
+roll back by moving content (never deleting it); committed -> roll forward. Recovery then MOVES the
+tx directory + a journal copy to backups/recovery-<tx>/ (evidence kept). Journal hashes detect
+inconsistency only; they do not authenticate (offline, trusted FS; no TOCTOU promise vs external writers).
 Linux fault injection is not proof of FAT/exFAT power-loss durability (see README).
 """
 import hashlib
@@ -33,7 +35,7 @@ from .fsops import FS
 from .lock import InstallerLock
 from .manifest import load_json_strict, validate_manifest, parse_version, valid_id_syntax, TIMELINES
 from .safefs import check_chain, check_tree, read_bounded, lstat_or_none, is_link_like
-from .validator import validate_package
+from .validator import validate_package, validate_installed
 
 JOURNAL_FORMAT = "groove-install-journal/2"
 JOURNAL_KEYS = {"format", "tx", "op", "id", "state", "level", "had_level", "has_new_level", "slots",
@@ -141,6 +143,17 @@ class SD:
         if set(files) != {"manifest.json", TIMELINES[man["timeline"]["format"]]}:
             raise InstallError("LEVEL_DIR_UNEXPECTED", f"{pid}: incomplete level directory {sorted(files)}")
         return man, files
+
+    def installed_package(self, pid):
+        """Full re-validation of an installed level (bounded reads; caller holds the lock):
+        manifest schema, id == directory, exact file set, timeline grammar. None if absent."""
+        files = self._read_level_files(self.level_dir(pid))
+        if files is None:
+            return None
+        try:
+            return validate_installed(files, pid)
+        except PackageError as e:
+            raise InstallError("INSTALLED_INVALID", f"{pid}: installed level fails re-validation ({e})") from None
 
     def unknown_staging(self):
         out = []
@@ -286,10 +299,30 @@ class SD:
             self._verify(dict(j, state="aborted"))
             j = dict(j, state="aborted")
             self._write_journal(j)
-            self._discard(j)
+            self._archive(j)
             return "rolled-back"
-        self._discard(j)
+        self._archive(j)
         return "rolled-forward" if j["state"] == "committed" else "rolled-back"
+
+    def _archive(self, j):
+        """Recovery never destroys evidence: the verified tx directory (staged/replaced content) and a copy
+        of the journal are MOVED to groove/backups/recovery-<tx>/ before the journal is removed.
+        Idempotent across crashes (each step is skipped once done). The user may delete it later."""
+        txd = self.tx_dir(j["tx"])
+        dest = os.path.join(self.backups, f"recovery-{j['tx']}")
+        jcopy = os.path.join(dest, "journal.json")
+        moved = os.path.join(dest, "tx")
+        self._chk(self.backups, dest, jcopy, moved)
+        self.fs.mkdir(self.backups)
+        self.fs.mkdir(dest)
+        check_tree(dest)
+        if not os.path.lexists(jcopy):
+            self.fs.write_file(jcopy, jsonstrict_dumps(j))
+        if os.path.lexists(txd):
+            if os.path.lexists(moved):
+                raise InstallError("RECOVERY_ARCHIVE_EXISTS", f"{moved} already exists; evidence retained in place")
+            self.fs.replace(txd, moved)
+        self.fs.remove(self.journal_path)
 
     def _run(self, j, stage):
         """Caller holds the lock. Returns True if cleanup finished, False if `recover` must finish it."""
@@ -324,11 +357,17 @@ class SD:
                 raise InstallError("RECOVERY_NEEDED", "an interrupted operation was found; run `recover` first")
             return fn()
         except InstallError as e:
-            if e.code in ("JOURNAL_TAMPERED", "JOURNAL_CORRUPT"):
+            if e.code in ("JOURNAL_TAMPERED", "JOURNAL_CORRUPT", "RECOVERY_ARCHIVE_EXISTS"):
                 keep_lock_file = True
             raise
+        except Exception:
+            raise
+        except BaseException:
+            keep_lock_file = True  # interrupted mid-operation (Ctrl+C, simulated power cut): state unknown
+            raise
         finally:
-            if os.path.lexists(self.journal_path):
+            # Gate coherence: the lock FILE is only removed when no journal (or journal temp) remains.
+            if os.path.lexists(self.journal_path) or os.path.lexists(self.journal_path + ".tmp"):
                 keep_lock_file = True
             lk.release(remove=not keep_lock_file)
 
@@ -463,12 +502,14 @@ class SD:
 
     def _slots_tx(self, op_name, pid, mutate, need_marker=True, allow_corrupt_backup=False):
         def op():
-            if need_marker:
-                check_registry_capable(resolve_marker(self.groove))
+            tgt = None
+            if need_marker:  # new assignments only; unassign/uninstall/recover work without a marker
+                tgt = resolve_marker(self.groove)
+                check_registry_capable(tgt)
             reg = self.read_slots()
             had = reg is not None
             base = reg if had else slotreg.default_registry()
-            new = mutate(base)
+            new = mutate(base, tgt)
             if new is base and had:
                 return {"action": "unchanged", "slots": base}
             data = slotreg.dumps(new)
@@ -489,16 +530,24 @@ class SD:
     def assign(self, pid, idx):
         self.level_dir(pid)
 
-        def mutate(reg):
-            if self.installed(pid) is None:  # checked under the lock
+        def mutate(reg, tgt):
+            # Under the same lock as the write: re-read (bounded) and fully re-validate the installed
+            # level, then the same compatibility gate as install (contract, engine_min, adapter, build,
+            # package.runtime/registry.slots/adapter.multi + the level's timeline.<fmt> capability).
+            pkg = self.installed_package(pid)
+            if pkg is None:
                 raise InstallError("NOT_INSTALLED", f"{pid} is not installed")
+            try:
+                check_compat(pkg, tgt)
+            except InstallError as e:
+                raise InstallError(e.code, f"installed {pid} {pkg.version}: {e.message}") from None
             return slotreg.with_assignment(reg, idx, pid)
         return self._slots_tx("assign", pid, mutate)
 
     def unassign(self, pid):
         self.level_dir(pid)
 
-        def mutate(reg):
+        def mutate(reg, tgt):
             if slotreg.slot_of(reg, pid) is None:
                 raise InstallError("NOT_ASSIGNED", f"{pid} is not in any slot")
             return slotreg.without(reg, pid)

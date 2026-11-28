@@ -37,6 +37,14 @@ HINTS = {
     "LEVEL_DIR_UNEXPECTED": "La carpeta del nivel tiene archivos ajenos; no se toca.",
     "NOT_INSTALLED": "Ese nivel no está instalado.",
     "SD_NOT_FOUND": "No existe esa carpeta de SD.",
+    "INSTALLED_INVALID": "El nivel instalado en la SD ya no es válido o no es compatible con el motor; "
+                         "no se asigna. Reinstala el paquete original.",
+    "ENGINE_CONTRACT_UNSUPPORTED": "El contrato del motor instalado no es compatible con este instalador.",
+    "ENGINE_CONTRACT_MISMATCH": "El nivel se hizo para otro contrato del motor.",
+    "ENGINE_TOO_OLD": "El nivel necesita una versión más nueva del motor.",
+    "ENGINE_ADAPTER_UNSUPPORTED": "El nivel usa un adaptador que el motor no admite.",
+    "LOCK_IO_ERROR": "No se pudo preparar el bloqueo en la SD (¿protegida contra escritura o llena?). No se ha tocado nada.",
+    "RECOVERY_ARCHIVE_EXISTS": "Ya hay una copia de recuperación con ese nombre en groove/backups; no se toca nada.",
     "NOT_RUNTIME_PROFILE": "Es un proyecto del editor, no un paquete instalable. Exporta el perfil «runtime».",
 }
 
