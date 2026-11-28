@@ -1,0 +1,45 @@
+{
+  "python": "3.13.5",
+  "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+  "tests_run": 39,
+  "failures": 0,
+  "errors": 0,
+  "skipped": [],
+  "subtests_passed": 553,
+  "subtests_failed": 0,
+  "subtests_per_test": {
+    "test_archive.Corpus.test_invalid_fixtures": {
+      "passed": 102,
+      "failed": 0
+    },
+    "test_archive.Corpus.test_valid_fixtures": {
+      "passed": 3,
+      "failed": 0
+    },
+    "test_engine_compat.Compat.test_matrix": {
+      "passed": 8,
+      "failed": 0
+    },
+    "test_manifest_schema.SchemaParity.test_strict_json": {
+      "passed": 6,
+      "failed": 0
+    },
+    "test_manifest_schema.SchemaParity.test_structural_parity": {
+      "passed": 25,
+      "failed": 0
+    },
+    "test_transactions.Transactions.test_crash_at_every_step": {
+      "passed": 93,
+      "failed": 0
+    },
+    "test_transactions.Transactions.test_crash_during_recovery": {
+      "passed": 223,
+      "failed": 0
+    },
+    "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+      "passed": 93,
+      "failed": 0
+    }
+  },
+  "ok": true
+}

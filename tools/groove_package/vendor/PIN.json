@@ -1,0 +1,8 @@
+{
+  "note": "Vendored verbatim; do not edit. Re-pin when GE-151 / GE-154 publish new revisions.",
+  "files": {
+    "gtf.py": {"source": "angelcraft/Groove-Builder codex/engine-v0.5.1-hardening:tools/gtf.py", "commit": "9b56aab4e791a9434b36548e0cee39c9ee0e2785", "sha256": "ac96a08eacd01aafeaeeab9c7e7e68bb8b34a1dea05b589e4f54c80520964fa7"},
+    "engine_contract.json": {"source": "angelcraft/Groove-Builder codex/engine-v0.5.1-hardening:tools/engine_contract.json", "commit": "9b56aab4e791a9434b36548e0cee39c9ee0e2785", "sha256": "09e1770c4c9e193db7f957b75e22cdca2e807b2eb2768294b0ec11a64d6239ba"},
+    "groove-runtime-manifest.draft.schema.json": {"source": "angelcraft/Groove-Builder coordination/v0.6.0:docs/schema/groove-runtime-manifest.draft.schema.json", "commit": "7a5fe22cd277de569a9deae0e4917611de5cdfbf", "sha256": "695e01aec0005223487ebb76eacacc731457b038431d9624c2ac18116b26f16c"}
+  }
+}

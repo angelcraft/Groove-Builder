@@ -1,0 +1,30 @@
+# GE-155 synthetic fixture A (original content, timing data only; no game assets).
+# Identity: org.groovebuilder.e291e52f-c146-41b0-823e-40b9fccb1338
+title "Synthetic Pulse A"
+bgm 139
+start 0
+results exit
+first KAERU
+end 40
+finish 44
+
+rest 4
+switch KAERU
+frog3 basic
+rest 2
+frog4 basic
+rest 2
+frog5 basic
+
+rest 4
+switch CARS
+brake basic
+rest 4
+accel basic
+
+rest 4
+switch KAERU
+loop 2
+  frog3 basic
+  rest 2
+end
