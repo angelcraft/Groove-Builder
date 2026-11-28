@@ -1,45 +1,196 @@
 {
-  "python": "3.13.5",
-  "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
-  "tests_run": 39,
-  "failures": 0,
-  "errors": 0,
-  "skipped": [],
-  "subtests_passed": 553,
-  "subtests_failed": 0,
-  "subtests_per_test": {
-    "test_archive.Corpus.test_invalid_fixtures": {
-      "passed": 102,
-      "failed": 0
+  "task": "GE-155",
+  "host_only": true,
+  "windows_tested": false,
+  "android_tested": false,
+  "runs": [
+    {
+      "python": "3.13.5",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [
+        "test_gui.View.test_smoke: tkinter not available in this Python"
+      ],
+      "subtests_passed": 729,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 293,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "note": "system python3.13 (no tkinter -> GUI view smoke skipped)"
     },
-    "test_archive.Corpus.test_valid_fixtures": {
-      "passed": 3,
-      "failed": 0
+    {
+      "python": "3.13.18",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "subtests_passed": 729,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 293,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "note": "uv python 3.13.18 + Tk 9.0 under xvfb-run"
     },
-    "test_engine_compat.Compat.test_matrix": {
-      "passed": 8,
-      "failed": 0
-    },
-    "test_manifest_schema.SchemaParity.test_strict_json": {
-      "passed": 6,
-      "failed": 0
-    },
-    "test_manifest_schema.SchemaParity.test_structural_parity": {
-      "passed": 25,
-      "failed": 0
-    },
-    "test_transactions.Transactions.test_crash_at_every_step": {
-      "passed": 93,
-      "failed": 0
-    },
-    "test_transactions.Transactions.test_crash_during_recovery": {
-      "passed": 223,
-      "failed": 0
-    },
-    "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
-      "passed": 93,
-      "failed": 0
+    {
+      "python": "3.9.25",
+      "platform": "Linux-6.12.113+-x86_64-with-glibc2.41",
+      "tests_run": 60,
+      "failures": 0,
+      "errors": 0,
+      "skipped": [],
+      "subtests_passed": 729,
+      "subtests_failed": 0,
+      "subtests_per_test": {
+        "test_archive.Corpus.test_invalid_fixtures": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_archive.Corpus.test_valid_fixtures": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_marker_parsing": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_engine_compat.Compat.test_matrix": {
+          "passed": 13,
+          "failed": 0
+        },
+        "test_install.SlotRegistry.test_invalid_registries": {
+          "passed": 19,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_strict_json": {
+          "passed": 6,
+          "failed": 0
+        },
+        "test_manifest_schema.SchemaParity.test_structural_parity": {
+          "passed": 25,
+          "failed": 0
+        },
+        "test_review_fixes.Links.test_symlinked_components": {
+          "passed": 3,
+          "failed": 0
+        },
+        "test_review_fixes.MaliciousJournal.test_rejected_and_evidence_retained": {
+          "passed": 15,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_at_every_step": {
+          "passed": 113,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_crash_during_recovery": {
+          "passed": 293,
+          "failed": 0
+        },
+        "test_transactions.Transactions.test_io_error_at_every_step_rolls_back_in_process": {
+          "passed": 113,
+          "failed": 0
+        }
+      },
+      "ok": true,
+      "note": "uv python 3.9.25 venv + Tk 8.6 + jsonschema under xvfb-run"
     }
-  },
-  "ok": true
+  ]
 }

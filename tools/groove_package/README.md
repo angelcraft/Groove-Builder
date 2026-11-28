@@ -1,41 +1,52 @@
 # groove_package — validador e instalador de paquetes `.groove` (GE-155, BORRADOR)
 
-Núcleo **Python 3.9+ solo con la biblioteca estándar**, para que el mismo código funcione
-en Windows (CLI) y dentro de una app Android (p. ej. Chaquopy) sin dependencias nativas.
-Implementa el perfil **runtime** del Draft 0.2 de GE-154 (`docs/GROOVE_PROFILE_DRAFT_02.md`
-en `coordination/v0.6.0` @ `7a5fe22`). **Ningún formato está congelado.**
+Núcleo **Python 3.9+ solo con la biblioteca estándar** y **sin imports de GUI** (lo comprueba
+`tests/package/test_cli_and_pins.py::CorePurity`), para que el mismo código funcione en Windows (CLI o
+la GUI de `tools/groove_gui/`) y dentro de una app Android (p. ej. Chaquopy).
+Implementa las decisiones V0 de GE-154 (**Draft 0.3**, `docs/GROOVE_INTEGRATION_V0_DECISIONS.md` en
+`coordination/v0.6.0` @ `3642b7e`, copia en `vendor/`) sobre el perfil runtime del Draft 0.2.
+Son decisiones V0 implementadas, **no una congelación final**.
 
 ```
 python tools/groove_install.py validate  nivel.groove [--json]
-python tools/groove_install.py install   nivel.groove --sd E:\ --engine-version 0.6.0 --engine-contract 1 --build-id 03FF4A3B [--slot auto|0|1|none]
-python tools/groove_install.py uninstall <id> --sd E:\ [--purge-saves]
-python tools/groove_install.py assign <id> <slot> --sd E:\  |  unassign <id> --sd E:\
+python tools/groove_install.py plan      nivel.groove [--sd E:\] [--engine-version 0.6.0 --engine-contract 1 --build-id <40 hex> --capability ...]
+python tools/groove_install.py install   nivel.groove --sd E:\ [--slot auto|none|A|B|<n>]
+python tools/groove_install.py uninstall <id> --sd E:\
+python tools/groove_install.py assign <id> A|B|<n> --sd E:\  |  unassign <id> --sd E:\
 python tools/groove_install.py init-slots --sd E:\ [--reset-corrupt]
 python tools/groove_install.py status --sd E:\  |  recover --sd E:\
 ```
-Códigos de salida: 0 ok · 1 paquete rechazado · 2 operación rechazada o fallida (SD sin cambios) · 3 uso.
+Códigos de salida: 0 ok · 1 paquete rechazado · 2 operación rechazada o error de E/S (si hay diario pendiente, usar `recover`) · 3 uso.
+
+Las operaciones que modifican la SD **solo** aceptan como destino `sd:/groove/engine.json`
+(`groove-engine/1`). Los flags `--engine-*` existen únicamente en `plan` (solo lectura) para raíces sintéticas.
+Sin `--allow-downgrade` ni `--purge-saves` en V0.
 
 ## Módulos
 | Módulo | Función |
 |---|---|
-| `zipreader.py` | Lector ZIP estricto propio: EOCD exacto, sin ZIP64/multidisco/comentario/datos antepuestos o huecos; cada cabecera local se compara con la central; sin duplicados ni colisiones de mayúsculas/NFC; sin symlinks, directorios, cifrado, métodos ≠ stored/deflate, flags o extras desconocidos; deflate en streaming con tope de salida, CRC y longitud real. |
+| `jsonstrict.py` | JSON estricto con tope de bytes: UTF-8 sin BOM, claves únicas, sin NaN/Infinity, profundidad limitada; `bool` no cuenta como entero. |
+| `zipreader.py` | Lector ZIP estricto: EOCD exacto, sin comentario de archivo ni de miembro, nombres ASCII exactos, extras restringidos, «version needed» ≤ 20, descriptores solo si coinciden, cabecera local = central, sin ZIP64/multidisco/huecos/duplicados/colisiones, deflate con tope y CRC. |
 | `safepath.py` | Reglas de nombres (traversal, `\`, absolutas, unidad, dispositivos DOS, punto/espacio final, controles). |
-| `manifest.py` | JSON estricto (UTF-8 sin BOM, claves únicas, sin NaN, profundidad ≤ 16, sin surrogates sueltos) + esquema Draft 0.2 + reglas semánticas (título 1–95 B, id sin dispositivo DOS, aviso si el id no lleva UUID v4). |
-| `timeline.py` | Parser endurecido de GE-151 (`vendor/gtf.py`, fijado) + reglas runtime: `start` y `results` explícitos, sin `match`, sin `results native`, GTLM 1 (GTL1/Hoop rechazado). |
-| `validator.py` | Orquesta todo; exactamente `manifest.json` + un timeline; rechaza tipos propietarios/ejecutables/anidados. |
-| `engine.py` | Destino: CLI o `sd:/groove/engine.json` (borrador); exige build `03FF4A3B`, contrato 1, motor ≥ 0.6.0 y ≥ `engine_min`. |
-| `slots.py` | `slots.json` (borrador `groove-slots/1`): 2 casillas A=(0,9,0), B=(0,9,1); capacidad ampliable a 256 por migración explícita; las casillas ≥ 2 no son asignables hasta que haya celdas verificadas. |
-| `fsops.py` | Primitivas con fsync e inyección de fallos (corte de energía / error de E/S) para las pruebas. |
-| `installer.py` | Transacciones con diario: preparar → diario `prepared` → renombrados atómicos → `committed` → limpieza. `recover` deshace o completa de forma idempotente. |
+| `manifest.py` | Esquema Draft 0.2 + reglas semánticas; id y versión con `fullmatch` (sin salto de línea final), id sin dispositivo DOS. |
+| `timeline.py` | Parser fijado de GE-151 + reglas C: `start` y `results exit` explícitos y únicos en GTF y GTLM; `match`, duplicados/conflictos y `results native` → error; id no v4 → aviso. |
+| `validator.py` | Allowlist exacta de dos miembros (`manifest.json` + un timeline). |
+| `engine.py` | Marcador `groove-engine/1` (claves exactas, ≤ 4 KiB, build completa de 40 hex, capacidades); compatibilidad: contrato 1, motor ≥ 0.6.0 y ≥ `engine_min`, capacidades `package.runtime/1`, `registry.slots/1`, `adapter.multi` + `timeline.gtf`/`timeline.gtl`. |
+| `slots.py` | `groove-slots/1`: capacidad 2..256; casillas ≥ 2 con `coord` e `id` nulos; coords de 3 enteros; `generation` 0..2147483647, +1 exacto por cambio efectivo, sin desbordar; no-op = `unchanged`; sin migraciones silenciosas. |
+| `safefs.py` | Rechazo de symlinks, junctions y reparse points (Windows `FILE_ATTRIBUTE_REPARSE_POINT`) en toda la ruta y árboles; lecturas acotadas con `O_NOFOLLOW` + `fstat`. |
+| `lock.py` | Lock exclusivo del SO (`fcntl.flock` / `msvcrt.locking`), no bloqueante; nunca se borra un lock vivo. |
+| `fsops.py` | Primitivas con fsync e inyección de fallos para las pruebas. |
+| `installer.py` | Transacciones con diario `groove-install-journal/2` (entrada no fiable: esquema estricto, rutas derivadas, hashes verificados antes de mutar). Lock → `staging` → `prepared` → renombrados → `committed` → limpieza. El rollback mueve, nunca borra. |
 
 ## Garantías (probadas en host, ver `tests/package/`)
 - Solo escribe en `groove/levels/<id>/`, `groove/slots.json`, `groove/.installer/` y `groove/backups/`.
-- **Nunca escribe `custom-saves/`.** `uninstall` conserva los `.gsv`; `--purge-saves` copia antes a `groove/backups/saves/<id>.<tx>.gsv*` y borra solo tras el commit.
-- No toca `groove/multi.gtf`, `stages/`, `atmosphere/`, JKSV ni otros archivos.
-- Mismo id y versión con bytes distintos → `VERSION_CONFLICT`; versión menor → `DOWNGRADE_REFUSED` (salvo `--allow-downgrade`).
-- Carpeta de nivel con archivos ajenos, symlinks o `slots.json` corrupto/legado → se rechaza sin modificar nada.
+- **Nunca escribe `custom-saves/`**; `uninstall` siempre conserva los `.gsv`.
+- Lock tomado antes de cualquier lectura/comprobación/asignación y mantenido durante `recover`; con un diario pendiente toda operación devuelve `RECOVERY_NEEDED`.
+- Diario manipulado o corrupto → `JOURNAL_TAMPERED`/`JOURNAL_CORRUPT`, no se toca nada y se conserva la evidencia (el lock queda como barrera).
+- Directorios `tx-*` desconocidos en `.installer/` no se borran nunca (`status` los lista; colisión → `TX_COLLISION`).
+- Mismo id y versión con bytes distintos → `VERSION_CONFLICT`; versión menor → `DOWNGRADE_REFUSED`; mismo contenido en otro ZIP → `unchanged`.
 
 ## Windows y Android
-- **Windows**: `py -3 tools\groove_install.py …` con la SD montada (p. ej. `E:\`). Sin fsync de directorios (no existe en Windows); se usa `os.replace`. Empaquetado `.exe` (PyInstaller) pendiente. Workflow manual preparado en `.github/workflows/package-installer.yml` (no ejecutado).
-- **Android**: el núcleo es stdlib pura y se puede incrustar con Chaquopy en una app Kotlin, o usar en Termux/Pydroid con una ruta real (`/storage/XXXX-XXXX`) y permiso «Acceso a todos los archivos». **No implementado:** un adaptador SAF (`DocumentsContract`) para tarjetas accesibles solo por SAF: `SD` lee con `os.*` y `FS` escribe con `os.*`; habría que abstraer también las lecturas y aceptar que `renameDocument/moveDocument` no garantizan atomicidad en todos los proveedores. MTP (DBI) no se soporta.
-- FAT32/exFAT: un rename no es atómico ante un corte de energía a nivel de sistema de archivos; el diario y `recover` cubren el estado lógico, no la corrupción del FS (usar fsck/chkdsk).
+- **Windows**: `py -3 tools\groove_install.py …` o la GUI (`tools/groove_gui/README.md`). Detección de junctions y lock `msvcrt` implementados pero **no probados en Windows real**. Workflow manual en `.github/workflows/package-installer.yml` (no ejecutado; requiere autorización).
+- **Android**: stdlib pura; con Chaquopy o Termux sobre una ruta real (`/storage/XXXX-XXXX`). **Sin adaptador SAF y sin afirmaciones sobre SAF.** No probado en Android.
+- FAT32/exFAT: las pruebas de fallos en Linux no demuestran durabilidad en FAT/exFAT; el diario cubre el estado lógico, no la corrupción del FS.

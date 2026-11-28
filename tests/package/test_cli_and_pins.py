@@ -71,7 +71,8 @@ class CorePurity(unittest.TestCase):
         for d, _, files in os.walk(core):
             for n in files:
                 if n.endswith(".py"):
-                    tree = ast.parse(open(os.path.join(d, n), encoding="utf-8").read())
+                    with open(os.path.join(d, n), encoding="utf-8") as f:
+                        tree = ast.parse(f.read())
                     for node in ast.walk(tree):
                         names = []
                         if isinstance(node, ast.Import):
