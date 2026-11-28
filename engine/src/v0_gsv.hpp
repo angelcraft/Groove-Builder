@@ -54,6 +54,9 @@ public:
  virtual bool create(const char*,const uint8_t*,unsigned)=0;
  virtual bool flush(const char*)=0;virtual bool sync()=0;
  virtual bool rename(const char*,const char*)=0;virtual bool remove(const char*)=0;
+ // GE-154 7241433453: a provider that cannot guarantee directory sync must say so BEFORE any mutation.
+ // Default true keeps injected synthetic IO unchanged; FileIO forwards the real provider capability.
+ virtual bool syncCapable(){return true;}
 };
 struct Paths {char main[160],backup[164],pending[168],temp[168];
  explicit Paths(const char* id){std::snprintf(main,sizeof(main),"custom-saves/%s.gsv",id);std::snprintf(backup,sizeof(backup),"%s.bak",main);std::snprintf(pending,sizeof(pending),"%s.pending",main);std::snprintf(temp,sizeof(temp),"%s.new",main);}
@@ -73,7 +76,8 @@ inline Status load(IO& io,const char* id,Record& out){if(!safeId(id))return Stat
 inline Status commit(IO& io,const char* id,const Intent& t){
  if(!safeId(id))return Status::Blocked;uint8_t j[JournalSize];Record before,after;
  if(!decode(t.before,Size,id,before)||!decode(t.after,Size,id,after)||!journal(t,j))return Status::Blocked;
- Lock l(io,id);if(!l.held)return Status::Pending;Paths p(id);uint8_t b[JournalSize];unsigned n=0;
+ Lock l(io,id);if(!l.held)return Status::Pending;if(!io.syncCapable())return Status::Pending; // no SD mutation without accredited sync
+ Paths p(id);uint8_t b[JournalSize];unsigned n=0;
  auto jr=io.read(p.pending,b,JournalSize,n);if(jr==Read::Error)return Status::Pending;if(jr==Read::Oversized)return Status::Conflict;
  if(jr==Read::Present&&(n!=JournalSize||std::memcmp(j,b,n)))return Status::Conflict;
  char receipt[208];std::snprintf(receipt,sizeof(receipt),"%s.done-%u-%llu",p.main,after.seq,(unsigned long long)t.token);
@@ -117,7 +121,7 @@ inline Status commit(IO& io,const char* id,const Intent& t){
 // Explicit operator-approved recovery; never called automatically by load/arm.
 // Preserve corrupt current under a fresh evidence name, and keep backup intact.
 inline Status restoreBackup(IO& io,const char* id,uint64_t recoveryToken){
- if(!safeId(id)||!recoveryToken)return Status::Blocked;Lock l(io,id);if(!l.held)return Status::Pending;Paths p(id);
+ if(!safeId(id)||!recoveryToken)return Status::Blocked;Lock l(io,id);if(!l.held)return Status::Pending;if(!io.syncCapable())return Status::Pending;Paths p(id);
  uint8_t old[JournalSize],backup[Size];unsigned n=0,bn=0;Record record;
  if(io.read(p.pending,old,JournalSize,n)!=Read::Missing)return Status::Blocked;
  if(io.read(p.backup,backup,Size,bn)!=Read::Present||!decode(backup,bn,id,record))return Status::Blocked;

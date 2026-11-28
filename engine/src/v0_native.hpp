@@ -23,6 +23,11 @@ struct Backend {
     gsv::IO* saves=nullptr;
     const MultiFactory* factory=nullptr;
     uint64_t (*newTransaction)()=nullptr;
+    // GE-151 interim (Grok): live binding. Called OUTSIDE the state lease, before MapInit is dispatched
+    // (normal game context: loads sd:/groove/levels + slots.json when no session is active).
+    void (*mapInitHook)()=nullptr;
+    // After MapReturn (post of mapEnterFromStage) try H9 once; Pending/Blocked keep the session.
+    bool persistOnMapReturn=false;
 };
 struct Acceptance {
     bool ownershipOnFailure,exclusiveRunnerMutation,noLateAppend,horizonJoin,transitiveStack,
@@ -33,7 +38,8 @@ constexpr bool installationAllowed(const Acceptance& a) {
         a.transitiveStack && a.instructionsAndBuild && a.ipsCompatibility && a.visuals &&
         a.registryContract && a.saveContract;
 }
-// Only a harness currently binds Backend. No live installer calls these entries.
+// Bound by the harnesses and, on grok/engine-b2-integration, by hkMain (installV0) when every V0 and B2 hook
+// signature matches. Not an installable candidate until GE-154 review.
 extern "C" bool groove_v0_bind(const Backend*);
 extern "C" bool groove_v0_configure(const Slot*);
 extern "C" bool groove_v0_configure_loaded();

@@ -28,8 +28,19 @@
 #include "v0_loader.hpp"
 #include "v0_native.hpp"
 #include "v0_file_io.hpp"
+#include "v0_execution.hpp"
+#include "b2_owner.hpp"
 
-#define GROOVE_HT3_VERSION "0.5.1"
+// Assembly entries (b2_entries.S, v0_entries.S): capture the caller's x30 before any C++ prologue.
+extern "C" bool groove_b2_destroy_entry(void* mgr);
+#define GROOVE_V0_ENTRIES(X) X(map_init) X(map_dtor) X(confirm) X(map_cell) X(reverse) X(cell_state) X(save_state) \
+    X(launch) X(begin_play) X(campaign_a) X(campaign_b) X(set_sel) X(get_sel) X(init_gameplay) X(commit) X(map_return) \
+    X(write_save) X(perfect_site) X(perfect_ctor)
+#define GROOVE_V0_DECL(n) extern "C" uint64_t groove_v0_##n##_entry(uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t, uint64_t);
+GROOVE_V0_ENTRIES(GROOVE_V0_DECL)
+#undef GROOVE_V0_DECL
+
+#define GROOVE_HT3_VERSION "0.6.0"  // grok/engine-b2-integration: integration build, NOT a release/candidate
 
 namespace {
 
@@ -390,6 +401,7 @@ struct V0NnFiles {
     }
     bool remove(const char* relative){char path[192];return v0Path(relative,path,true)==1&&!gFs.DeleteFile(path).IsFailure();}
     bool syncDirectory(){return false;} // SD directory sync guarantee is NOT provided by FlushFile/CommitSaveData.
+    bool syncCapable(){return false;}   // checked by gsv::commit BEFORE any SD mutation (GE-154 7241433453)
 } gV0NnFiles;
 groove::v0::FileIO<V0NnFiles> gV0SaveIo(gV0NnFiles);
 extern "C" __attribute__((used,retain,visibility("default"))) groove::v0::gsv::IO* groove_v0_get_save_io(){
@@ -500,6 +512,7 @@ bool waitTicks(void* th, int ticks) {
 // Spawns a game thread running `body(stage, thread)` exactly like the native
 // HT2 code spawns its member threads (same allocator, ctor, vtable, trampoline).
 void spawn(void* stage, void* parent, void (*body)(void*, void*)) {
+    if (tStop(parent)) return;  // rev3 §5.2 / GE-154: never append a child after cancellation
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
     if (!th) { logf("spawn: native allocation failed"); return; }
     void* runner = at<void*>(stage, sRunner);
@@ -531,6 +544,7 @@ void cueThread(void* stage, void* th) {
             if (!waitTicks(th, e.tick - cur)) { gRun.stopped = 1; tPop(th); return; }
             cur = e.tick;
         }
+        if (tStop(th)) { gRun.stopped = 1; tPop(th); return; }  // no game call after cancellation
         if (e.op == groove::Op::Hoop) {
             fn<void (*)(void*, void*, int)>(oHoop)(scene, th, e.mask);
             gRun.hoopsSent++;
@@ -555,6 +569,7 @@ void bgThread(void* stage, void* th) {
             if (!waitTicks(th, e.tick - cur)) { tPop(th); return; }
             cur = e.tick;
         }
+        if (tStop(th)) { tPop(th); return; }  // no game call after cancellation
         if (e.op == groove::Op::LayoutAnim) {
             void* layout = at<void*>(stage, sLayout);
             if (layout) playAnim(layout, e.str);
@@ -569,6 +584,7 @@ void bgThread(void* stage, void* th) {
 
 void latencyThread(void* stage, void* th) {
     // Same as native 0x42B2B0: shift this thread's clock by the stage latency.
+    if (tStop(th)) { tPop(th); return; }
     int lat = fn<int (*)(void*)>(oLatency)(stage);
     at<int32_t>(th, 0x10) -= lat;
     tPop(th);
@@ -632,6 +648,7 @@ void control(void* stage, void* th) {
 }
 
 bool writeSave();
+void customExit(void* stage);
 bool patchHt3Sky(void* stage, const char* when);
 
 // Equivalent of the native worker 0x428EF0, always on the non-practice path.
@@ -669,22 +686,15 @@ void ht3Worker(void* stage, void* th) {
          gRun.partsStarted, gTl.partCount, gRun.reachedEnd,
          gRun.finished, gRun.hoopsSent, gRun.commentsSent, gRun.bgSent, at<int>(stage, 0x29E4),
          gRun.resultsMode ? "native toResults (as HT2)" : "return to previous scene");
-    gRun.saved = writeSave() ? 1 : 0; // Retry from the stage dtor only if this attempt failed.
+    gRun.saved = writeSave() ? 1 : 0; // Fallback retried by H-B2 after an approved barrier, never in the dtor.
     flushLog();
+    if (tStop(th)) { gRun.stopped = 1; tPop(th); return; }  // no scene call after cancellation
     if (gRun.resultsMode) {
         // Exactly what the native HT2 worker does after its control thread
         // (0x429028: bl toResults). Shows the native results screen.
         fn<VoidStage>(oToResults)(stage);
     } else {
-        // Clean return like the game's own "back" path (0x133024): set the
-        // "returning" flag, schedule the previous scene (ctx+8) and request
-        // the scene change. (v0.1.0/0.1.1 called 0x130500(ctx,0) WITHOUT a
-        // next scene -> black screen.)
-        void* ctx = at<void*>(stage, sCtx);
-        uint32_t* flags = *reinterpret_cast<uint32_t**>(gBase + oManager + 0x3AA0);
-        if (flags) *flags |= 1;
-        fn<void (*)(void*, int, void*)>(oSetNextScene)(ctx, at<int>(ctx, 8), nullptr);
-        fn<void (*)(void*, int)>(oExitToMenu)(ctx, 1);
+        customExit(stage);  // native Quit semantics; the old ctx+8 + flag path was the native RETRY (0x133024)
     }
     tPop(th);
 }
@@ -996,6 +1006,92 @@ void* ringTypeEntry(int type) {
 
 HkReplace<void*, int> ringTypeHook{ ringTypeEntry };
 
+// ---------------------------------------------------------------- B2 owner boundary (GE-151 interim, Grok)
+// reports/GE-152/CODEX_HANDOFF_rev3.md §3–§7. H-open = custom ctor hooks; H-B2 = pre-hook of SceneMgr::destroyPending
+// (0x5096F0, called from 0x50A05C); H-tw = Seq/Stage deleting-dtor + ~SceneMgr tripwires; H-obs = Stage dtor hooks.
+// A custom stage is only ever diverted when every B2 hook is installed (gB2Installed) and the current-thread
+// query resolved: without its owner boundary the custom session never starts.
+groove::b2::Session gB2;
+bool gB2Installed = false;
+unsigned gB2Branch[5] = {};  // NoSession, Foreign, NoNext, Barrier, SafeStop
+unsigned gB2Trips = 0;
+using CurThreadFn = void* (*)();
+CurThreadFn gCurThread = nullptr;
+struct LiveEnv {
+    uintptr_t base() const { return gBase; }
+    bool plausible(uintptr_t p) const {
+        // non-null, 8-aligned, inside the 39-bit user address space and never main .text/.rodata.
+        return p && !(p & 7) && p < (uintptr_t(1) << 39) && !(p >= gBase && p < gBase + 0xD98000);
+    }
+    bool rd64(uintptr_t a, uint64_t& v) { v = *reinterpret_cast<volatile uint64_t*>(a); return true; }
+    bool rd32(uintptr_t a, uint32_t& v) { v = *reinterpret_cast<volatile uint32_t*>(a); return true; }
+    bool wr32(uintptr_t a, uint32_t v) { *reinterpret_cast<volatile uint32_t*>(a) = v; return true; }
+    void fence() { __atomic_thread_fence(__ATOMIC_SEQ_CST); }
+    void signal(uintptr_t e) { fn<void (*)(void*)>(groove::b2::oSignal)(reinterpret_cast<void*>(e)); }
+    void join(uintptr_t w) { fn<void (*)(void*)>(groove::b2::oJoin)(reinterpret_cast<void*>(w)); }
+    uintptr_t currentThread() { return gCurThread ? reinterpret_cast<uintptr_t>(gCurThread()) : 0; }
+};
+// Normal game context only (ctor hooks): resolves nn::os::GetCurrentThread once.
+bool b2Ready() {
+    if (!gB2Installed) return false;
+    if (!gCurThread)
+        gCurThread = reinterpret_cast<CurThreadFn>(hk::ro::lookupSymbol("_ZN2nn2os16GetCurrentThreadEv"));
+    return gCurThread != nullptr;
+}
+// H-open: must run in the Seq/Stage ctor (main thread). Returns false (no custom session) if anything is missing.
+bool b2Open(void* stage, void* seq, groove::b2::Kind kind) {
+    if (gB2.active || !b2Ready()) return false;
+    uintptr_t cur = reinterpret_cast<uintptr_t>(gCurThread());
+    if (!cur) return false;
+    uint64_t gen = gB2.gen + 1;
+    gB2 = groove::b2::Session{};
+    gB2.active = true; gB2.kind = kind; gB2.gen = gen; gB2.mainThread = cur;
+    gB2.seq = reinterpret_cast<uintptr_t>(seq); gB2.stage = reinterpret_cast<uintptr_t>(stage);
+    logf("B2 open: gen=%llu kind=%s seq=%p stage=%p main=%p", (unsigned long long)gen,
+         kind == groove::b2::Kind::Ht2 ? "ht2" : "r21", seq, stage, reinterpret_cast<void*>(cur));
+    return true;
+}
+// rev3 §6: one log record (only if the SD log is already open), no save, no orig, nothing freed, then abort.
+[[noreturn]] void b2SafeStop(const char* why, const groove::b2::Report* r) {
+    if (r)
+        logf("B2 SAFE STOP: %s gen=%llu kind=%d rounds=%u listed=%u before=%u/%u/%u/%u (no orig, no save, no free)",
+             why ? why : "?", (unsigned long long)gB2.gen, int(gB2.kind), r->rounds, r->listed, r->before[0],
+             r->before[1], r->before[2], r->before[3]);
+    else
+        logf("B2 SAFE STOP: %s gen=%llu kind=%d (no orig, no save, no free)", why ? why : "?",
+             (unsigned long long)gB2.gen, int(gB2.kind));
+    if (gFsOk) flushLog();  // log already mounted/open only; flushLog never mounts
+    hk::svc::Break(hk::svc::BreakReason_Panic, nullptr, 0);
+    for (;;) {}
+}
+// Tripwire: an own Seq/Stage reached a destructor without an approved barrier.
+void b2Trip(const char* where) {
+    ++gB2Trips;
+    b2SafeStop(where, nullptr);
+}
+// V0 Custom Remix live state (bound in hkMain when every V0 + B2 + REMIX_21 hook is installed).
+groove::v0::Execution gV0Exec;
+bool gV0Live = false;
+bool gMultiV0 = false;  // the current gMultiStage is a V0 Custom Remix (H9 path), not the legacy tile
+
+// Custom exit (GE-154 7241433453): same as the native pause "Quit" (0x132E58): schedule the registered return
+// scene (*(int*)0xDAB880, arg *(void**)0x10B5A98, written by the map at 0x1CE154) and request the change with
+// exitToMenu(ctx,1). It does NOT set the retry flag (mgr+0x3AA0 |= 1, native Retry 0x133024): no implicit retry.
+void customExit(void* stage) {
+    void* ctx = at<void*>(stage, sCtx);
+    int ret = *reinterpret_cast<int*>(gBase + 0xDAB880);
+    void* arg = *reinterpret_cast<void**>(gBase + 0x10B5A98);
+    if (ret < 0) {
+        // No return scene registered: never invent one. Leave the stage paused-capable so the player can Quit.
+        logf("exit: no registered return scene (%d) -> pause re-enabled, no scene change", ret);
+        fn<VoidStage>(oEnablePause)(stage);
+        return;
+    }
+    logf("exit: quit to return scene %d (no retry flag)", ret);
+    fn<void (*)(void*, int, void*)>(oSetNextScene)(ctx, ret, arg);
+    fn<void (*)(void*, int)>(oExitToMenu)(ctx, 1);
+}
+
 // ---------------------------------------------------------------- hooks
 // HT2 constructor (only reached through CSTAGE_StageCreator case 67). We hook
 // the ctor instead of CSTAGE_StageCreator because the user's Orochi logger
@@ -1011,8 +1107,8 @@ HkTrampoline ht2CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
         return r;
     }
     void* stage = self;
-    // Do not replace a timeline while its owner (and native children) is live.
-    if (gHt3Stage) return orig(self, seq, b, c, d, e, f);
+    // Do not replace a timeline while its owner (and native children) is live, nor open a 2nd B2 session.
+    if (gHt3Stage || gB2.active) return orig(self, seq, b, c, d, e, f);
     groove::TryLease sourceLease(gInputBusy);
     if (!sourceLease.held) return orig(self, seq, b, c, d, e, f);
     gHt3Stage = nullptr;
@@ -1023,6 +1119,7 @@ HkTrampoline ht2CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
     clearTitleMode();
     gTTLoaded = false;  // GRO-11: re-read tile titles on the next map refresh
     if (!ensureFs()) return orig(self, seq, b, c, d, e, f);  // no SD -> native HT2, type_00
+    if (!b2Ready()) { logf("HT2 ctor: B2 not ready -> native HT2"); flushLog(); return orig(self, seq, b, c, d, e, f); }
     Selection s = readSelection();
     logf("HT2 ctor stage=%p seq=%p args=(%d,%d,%d,%d,%d) | mgr mode=%d world=%d col=%d row=%d cur=%d flags=0x%x",
          stage, seq, b, c, d, e, f, s.mode, s.world, s.col, s.row, s.curIdx, s.flags);
@@ -1080,6 +1177,10 @@ HkTrampoline ht2CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
     flushLog();
     void* r = orig(self, seq, b, c, d, e, f);
     gForceRingType01Bg = false;
+    if (willRun && !b2Open(stage, seq, groove::b2::Kind::Ht2)) {
+        logf("=> B2 open failed: native HT2 worker");  // never run custom bodies without the owner boundary
+        willRun = false;
+    }
     gHt3Stage = willRun ? stage : nullptr;
     if (willBeHt3) {
         if (!patchHt3Sky(stage, "after ctor"))
@@ -1103,13 +1204,14 @@ HkTrampoline dtorHook = [](TrampolineStatic(), void* stage) -> void* {
     if (gHt3Stage && stage == gHt3Stage) {
         logf("%s stage destroyed: started=%d gameplay=%d end=%d finished=%d stopped=%d hoops=%d", gStage->name, gRun.started,
              gRun.gameplayStarted, gRun.reachedEnd, gRun.finished, gRun.stopped, gRun.hoopsSent);
-        if (gRun.started && !gRun.saved) writeSave();
-        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
+        // H-obs (rev3 §5.4/§7): pure observer. No SD I/O here; the fallback save ran in H-B2 after the barrier.
+        logf("%s stage dtor: b2 passed=%d gen=%llu saved=%d", gStage->name, gB2.passed, (unsigned long long)gB2.gen,
+             gRun.saved);
+        void* result=orig(stage);
         gHt3Stage = nullptr;
         logf("ht3 sky: stage done: tinted keyframes=%d crimson lookups=%d", gSkyTinted, (int)gSkyMulHits);
         gSkyRemap = false;
         clearTitleMode();
-        flushLog();
         return result;
     }
     return orig(stage);
@@ -1168,6 +1270,7 @@ bool waitUntil(void* th, int base, int tick) {
 
 // Same spawn as the native REMIX_21 code (its thread vtable + PMF trampoline).
 void spawnR21(void* stage, void* parent, void (*body)(void*, void*)) {
+    if (tStop(parent)) return;  // rev3 §5.2 / GE-154: never append a child after cancellation
     uint8_t* th = fn<uint8_t* (*)(unsigned long)>(oNew)(0x298);
     if (!th) { logf("spawnR21: native allocation failed"); return; }
     void* runner = at<void*>(stage, rRunner);
@@ -1239,6 +1342,7 @@ void mCueThread(void* stage, void* th) {
         if (e.op != groove::MOp::Call || gThreadOf[e.game] != k) continue;
         const int slot = gSlotOf[e.game];
         if (!waitUntil(th, base, e.tick)) { gMRun.stopped = 1; tPop(th); return; }
+        if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }  // no game call after cancellation
         int p = tPush(th);
         fn<void (*)(void*, void*, int)>(oGetScene)(stage, th, slot);
         tRestore(th, p);
@@ -1265,6 +1369,7 @@ void mSwitchThread(void* stage, void* th) {
         const groove::MEvent& e = gMt.ev[i];
         if (e.op != groove::MOp::Switch) continue;
         if (!waitUntil(th, base, e.tick)) { gMRun.stopped = 1; tPop(th); return; }
+        if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }
         int slot = gSlotOf[e.game];
         int p = tPush(th);
         switch (e.style) {
@@ -1282,6 +1387,7 @@ void mSwitchThread(void* stage, void* th) {
 
 // Preloads + screen effects (fade, per-scene layout animations).
 void mDirectorThread(void* stage, void* th) {
+    if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }
     const int base = thClock(th);
     for (int k = 0; k < gMt.gameCount; k++) {
         int slot = gSlotOf[gMt.games[k]];
@@ -1292,6 +1398,7 @@ void mDirectorThread(void* stage, void* th) {
         const groove::MEvent& e = gMt.ev[i];
         if (e.op != groove::MOp::Fade && e.op != groove::MOp::Anim) continue;
         if (!waitUntil(th, base, e.tick)) { gMRun.stopped = 1; tPop(th); return; }
+        if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }
         if (e.op == groove::MOp::Fade) {
             fadeScreen(stage, e.len, e.alpha);
             gMRun.fades++;
@@ -1312,6 +1419,7 @@ void mDirectorThread(void* stage, void* th) {
 }
 
 void mLatencyThread(void* stage, void* th) {
+    if (tStop(th)) { tPop(th); return; }
     int lat = fn<int (*)(void*)>(oLatency)(stage);
     at<int32_t>(th, 0x10) -= lat;
     tPop(th);
@@ -1393,16 +1501,22 @@ void multiWorker(void* stage, void* th) {
     logf("multi worker: end reached=%d finished=%d calls=%d skipped=%d switches=%d fades=%d anims=%d late=%d -> %s",
          gMRun.reachedEnd, gMRun.finished, gMRun.calls, gMRun.callsSkipped, gMRun.switches, gMRun.fades, gMRun.anims,
          gMRun.late, gMRun.resultsMode ? "native toResults (REMIX_21 record)" : "return to previous scene");
-    gMRun.saved = writeMultiSave() ? 1 : 0;
+    if (gMultiV0) {
+        // V0 Custom Remix: progress only through Execution/H9 (custom-saves), never the legacy multi save.
+        gMRun.saved = 0;
+        if (gMRun.finished) {
+            bool ok = groove::v0::groove_v0_finish_token(gV0Exec.token());
+            logf("v0: finish confirmed=%d", ok);
+        }
+    } else {
+        gMRun.saved = writeMultiSave() ? 1 : 0;
+    }
     flushLog();
+    if (tStop(th)) { gMRun.stopped = 1; tPop(th); return; }  // no scene call after cancellation
     if (gMRun.resultsMode) {
         fn<VoidStage>(oToResults)(stage);
     } else {
-        void* ctx = at<void*>(stage, sCtx);
-        uint32_t* flags = *reinterpret_cast<uint32_t**>(gBase + oManager + 0x3AA0);
-        if (flags) *flags |= 1;
-        fn<void (*)(void*, int, void*)>(oSetNextScene)(ctx, at<int>(ctx, 8), nullptr);
-        fn<void (*)(void*, int)>(oExitToMenu)(ctx, 1);
+        customExit(stage);  // native Quit semantics; no implicit retry
     }
     tPop(th);
 }
@@ -1439,9 +1553,18 @@ bool writeMultiSave() {
     return committed;
 }
 
+bool v0ConstructCustom(void* self, void* seq, const int (&args)[5]);
 HkTrampoline r21CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, int c, int d, int e, int f) -> void* {
+    if (gV0Live && gV0Exec.phase == groove::v0::ExecutionPhase::Armed && !gMultiStage && !gB2.active) {
+        // V0 Custom Remix A/B (armed by the Launch hook of slot (0,9,0)/(0,9,1)): construct exactly once through
+        // Execution (the factory calls the native ctor below), then adopt + H-open.
+        const int args[5] = {b, c, d, e, f};
+        if (v0ConstructCustom(self, seq, args)) return self;
+        if (gV0Exec.token().stage) return self;  // native ctor already ran: never construct twice
+        return orig(self, seq, b, c, d, e, f);  // construction never started: plain native REMIX_21
+    }
     void* r = orig(self, seq, b, c, d, e, f);
-    if (gMultiStage) return r;
+    if (gMultiStage || gB2.active) return r;
     groove::TryLease sourceLease(gInputBusy);
     if (!sourceLease.held) return r;
     gMultiStage = nullptr;
@@ -1474,6 +1597,8 @@ HkTrampoline r21CtorHook = [](TrampolineStatic(), void* self, void* seq, int b, 
         }
         if (cnt <= 0 || !all) {
             logf("=> native REMIX_21 (a game of the timeline has no slot in this stage)");
+        } else if (!b2Open(self, seq, groove::b2::Kind::R21)) {
+            logf("=> native REMIX_21 (B2 owner boundary not available)");
         } else {
             gMultiNoNative = fileExists(sd.noNative);
             gMRun = MultiStats{};
@@ -1503,15 +1628,163 @@ HkTrampoline r21DtorHook = [](TrampolineStatic(), void* stage) -> void* {
         logf("multi stage destroyed: started=%d gameplay=%d end=%d finished=%d stopped=%d calls=%d switches=%d",
              gMRun.started, gMRun.gameplayStarted, gMRun.reachedEnd, gMRun.finished, gMRun.stopped, gMRun.calls,
              gMRun.switches);
-        if (gMRun.started && !gMRun.saved) writeMultiSave();
-        void* result=orig(stage); // Stage teardown only: GE-152 finds later Runner reaping, not a join barrier.
+        // H-obs: pure observer (no SD I/O; fallback/quiet handled in H-B2 after the barrier).
+        logf("multi stage dtor: b2 passed=%d gen=%llu v0=%d saved=%d", gB2.passed, (unsigned long long)gB2.gen,
+             gMultiV0, gMRun.saved);
+        void* result=orig(stage);
         gMultiStage = nullptr;
+        gMultiV0 = false;
         if (gTitleMode == 3) clearTitleMode();
-        flushLog();
         return result;
     }
     return orig(stage);
 };
+
+// ---------------------------------------------------------------- V0 live binding (GE-151 interim, Grok)
+uintptr_t v0FactoryConstruct(void*, uintptr_t self, uintptr_t seq, const int* a) {
+    // Exactly the native REMIX_21 ctor with the native arguments (Execution guarantees one call).
+    decltype(r21CtorHook)::orig(reinterpret_cast<void*>(self), reinterpret_cast<void*>(seq), a[0], a[1], a[2], a[3], a[4]);
+    return self;
+}
+bool v0FactoryAdopt(void*, uintptr_t stage, const groove::MultiTimeline& tl, const groove::v0::Package& pkg) {
+    void* st = reinterpret_cast<void*>(stage);
+    gMt = tl;
+    if (!gMt.title[0] && pkg.title[0]) { strncpy(gMt.title, pkg.title, sizeof(gMt.title) - 1); gMt.title[sizeof(gMt.title) - 1] = 0; }
+    int cnt = resolveSlots(st);
+    bool all = cnt > 0;
+    for (int k = 0; k < gMt.gameCount; k++) if (gSlotOf[gMt.games[k]] < 0) all = false;
+    if (!all) { logf("v0: adopt refused: a timeline game has no REMIX_21 slot"); return false; }
+    gMultiNoNative = true;
+    gMRun = MultiStats{};
+    gMultiStage = st;
+    gMultiV0 = true;
+    gTitleMode = 3;
+    gTitleLogged = false;
+    return true;
+}
+const groove::v0::MultiFactory gV0Factory{nullptr, v0FactoryConstruct, v0FactoryAdopt};
+bool v0ConstructCustom(void* self, void* seq, const int (&args)[5]) {
+    if (!b2Ready()) { logf("v0: B2 not ready -> native REMIX_21"); return false; }
+    bool ok = groove::v0::groove_v0_construct_bound_multi(reinterpret_cast<uintptr_t>(self), reinterpret_cast<uintptr_t>(seq), args);
+    logf("v0: construct %s id=%s phase=%d stage=%p", ok ? "ok" : "FAILED", gV0Exec.package().id, int(gV0Exec.phase), self);
+    if (!ok) {
+        // Ctor ran but adopt/stageStarted failed: the live Stage stays native (ownership fault recorded by Execution).
+        if (gMultiStage == self) { gMultiStage = nullptr; gMultiV0 = false; }
+        return false;
+    }
+    if (!b2Open(self, seq, groove::b2::Kind::R21)) {
+        logf("v0: B2 open failed -> custom bodies disabled, native REMIX_21 worker");
+        gMultiStage = nullptr; gMultiV0 = false;
+        return false;
+    }
+    flushLog();
+    return true;
+}
+void v0MapInit() {
+    // Normal game context (map scene ctor). Loads sd:/groove/levels + slots.json written by the GE-155 installer.
+    if (!ensureFs()) return;
+    if (!groove::v0::groove_v0_session_active()) {
+        bool loaded = groove_v0_load_sd_levels();
+        groove::v0::gsv::IO* io = groove_v0_get_save_io();
+        bool configured = loaded && io && groove::v0::groove_v0_configure_loaded();
+        logf("v0: map init levels=%d saves=%d configured=%d A=%s B=%s", loaded, io != nullptr, configured,
+             gV0Packages.registry.ids[0][0] ? gV0Packages.registry.ids[0] : "-",
+             gV0Packages.registry.ids[1][0] ? gV0Packages.registry.ids[1] : "-");
+    } else {
+        logf("v0: map init with a session still open (phase=%d): slots unchanged", int(gV0Exec.phase));
+    }
+    flushLog();
+}
+bool v0MemRead(uintptr_t a, void* out, size_t n) { if (!a || !out) return false; memcpy(out, reinterpret_cast<const void*>(a), n); return true; }
+bool v0MemWrite(uintptr_t a, const void* in, size_t n) { if (!a || !in) return false; memcpy(reinterpret_cast<void*>(a), in, n); return true; }
+bool v0WriteCursor(const uintptr_t* d, const int* v) {
+    for (int i = 0; i < 4; i++) if (!d[i] || (d[i] & 3)) return false;  // validate all before any write
+    for (int i = 0; i < 4; i++) *reinterpret_cast<int*>(d[i]) = v[i];
+    return true;
+}
+uint64_t v0NewTransaction() {
+    // Unique within a boot (tick ^ counter); NOT accredited unique across reboots (open item for GE-154).
+    static uint64_t counter = 0;
+    using TickFn = uint64_t (*)();
+    static TickFn tick = nullptr;
+    if (!tick) tick = reinterpret_cast<TickFn>(hk::ro::lookupSymbol("_ZN2nn2os13GetSystemTickEv"));
+    uint64_t t = tick ? tick() : 0;
+    uint64_t v = (t << 12) ^ ++counter;
+    return v ? v : counter;
+}
+
+// ---------------------------------------------------------------- H-B2 + tripwires
+template <int N> struct B2Tag {};
+hk::hook::Trampoline<bool (*)(void*)> b2DestroyHook(groove_b2_destroy_entry, B2Tag<0>{});
+// Post-barrier, pre-orig (rev3 §5.4): the only place where a custom session may touch the SD on teardown.
+void b2PostBarrier() {
+    if (gB2.kind == groove::b2::Kind::Ht2) {
+        if (gRun.started && !gRun.saved) gRun.saved = writeSave() ? 1 : 0;
+    } else if (gB2.kind == groove::b2::Kind::R21) {
+        if (gMultiV0) {
+            bool q = groove::v0::groove_v0_quiet_token(gV0Exec.token(), !gMRun.finished);
+            logf("v0: quiesced=%d aborted=%d", q, !gMRun.finished);
+        } else if (gMRun.started && !gMRun.saved) {
+            gMRun.saved = writeMultiSave() ? 1 : 0;
+        }
+    }
+    flushLog();
+}
+
+#define B2_TRIP_SEQ(NAME, LABEL) \
+    HkTrampoline NAME = [](TrampolineStatic(), void* self) -> void { \
+        if (gB2.active && !gB2.passed && reinterpret_cast<uintptr_t>(self) == gB2.seq) b2Trip("tw:" LABEL); \
+        orig(self); \
+    };
+#define B2_TRIP_STAGE(NAME, LABEL, ADJ) \
+    HkTrampoline NAME = [](TrampolineStatic(), void* self) -> void { \
+        if (gB2.active && !gB2.passed && reinterpret_cast<uintptr_t>(self) - (ADJ) == gB2.stage) b2Trip("tw:" LABEL); \
+        orig(self); \
+    };
+B2_TRIP_SEQ(twSeq0, "seq0")
+B2_TRIP_SEQ(twSeq1, "seq1")
+B2_TRIP_SEQ(twSeq2, "seq2")
+B2_TRIP_SEQ(twSeq3, "seq3")
+B2_TRIP_SEQ(twSeq4, "seq4")
+B2_TRIP_STAGE(twHt2, "ht2", 0)
+B2_TRIP_STAGE(twHt2a, "ht2-2978", 0x2978)
+B2_TRIP_STAGE(twHt2b, "ht2-2990", 0x2990)
+B2_TRIP_STAGE(twHt2c, "ht2-29b0", 0x29B0)
+B2_TRIP_STAGE(twHt2d, "ht2-2c78", 0x2C78)
+B2_TRIP_STAGE(twR21, "r21", 0)
+B2_TRIP_STAGE(twR21a, "r21-2978", 0x2978)
+B2_TRIP_STAGE(twR21b, "r21-2990", 0x2990)
+B2_TRIP_STAGE(twR21c, "r21-29b0", 0x29B0)
+B2_TRIP_STAGE(twR21d, "r21-3548", 0x3548)
+HkTrampoline twSceneMgr = [](TrampolineStatic(), void* mgr) -> void {
+    if (gB2.active && !gB2.passed && mgr && at<uintptr_t>(mgr, groove::b2::mgrCur) == gB2.seq) b2Trip("tw:scenemgr");
+    orig(mgr);
+};
+
+// rev3 §3.1/§4/§6. Returns only on NoSession/Foreign/NoNext (orig) or after an approved barrier (orig + close).
+bool b2DestroyPending(void* mgr, uintptr_t lr) {
+    LiveEnv env;
+    const char* why = nullptr;
+    auto d = groove::b2::decide(env, gB2, reinterpret_cast<uintptr_t>(mgr), lr, &why);
+    gB2Branch[unsigned(d)]++;
+    if (d == groove::b2::Decision::NoSession || d == groove::b2::Decision::Foreign || d == groove::b2::Decision::NoNext)
+        return b2DestroyHook.orig(mgr);
+    if (d == groove::b2::Decision::SafeStop) b2SafeStop(why, nullptr);
+    groove::b2::Report r = groove::b2::barrier(env, gB2, gB2.seq + groove::b2::seqRunner);
+    if (!r.ok) b2SafeStop(r.why, &r);
+    gB2.passed = true;
+    logf("B2 barrier: gen=%llu kind=%s rounds=%u per_round=%u,%u,%u listed=%u before=%u/%u/%u/%u after=%u/%u/%u/%u passed=1 "
+         "branches=%u/%u/%u/%u",
+         (unsigned long long)gB2.gen, gB2.kind == groove::b2::Kind::Ht2 ? "ht2" : "r21", r.rounds, r.perRound[0],
+         r.perRound[1], r.perRound[2], r.listed, r.before[0], r.before[1], r.before[2], r.before[3], r.after[0],
+         r.after[1], r.after[2], r.after[3], gB2Branch[0], gB2Branch[1], gB2Branch[2], gB2Branch[3]);
+    b2PostBarrier();
+    bool ret = b2DestroyHook.orig(mgr);
+    gB2.active = false;  // closed after native teardown; gen is kept for the next session
+    gB2.passed = false;
+    gB2.seq = gB2.stage = 0;
+    return ret;
+}
 
 // 0x4EFE80: const char* GetMessage(void* archive, const char* label, int* opt);
 HkTrampoline getMessageHook = [](TrampolineStatic(), void* archive, const char* label, int* opt) -> void* {
@@ -1888,11 +2161,7 @@ bool checkSigList(const Sig* list, int n) {
 }
 bool checkSignatures() { return checkSigList(kSigs, (int)(sizeof(kSigs) / sizeof(kSigs[0]))); }
 
-void installMulti(const hk::ro::RoModule* main) {
-    if (!checkSigList(kSigsMulti, (int)(sizeof(kSigsMulti) / sizeof(kSigsMulti[0])))) {
-        logf("multi (REMIX_21 host): signature check failed -> multi disabled, REMIX_21 untouched");
-        return;
-    }
+int checkCueFns() {
     int okFns = 0;
     for (int i = 0; i < groove::kCueFnCount; i++) {
         const groove::CueFn& c = groove::kCueFns[i];
@@ -1901,6 +2170,15 @@ void installMulti(const hk::ro::RoModule* main) {
         if (gCueFnOk[i]) okFns++;
         else logf("cue fn %s 0x%X MISMATCH (%08X %08X) -> its calls are skipped", groove::kGameName[c.game], c.off, p[0], p[1]);
     }
+    return okFns;
+}
+
+void installMulti(const hk::ro::RoModule* main) {
+    if (!checkSigList(kSigsMulti, (int)(sizeof(kSigsMulti) / sizeof(kSigsMulti[0])))) {
+        logf("multi (REMIX_21 host): signature check failed -> multi disabled, REMIX_21 untouched");
+        return;
+    }
+    int okFns = checkCueFns();
     bool h3 = r21DtorHook.installAtOffset(main, oR21Dtor).succeeded();
     bool h2 = h3 && r21WorkerHook.installAtOffset(main, oR21Worker).succeeded();
     bool h1 = h2 && r21CtorHook.installAtOffset(main, oR21Ctor).succeeded();
@@ -1909,7 +2187,161 @@ void installMulti(const hk::ro::RoModule* main) {
          gMultiActive ? "ACTIVE" : "PARTIAL/FAILED (REMIX_21 untouched)");
 }
 
+// ---------------------------------------------------------------- B2 / V0 installation
+bool installB2(const hk::ro::RoModule* main) {
+    if (!checkSigList(kSigsB2, (int)(sizeof(kSigsB2) / sizeof(kSigsB2[0])))) {
+        logf("B2: signature check failed -> no custom stage (HT2/REMIX_21 stay native)");
+        return false;
+    }
+    // Tripwires first, then H-B2: with H-B2 missing no session can ever open (gB2Installed false).
+    bool ok = twSeq0.installAtOffset(main, 0x2AB5F0).succeeded() && twSeq1.installAtOffset(main, 0x2ABA50).succeeded() &&
+              twSeq2.installAtOffset(main, 0x2ABEB0).succeeded() && twSeq3.installAtOffset(main, 0x2AC310).succeeded() &&
+              twSeq4.installAtOffset(main, 0x2AC750).succeeded() && twHt2.installAtOffset(main, 0x4291A0).succeeded() &&
+              twHt2a.installAtOffset(main, 0x4291D0).succeeded() && twHt2b.installAtOffset(main, 0x429200).succeeded() &&
+              twHt2c.installAtOffset(main, 0x429230).succeeded() && twHt2d.installAtOffset(main, 0x429260).succeeded() &&
+              twR21.installAtOffset(main, 0x420C40).succeeded() && twR21a.installAtOffset(main, 0x420C70).succeeded() &&
+              twR21b.installAtOffset(main, 0x420CA0).succeeded() && twR21c.installAtOffset(main, 0x420CD0).succeeded() &&
+              twR21d.installAtOffset(main, 0x420D00).succeeded() && twSceneMgr.installAtOffset(main, groove::b2::oSceneMgrDtor).succeeded();
+    ok = ok && b2DestroyHook.installAtOffset(main, groove::b2::oDestroyPending).succeeded();
+    logf("B2 hooks (16 tripwires + destroyPending): %s", ok ? "ACTIVE" : "FAILED -> no custom stage");
+    return ok;
+}
+
+template <int N> struct V0Tag {};
+using V0Fn = groove::v0::Original;
+#define GROOVE_V0_TRAMP(n) hk::hook::Trampoline<V0Fn> v0h_##n(groove_v0_##n##_entry, V0Tag<__LINE__>{});
+GROOVE_V0_TRAMP(map_init)
+GROOVE_V0_TRAMP(map_dtor)
+GROOVE_V0_TRAMP(confirm)
+GROOVE_V0_TRAMP(map_cell)
+GROOVE_V0_TRAMP(reverse)
+GROOVE_V0_TRAMP(cell_state)
+GROOVE_V0_TRAMP(save_state)
+GROOVE_V0_TRAMP(launch)
+GROOVE_V0_TRAMP(begin_play)
+GROOVE_V0_TRAMP(campaign_a)
+GROOVE_V0_TRAMP(campaign_b)
+GROOVE_V0_TRAMP(set_sel)
+GROOVE_V0_TRAMP(get_sel)
+GROOVE_V0_TRAMP(init_gameplay)
+GROOVE_V0_TRAMP(commit)
+GROOVE_V0_TRAMP(map_return)
+GROOVE_V0_TRAMP(write_save)
+GROOVE_V0_TRAMP(perfect_ctor)
+#undef GROOVE_V0_TRAMP
+hk::hook::HookOneInstr v0PerfectSite;
+constexpr uintptr_t oV0PerfectSite = 0x206A54, oV0PerfectTarget = 0x2CC0;
+
+// V0 Custom Remix A/B (slots (0,9,0)/(0,9,1) on REMIX_21). Requires B2 + REMIX_21 hooks. MapInit last: until it is
+// installed no slot is ever configured, so a partial install stays inert (empty cells, native paths).
+bool bindV0() {
+    using H = groove::v0::Hook;
+    static groove::v0::Backend b{};
+    b.mainBase = gBase;
+    b.memory = {v0MemRead, v0MemWrite};
+    b.original[unsigned(H::MapInit)] = v0h_map_init.orig;
+    b.original[unsigned(H::MapDtor)] = v0h_map_dtor.orig;
+    b.original[unsigned(H::Confirm)] = v0h_confirm.orig;
+    b.original[unsigned(H::MapCell)] = v0h_map_cell.orig;
+    b.original[unsigned(H::Reverse)] = v0h_reverse.orig;
+    b.original[unsigned(H::CellState)] = v0h_cell_state.orig;
+    b.original[unsigned(H::SaveState)] = v0h_save_state.orig;
+    b.original[unsigned(H::Launch)] = v0h_launch.orig;
+    b.original[unsigned(H::BeginPlay)] = v0h_begin_play.orig;
+    b.original[unsigned(H::CampaignA)] = v0h_campaign_a.orig;
+    b.original[unsigned(H::CampaignB)] = v0h_campaign_b.orig;
+    b.original[unsigned(H::SetSel)] = v0h_set_sel.orig;
+    b.original[unsigned(H::GetSel)] = v0h_get_sel.orig;
+    b.original[unsigned(H::InitGameplay)] = v0h_init_gameplay.orig;
+    b.original[unsigned(H::CommitResult)] = v0h_commit.orig;
+    b.original[unsigned(H::MapReturn)] = v0h_map_return.orig;
+    b.original[unsigned(H::WriteSave)] = v0h_write_save.orig;
+    b.original[unsigned(H::PerfectSite)] = reinterpret_cast<V0Fn>(gBase + oV0PerfectTarget);  // call-site patch: callee
+    b.original[unsigned(H::PerfectCtor)] = v0h_perfect_ctor.orig;
+    b.writeCursor = v0WriteCursor;
+    b.execution = &gV0Exec;
+    b.levels = &gV0Packages;
+    b.saves = &gV0SaveIo;
+    b.factory = &gV0Factory;
+    b.newTransaction = v0NewTransaction;
+    b.mapInitHook = v0MapInit;
+    b.persistOnMapReturn = true;
+    if (!groove::v0::groove_v0_bind(&b)) { logf("v0: bind failed -> disabled"); return false; }
+    return true;
+}
+bool installV0(const hk::ro::RoModule* main) {
+    if (!gB2Installed || !gMultiActive) { logf("v0: needs B2 + REMIX_21 hooks -> disabled"); return false; }
+    if (!checkSigList(kSigsV0, (int)(sizeof(kSigsV0) / sizeof(kSigsV0[0])))) { logf("v0: signature check failed -> disabled"); return false; }
+    if (!bindV0()) return false;
+    uintptr_t site = gBase + oV0PerfectSite, entry = reinterpret_cast<uintptr_t>(&groove_v0_perfect_site_entry);
+    intptr_t dist = intptr_t(entry) - intptr_t(site);
+    bool inRange = dist > -(intptr_t(1) << 27) && dist < (intptr_t(1) << 27);
+    bool ok = inRange &&
+        v0h_map_dtor.installAtOffset(main, 0x1CE200).succeeded() && v0h_confirm.installAtOffset(main, 0x1D2CC0).succeeded() &&
+        v0h_map_cell.installAtOffset(main, 0x1CBCA0).succeeded() && v0h_reverse.installAtOffset(main, 0x1CD4E0).succeeded() &&
+        v0h_cell_state.installAtOffset(main, 0x1CC420).succeeded() && v0h_save_state.installAtOffset(main, 0x3F70).succeeded() &&
+        v0h_launch.installAtOffset(main, 0x1D3130).succeeded() && v0h_begin_play.installAtOffset(main, 0x48B0).succeeded() &&
+        v0h_campaign_a.installAtOffset(main, 0x4A30).succeeded() && v0h_campaign_b.installAtOffset(main, 0x4A70).succeeded() &&
+        v0h_set_sel.installAtOffset(main, 0x4890).succeeded() && v0h_get_sel.installAtOffset(main, 0x4860).succeeded() &&
+        v0h_init_gameplay.installAtOffset(main, 0x137050).succeeded() && v0h_commit.installAtOffset(main, 0x1D39D0).succeeded() &&
+        v0h_map_return.installAtOffset(main, 0x1D38A0).succeeded() && v0h_write_save.installAtOffset(main, 0x3D60).succeeded() &&
+        v0h_perfect_ctor.installAtOffset(main, 0x2064A0).succeeded() &&
+        v0PerfectSite.installAtOffset(main, oV0PerfectSite, hk::hook::makeBL(site, entry)).succeeded();
+    ok = ok && v0h_map_init.installAtOffset(main, 0x1CD9A0).succeeded();
+    logf("v0 hooks (18 trampolines + perfect call site, range=%d): %s", inRange, ok ? "ACTIVE" : "FAILED (inert: no slot configured)");
+    return ok;
+}
+
+// Emulation introspection (tests/emulation): the exact (offset, entry, backup) of every hook hkMain installs, so the
+// harness patches the game image the way Hakkun does. Never called by the game or by hkMain.
+struct GrooveHookPlan { uint32_t off; uint32_t kind; uintptr_t to; uintptr_t backup; };  // kind 0 trampoline, 1 BL site
+template <class L> GrooveHookPlan planOf(const hk::hook::Trampoline<L>&, uint32_t off) {
+    return {off, 0, reinterpret_cast<uintptr_t>(&hk::hook::detail::TrampolineFunc<L>::invoke),
+            reinterpret_cast<uintptr_t>(&hk::hook::detail::TrampolineStaticBackup<L>::orig)};
+}
+template <class F> GrooveHookPlan planFn(const hk::hook::Trampoline<F>& t, F to, uint32_t off) {
+    return {off, 0, reinterpret_cast<uintptr_t>(to), reinterpret_cast<uintptr_t>(t.orig)};
+}
+unsigned hookPlan(GrooveHookPlan* o, unsigned cap) {
+    GrooveHookPlan p[] = {
+        planOf(ht2CtorHook, oHt2Ctor), planOf(workerHook, oWorker), planOf(dtorHook, oDtor),
+        planOf(r21CtorHook, oR21Ctor), planOf(r21WorkerHook, oR21Worker), planOf(r21DtorHook, oR21Dtor),
+        planOf(twSeq0, 0x2AB5F0), planOf(twSeq1, 0x2ABA50), planOf(twSeq2, 0x2ABEB0), planOf(twSeq3, 0x2AC310),
+        planOf(twSeq4, 0x2AC750), planOf(twHt2, 0x4291A0), planOf(twHt2a, 0x4291D0), planOf(twHt2b, 0x429200),
+        planOf(twHt2c, 0x429230), planOf(twHt2d, 0x429260), planOf(twR21, 0x420C40), planOf(twR21a, 0x420C70),
+        planOf(twR21b, 0x420CA0), planOf(twR21c, 0x420CD0), planOf(twR21d, 0x420D00),
+        planOf(twSceneMgr, groove::b2::oSceneMgrDtor),
+        planFn(b2DestroyHook, &groove_b2_destroy_entry, groove::b2::oDestroyPending),
+        planFn(v0h_map_init, &groove_v0_map_init_entry, 0x1CD9A0), planFn(v0h_map_dtor, &groove_v0_map_dtor_entry, 0x1CE200),
+        planFn(v0h_confirm, &groove_v0_confirm_entry, 0x1D2CC0), planFn(v0h_map_cell, &groove_v0_map_cell_entry, 0x1CBCA0),
+        planFn(v0h_reverse, &groove_v0_reverse_entry, 0x1CD4E0), planFn(v0h_cell_state, &groove_v0_cell_state_entry, 0x1CC420),
+        planFn(v0h_save_state, &groove_v0_save_state_entry, 0x3F70), planFn(v0h_launch, &groove_v0_launch_entry, 0x1D3130),
+        planFn(v0h_begin_play, &groove_v0_begin_play_entry, 0x48B0), planFn(v0h_campaign_a, &groove_v0_campaign_a_entry, 0x4A30),
+        planFn(v0h_campaign_b, &groove_v0_campaign_b_entry, 0x4A70), planFn(v0h_set_sel, &groove_v0_set_sel_entry, 0x4890),
+        planFn(v0h_get_sel, &groove_v0_get_sel_entry, 0x4860), planFn(v0h_init_gameplay, &groove_v0_init_gameplay_entry, 0x137050),
+        planFn(v0h_commit, &groove_v0_commit_entry, 0x1D39D0), planFn(v0h_map_return, &groove_v0_map_return_entry, 0x1D38A0),
+        planFn(v0h_write_save, &groove_v0_write_save_entry, 0x3D60), planFn(v0h_perfect_ctor, &groove_v0_perfect_ctor_entry, 0x2064A0),
+        {uint32_t(oV0PerfectSite), 1, reinterpret_cast<uintptr_t>(&groove_v0_perfect_site_entry), 0},
+    };
+    unsigned n = sizeof(p) / sizeof(p[0]);
+    if (o && cap >= n) for (unsigned i = 0; i < n; i++) o[i] = p[i];
+    return n;
+}
+
 } // namespace
+
+extern "C" __attribute__((used, retain, visibility("default"))) unsigned groove_hook_plan(GrooveHookPlan* out, unsigned cap) {
+    return hookPlan(out, cap);
+}
+// Emulation only: what hkMain does after every install succeeded (flags + V0 Backend binding).
+extern "C" __attribute__((used, retain, visibility("default"))) bool groove_emu_activate() {
+    gB2Installed = gActive = gMultiActive = true;
+    checkCueFns();
+    gV0Live = bindV0();
+    return gV0Live;
+}
+
+extern "C" bool groove_b2_destroy_pending(void* mgr, uintptr_t lr) { return b2DestroyPending(mgr, lr); }
 
 extern "C" void hkMain() {
     // Runs inside rtld module initialisation, BEFORE nninitStartup/nnMain:
@@ -1950,10 +2382,12 @@ extern "C" void hkMain() {
     }
     // Install the passive hooks first and the trigger (ctor) last; the ctor hook
     // only diverts a stage when all three are in place (gActive).
+    // B2 owner boundary first: no custom stage can be diverted without it (rev3 §3, GE-154 7241433453).
+    gB2Installed = installB2(main);
     bool h3 = dtorHook.installAtOffset(main, oDtor).succeeded();
     bool h2 = h3 && workerHook.installAtOffset(main, oWorker).succeeded();
     bool h1 = h2 && ht2CtorHook.installAtOffset(main, oHt2Ctor).succeeded();
-    gActive = h1 && h2 && h3;
+    gActive = h1 && h2 && h3;  // titles/map hooks still need gActive; stage diversion also requires b2Ready()
     logf("hooks: HT2ctor=%d HT2worker=%d HT2dtor=%d -> %s", h1, h2, h3, gActive ? "ACTIVE" : "PARTIAL/FAILED (HT2 untouched)");
     // Custom HT3 bg hook is optional: a failure here must not disable HT3 / Double Hell.
     {
@@ -2035,5 +2469,6 @@ extern "C" void hkMain() {
         logf("sky hook: layoutBake=%d mulColor=%d (atlas[57] multiply, HT3 only)", hBake, hMul);
     }
     installMulti(main);
+    gV0Live = installV0(main);
    
 }
